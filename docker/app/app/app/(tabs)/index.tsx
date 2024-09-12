@@ -1,11 +1,32 @@
 import { Image, StyleSheet, Platform } from 'react-native';
-
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
 export default function HomeScreen() {
+  // データを保存するためのステートを定義
+  const [message, setMessage] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // コンポーネントがマウントされた時にAPIリクエストを実行
+  useEffect(() => {
+    axios
+      .get('http://localhost/api/data')  // Flask APIエンドポイント
+      .then(response => {
+        setMessage(response.data.message);  // response.data.messageをステートに保存
+        setLoading(false);  // ローディング状態を解除
+      })
+      .catch(err => {
+        setError(err.message);  // エラーが発生した場合の処理
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -19,6 +40,19 @@ export default function HomeScreen() {
         <ThemedText type="title">uuu!</ThemedText>
         <HelloWave />
       </ThemedView>
+
+      {/* APIのレスポンスを表示 */}
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">API Response:</ThemedText>
+        {loading ? (
+          <ThemedText>Loadin...</ThemedText>
+        ) : error ? (
+          <ThemedText>Erro: {error}</ThemedText>
+        ) : (
+          <ThemedText>{message}</ThemedText>  // 取得したmessageを表示
+        )}
+      </ThemedView>
+
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>

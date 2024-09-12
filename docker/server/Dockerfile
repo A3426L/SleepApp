@@ -5,6 +5,6 @@ WORKDIR /var/www/html/
 
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
-RUN pip install flask uWSGI SQLAlchemy pymysql Flask-Migrate cryptography
+RUN pip install flask uWSGI SQLAlchemy pymysql Flask-Migrate cryptography flask-cors
 
 CMD ["uwsgi", "uwsgi.ini"]
