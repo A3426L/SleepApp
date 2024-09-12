@@ -1,16 +1,10 @@
-import { Text, View } from "react-native";
+import { Redirect, useRootNavigationState } from 'expo-router';
 
-export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>test!!!</Text>
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-    </View>
-  );
+export default function Page() {
+  const rootNavigationState = useRootNavigationState();
+
+  // ルートナビゲーターが準備できている場合にのみ、リダイレクトをレンダリング
+  if (rootNavigationState?.key == null) return null;
+
+  return <Redirect href={'/(pages)/home'} />;
 }
