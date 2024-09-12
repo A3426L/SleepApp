@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask , jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import text 
@@ -18,7 +18,6 @@ def hello():
 @app.route('/check-db')
 def check_db():
     try:
-        # テキスト形式でSQLを実行
         result = db.session.execute(text('SELECT 1')).scalar()
         if result == 1:
             return "Database connection successful!", 200
@@ -26,6 +25,10 @@ def check_db():
             return "Database connection failed!", 500
     except Exception as e:
         return str(e), 500
+    
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    return jsonify({"message": "Hello from Flask!"})
 
 if __name__ == "__main__":
 	app.run(debug=True)
