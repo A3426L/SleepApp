@@ -1,0 +1,27 @@
+services:
+  app:
+    build: ./docker/app
+    volumes: 
+      - ./docker/app:/app
+    tty: true
+    env_file: ./docker/app/.env
+    ports:
+      - 8081:8081
+
+  server:
+    image: python:3.11
+    build: ./docker/server
+
+    volumes:
+      - ./docker/server:/var/www/html/
+
+    restart: always
+    tty: true
+
+  web:
+    build: ./docker/web
+    ports:
+      - 80:80
+    volumes:
+      - ./docker/web/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/server:/var/www/html/
