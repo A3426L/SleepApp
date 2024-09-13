@@ -16,7 +16,7 @@ export default function HomeScreen() {
   // コンポーネントがマウントされた時にAPIリクエストを実行
   useEffect(() => {
     axios
-      .get('http://localhost/api/data')  // Flask APIエンドポイント
+      .get('http://172.16.42.22/api/data')  // Flask APIエンドポイント
       .then(response => {
         setMessage(response.data.message);  // response.data.messageをステートに保存
         setLoading(false);  // ローディング状態を解除
