@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet, Platform, Button } from 'react-native';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -26,6 +26,11 @@ export default function HomeScreen() {
         setLoading(false);
       });
   }, []);
+  const test = ()=>{axios.get('http://172.16.42.22/api/data')
+      .then(test_data=>{
+        console.log(test_data.data)})
+      .catch(error => console.error("error",error))}
+      
 
   return (
     <ParallaxScrollView
@@ -39,6 +44,7 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">uuu!</ThemedText>
         <HelloWave />
+        <Button title='test' onPress={test}/>
       </ThemedView>
 
       {/* APIのレスポンスを表示 */}
