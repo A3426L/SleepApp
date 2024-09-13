@@ -1,0 +1,4 @@
+.vscode/
+.DS_Store
+docker/db/data/
+docker/app/.env
