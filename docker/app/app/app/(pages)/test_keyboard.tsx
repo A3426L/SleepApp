@@ -9,6 +9,14 @@ import { Header, } from "react-native/Libraries/NewAppScreen";
 export default function Home() {
   const [text, onChangeText] = useState('Useless Text');
 
+
+  const [value, setValue] = useState("");
+  const handleTextChange = (text: string) => {
+    // 正規表現で英数字のみ許可
+    const filteredText = text.replace(/[^a-zA-Z0-9]/g, "");
+    setValue(filteredText);
+  };
+
   return (
 
     <SafeAreaView style ={{
@@ -24,7 +32,7 @@ export default function Home() {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
           <Text style={styles.header}>Header</Text>
-          <TextInput placeholder="Username" style={styles.textInput} />
+          <TextInput placeholder="Username" style={styles.textInput} value={value} keyboardType="email-address" onChangeText={handleTextChange}/>
           <View style={styles.btnContainer}>
             <Button title="Submit" onPress={() => null} />
           </View>
@@ -59,6 +67,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
 });
+
+
+
+
 /*
 
 <SafeAreaView style ={{
