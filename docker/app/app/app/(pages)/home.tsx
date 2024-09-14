@@ -1,102 +1,3 @@
-import { Pressable, Text, SafeAreaView } from "react-native";
-import {StyleSheet} from 'react-native';
-import { Button , Alert, View, TouchableOpacity} from "react-native";
-import {Link} from 'expo-router';
-
-
-
-export default function Home() {
-  return (
-    <View style={{
-      flex: 1,
-      justifyContent: "flex-start",
-      //alignItems: "center",
-      backgroundColor: 'skyblue'
-    }}
-    >
-      <View style ={{
-        flex:0.5,
-        backgroundColor:'yellow',
-        borderBottomLeftRadius:60,
-        borderBottomRightRadius:60,
-      }}>
-      </View>
-      <SafeAreaView style ={{
-        flex:1,
-        backgroundColor:'skyblue'
-      }}>
-        <SafeAreaView style ={{
-          flex:1,
-          backgroundColor:'white'
-        }}>
-          <Link href={"/(pages)/chat"} asChild>
-            <TouchableOpacity onPress={() => {}} style={{
-              margin: "10%",
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: 'gray',
-              borderRadius: 20
-            }}>
-              <Text style={{
-                fontSize: 30,
-              }}>go chat</Text>
-            </TouchableOpacity>
-          </Link>
-        </SafeAreaView>
-        <SafeAreaView style ={{
-          flex:1,
-          backgroundColor:'red'
-        }}>
-          <Link href={"/(pages)/waiting"} asChild>
-            <TouchableOpacity onPress={() => {}} style={{
-              margin: "10%",
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: 'gray',
-              borderRadius: 20
-            }}>
-              <Text style={{
-                fontSize: 30,
-              }}>go waiting</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href={"/test_timer"} asChild style={{
-            alignItems: "center",
-            flex: 1,
-          }}>
-            <Pressable>
-              <Text style={{
-                  fontSize: 30,
-                }}>go timer</Text>
-              </Pressable>
-          </Link>
-          <Link href={"/(pages)/test_keyboard"} asChild style={{
-            alignItems: "center",
-            flex: 1,
-          }}>
-            <Pressable>
-              <Text style={{
-                  fontSize: 30,
-                }}>go test_keyboard</Text>
-              </Pressable>
-          </Link>
-        </SafeAreaView>
-      </SafeAreaView>
-      
-    </View>
-
-
-
-    
-  );
-}
-
-const styles = StyleSheet.create({
-
-});
-/*
 import { Pressable, Text, SafeAreaView, LayoutChangeEvent } from "react-native";
 import {StyleSheet} from 'react-native';
 import { Button , Alert, View, TouchableOpacity, ImageBackground} from "react-native";
@@ -106,6 +7,8 @@ import { Ionicons } from "@expo/vector-icons";
 import TabsHeaderText from "@/components/TabsHeaderText";
 import React, { useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
+import Diditaltimer from "./test_comp";
+
 
 export default function Home() {
   const router = useRouter();
@@ -120,9 +23,26 @@ export default function Home() {
           <TabsHeaderIcon/>
         </View>
         <View style={styles.MainContainer}>
-          <ImageBackground source={home_image} style={styles.HomeImage}>
-            <View style={{backgroundColor:"red",flex:0}}></View>
-          </ImageBackground>
+          <View style={{backgroundColor:"#001125",flex:0.5}}>
+            <View style ={{flex:0.3, backgroundColor: "#001125",justifyContent: 'center', marginLeft: "5%"}}>
+              <Text style={{color: "white", backgroundColor: "#001125", fontSize: 25 }}>
+                こんばんは！
+              </Text>
+            </View>
+            <Diditaltimer>
+
+            </Diditaltimer>
+          </View>
+          <View style={{backgroundColor:"#001125",flex:0.5}}>
+            <ImageBackground source={home_image} style={styles.HomeImage}>
+              <TouchableOpacity style={{flex:0.35, backgroundColor: "#4b58c8",justifyContent: 'center',marginBottom: "20%",marginHorizontal:"7%", borderRadius:20}}>
+                <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
+                  夢を決める
+                </Text>
+              </TouchableOpacity>
+            </ImageBackground>
+          </View>   
+          
         </View>
       </SafeAreaView>
   );
@@ -158,4 +78,3 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
 });
-*/

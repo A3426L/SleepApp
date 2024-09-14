@@ -18,7 +18,7 @@ const TabsHeaderText = () => {
 const styles = StyleSheet.create({
   TabsHeaderText: {
     color: "white",
-    fontSize: 25,
+    fontSize: 35,
     textAlign: "left",
   },
 });
