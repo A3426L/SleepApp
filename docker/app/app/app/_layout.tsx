@@ -8,7 +8,7 @@ export default function RootLayout() {
   return (
     <Tabs screenOptions={{
       tabBarActiveTintColor: "pink",
-      tabBarStyle:{backgroundColor:"purple"},
+      tabBarStyle:{backgroundColor:'#9370db'},
     }}>
       <Tabs.Screen
         name="(pages)"

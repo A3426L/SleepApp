@@ -11,9 +11,6 @@ export default function RootLayout() {
         headerShown: false,
         headerBackVisible: false,
         gestureEnabled: false,
-        headerStyle:{
-          backgroundColor: "red",
-        }
       }}/>
       <Stack.Screen name="waiting" options={{
         headerShown: false,
@@ -22,6 +19,14 @@ export default function RootLayout() {
       }}/>
       <Stack.Screen name="demo_chat" options={{
         title: "demo_chat",
+        //headerBackVisible: false,
+        //gestureEnabled: false,
+      }}/>
+      <Stack.Screen name="chat" options={{
+        title: "",
+        headerStyle:{
+          backgroundColor:'#9370db',
+        }
         //headerBackVisible: false,
         //gestureEnabled: false,
       }}/>
