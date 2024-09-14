@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     marginLeft: 50,
     marginRight: 20,
     marginTop: 40,
-    marginBottom:15
+    marginBottom:0
   },
   progressBarFill: {
     height: '100%',
