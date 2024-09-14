@@ -23,7 +23,7 @@ export default function RootLayout() {
         //gestureEnabled: false,
       }}/>
       <Stack.Screen name="chat" options={{
-        title: "",
+        headerShown: false,
         headerStyle:{
           backgroundColor:'#9370db',
         }
