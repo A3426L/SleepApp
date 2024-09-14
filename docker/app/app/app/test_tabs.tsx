@@ -4,7 +4,7 @@ import { Button , Alert, View, TouchableOpacity} from "react-native";
 import {Link,useRouter} from 'expo-router';
 import { Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import TabsHeaderText from "../components/TabsHeaderText";
+import TabsHeaderText from "@/components/TabsHeaderText";
 import { red } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 import React, { useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
@@ -13,22 +13,14 @@ export default function Home() {
   const router = useRouter();
 
 
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  const handleLayout = (event:LayoutChangeEvent) => {
-    const { width, height } = event.nativeEvent.layout;
-    setDimensions({ width, height });
-  };
-
-
   return (
       <SafeAreaView style = {styles.Container}>
         <View style = {styles.TabsHeaderContainer}>
           <View style = {styles.TabsHeaderTextContainer}>
-            <TabsHeaderText/>
           </View>
           <TabsHeaderIcon/>
         </View>
+        <View style = {{flex :0.9, backgroundColor: "white"}}/>
       </SafeAreaView>
   );
 }
@@ -36,20 +28,20 @@ export default function Home() {
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#001125",
   },
   TabsHeaderContainer: {
     flex: 0.1,
-    backgroundColor: '#9370db',
+    backgroundColor: 'white',
     flexDirection: "row",
-    //alignItems: "center",
   },
   TabsHeaderTextContainer: {
     flex: 0.8,
     justifyContent: "center", 
+    backgroundColor:"#001125"
   },
   TabsHeaderIcon: {
-    backgroundColor: '#9370db',
+    backgroundColor: 'white',
     flex: 0.2,
     justifyContent: "center", 
     alignItems: "center",

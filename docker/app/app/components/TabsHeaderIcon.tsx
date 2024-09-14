@@ -18,14 +18,14 @@ const handleLayout = (event:LayoutChangeEvent) => {
 };
   return (
     <TouchableOpacity style={styles.TabsHeaderIcon} onLayout={handleLayout}>
-      <Ionicons name="person-circle" size={dimensions.height}/>
+      <Ionicons name="person-circle" size={dimensions.height} color={"white"}/>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   TabsHeaderIcon: {
-    backgroundColor: '#9370db',
+    backgroundColor: '#001125',
     flex: 0.2,
     justifyContent: "center", 
     alignItems: "center",
