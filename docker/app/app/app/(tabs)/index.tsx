@@ -16,7 +16,7 @@ export default function HomeScreen() {
   // コンポーネントがマウントされた時にAPIリクエストを実行
   useEffect(() => {
     axios
-      .get('http://172.16.42.22/api/data')  // Flask APIエンドポイント
+      .get('http://172.20.10.8/api/data')  // Flask APIエンドポイント
       .then(response => {
         setMessage(response.data.message);  // response.data.messageをステートに保存
         setLoading(false);  // ローディング状態を解除
@@ -26,10 +26,20 @@ export default function HomeScreen() {
         setLoading(false);
       });
   }, []);
-  const test = ()=>{axios.get('http://172.16.42.22/api/data')
+  const test = ()=>{axios.get('http://172.20.10.8/api/data')
       .then(test_data=>{
         console.log(test_data.data)})
       .catch(error => console.error("error",error))}
+
+  
+  const postData = async () => {
+    try {
+        const response = await axios.post('http://172.20.10.8/api/data/post', { key: 'value' });
+        console.log(response.data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+  };
       
 
   return (
@@ -44,7 +54,7 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">uuu!</ThemedText>
         <HelloWave />
-        <Button title='test' onPress={test}/>
+        <Button title='test' onPress={postData}/>
       </ThemedView>
 
       {/* APIのレスポンスを表示 */}
