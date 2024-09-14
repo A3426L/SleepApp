@@ -33,5 +33,14 @@ def check_db():
 def get_data():
     return jsonify({"message": "Hello from Flask!"})
 
+@app.route('/api/data/post', methods=['POST'])
+def post_data():
+    data = request.get_json()  # POSTリクエストのJSONデータを取得
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    # 受け取ったデータをそのまま返す
+    return jsonify({"received_data": data})
+
 if __name__ == "__main__":
 	app.run(debug=True)
