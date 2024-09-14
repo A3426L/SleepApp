@@ -1,5 +1,5 @@
-import React, { forwardRef, useState } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { forwardRef, useState, createRef, useEffect, useRef } from 'react';
+import { View, StyleSheet, Text, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, Animated } from 'react-native';
 import { GiftedChat, IMessage, Send, InputToolbar } from 'react-native-gifted-chat';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -8,6 +8,9 @@ interface AppState {
 }
 
 export default class App extends React.Component<{}, AppState> {
+  private topInputRef = createRef<TextInput>();
+  private bottomInputRef = createRef<TextInput>();
+
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -39,13 +42,22 @@ export default class App extends React.Component<{}, AppState> {
     }));
   };
 
+  handleTopInputFocus = () => {
+    if (this.bottomInputRef.current) {
+      this.bottomInputRef.current.blur(); // 下部のテキストボックスのフォーカスを解除
+    }
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
           <View style={styles.topInputContainer}>
+            <ProgressBar duration={10000} />
             <TextInput
               style={styles.textInput}
               placeholder="上部のテキスト入力"
+              ref={this.topInputRef}
+              onFocus={this.handleTopInputFocus} // フォーカスイベントを処理
             />
           </View>
           <GiftedChat
@@ -57,6 +69,8 @@ export default class App extends React.Component<{}, AppState> {
             }}
             renderSend={(props) => <CustomSend {...props} />}
             renderInputToolbar={(props) => <CustomInputToolbar {...props} />} // カスタム入力ボックス
+            alwaysShowSend={true}
+            keyboardShouldPersistTaps='handled'
           />
       </SafeAreaView>
     );
@@ -80,7 +94,32 @@ const CustomInputToolbar = (props: any) => {
     <InputToolbar
       {...props}
       containerStyle={styles.inputToolbar} // スタイルを適用
+      textInputProps={{
+        ref: props.bottomInputRef, // ここで ref を渡す
+      }}
     />
+  );
+};
+
+// プログレスバーコンポーネント
+const ProgressBar = ({ duration }: { duration: number }) => {
+  const widthAnim = useRef(new Animated.Value(100)).current;
+
+  useEffect(() => {
+    Animated.timing(widthAnim, {
+      toValue: 0,
+      duration: duration,
+      useNativeDriver: false,
+    }).start();
+  }, [widthAnim, duration]);
+
+  return (
+    <View style={styles.progressBarBackground}>
+      <Animated.View style={[styles.progressBarFill, { width: widthAnim.interpolate({
+        inputRange: [0, 100],
+        outputRange: ['100%', '0%']
+      }) }]} />
+    </View>
   );
 };
 
@@ -124,5 +163,18 @@ const styles = StyleSheet.create({
     paddingTop: 0,    // 上部の内側の余白を調整
     paddingBottom: 0,  // 下部の内側の余白を減らし、背景を見せる
     marginBottom: 0,
+  },
+  progressBarBackground: {
+    height: 7,
+    backgroundColor: '#ddd',
+    borderRadius: 5,
+    overflow: 'hidden',
+    marginHorizontal: 15,
+    marginTop: 0,
+    marginBottom:15
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#6495ed',
   },
 });
