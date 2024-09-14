@@ -21,16 +21,25 @@ migrate = Migrate(app, db)
 #ユーザーモデル
 class Userdate(db.Model):
      id = db.Column(db.Integer,primary_key=True)
-     username = db.Column(db.String(50),nullable=False)     #名前
-#ルームモデル
+     username = db.Column(db.String(10),nullable=False)     #名前
+
+#ルーム人数確認
+class Roomnumber(db.Model):
+     id = db.Column(db.Integer,primary_key=True)
+     room_inthe_peple = db.Column(db.Integer,nullable=False)
+
+#各ルームモデル
 class Room(db.Model):
      id = db.Column(db.Integer,primary_key=True)
-     people_inthe_room = db.Column(db.Integer,nullable=False)       #ルーム人数
-     room_number = db.Column(db.Integer,nullable=False)         #ルームナンバー
+     room_number = db.Column(db.Integer,db.ForeignKey('roomnumber.id'),nullable=False)         #ルームナンバー
+     username = db.Column(db.String(10),db.ForeignKey('userdate.username'),nullable=False)     #名前
+     user_id = db.Column(db.Integer,db.ForeignKey('userdate.id'),nullable=False)
+     role = db.Column(db.Integer,nullable=False)         #リーダかそれ以外か
+
 #メッセージモデル
 class Message(db.Model):
      id = db.Column(db.Integer,primary_key=True)
-     user_id = db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)  
+     user_id = db.Column(db.Integer,db.ForeignKey('userdate.id'),nullable=False)  
      message = db.Column(db.String(100),nullable=False)          #メッセージ
 
 #データベース初期化
@@ -111,5 +120,5 @@ def leave_room():
      emit('status',{'mag':f'{username} が退出しました'},to=room)
 
      leave_room(room)
-     
+
 
