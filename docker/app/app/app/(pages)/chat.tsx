@@ -18,7 +18,7 @@ export default class App extends React.Component<{}, AppState> {
       messages: [
         {
           _id: 1,
-          text: 'Hello developer',
+          text: 'Hello developer!!',
           createdAt: new Date(),
           user: {
             _id: 2,
@@ -40,6 +40,7 @@ export default class App extends React.Component<{}, AppState> {
     return (
       <GiftedChat
         messages={this.state.messages}
+        placeholder="メッセージを入力"
         onSend={(messages) => this.onSend(messages)}
         user={{
           _id: 1,
