@@ -1,5 +1,6 @@
-import { Stack } from "expo-router";
+import { Stack} from "expo-router";
 import {useRouter} from 'expo-router';
+import { Modal } from "react-native";
 
 export default function RootLayout() {
   const router = useRouter();

@@ -62,6 +62,16 @@ export default function Home() {
               }}>go waiting</Text>
             </TouchableOpacity>
           </Link>
+          <Link href={"/test_timer"} asChild style={{
+            alignItems: "center",
+            flex: 1,
+          }}>
+            <Pressable>
+              <Text style={{
+                  fontSize: 30,
+                }}>go timer</Text>
+              </Pressable>
+          </Link>
         </SafeAreaView>
       </SafeAreaView>
       
