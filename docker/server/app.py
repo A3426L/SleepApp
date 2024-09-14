@@ -22,6 +22,7 @@ migrate = Migrate(app, db)
 class Userdate(db.Model):
      id = db.Column(db.Integer,primary_key=True)
      username = db.Column(db.String(10),nullable=False)     #名前
+     userpass = db.Column(db.String(20),nullable=False)     #パスワード
 
 #ルーム人数確認
 class Roomnumber(db.Model):
@@ -121,4 +122,6 @@ def leave_room():
 
      leave_room(room)
 
+
+#投稿機能
 
