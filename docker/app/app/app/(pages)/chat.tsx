@@ -50,7 +50,7 @@ export default class App extends React.Component<{}, AppState> {
 
   render() {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
           <View style={styles.topInputContainer}>
             <ProgressBar duration={10000} />
             <TextInput
@@ -72,7 +72,7 @@ export default class App extends React.Component<{}, AppState> {
             alwaysShowSend={true}
             keyboardShouldPersistTaps='handled'
           />
-      </SafeAreaView>
+      </View>
     );
   }
 }
@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderRadius: 4,
     padding: 10,
+    marginTop: 20,
     marginLeft: 30,
     marginRight: 30,
     fontSize: 30,
@@ -169,8 +170,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ddd',
     borderRadius: 5,
     overflow: 'hidden',
-    marginHorizontal: 15,
-    marginTop: 0,
+    marginLeft: 50,
+    marginRight: 20,
+    marginTop: 40,
     marginBottom:15
   },
   progressBarFill: {
