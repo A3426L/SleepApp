@@ -72,6 +72,16 @@ export default function Home() {
                 }}>go timer</Text>
               </Pressable>
           </Link>
+          <Link href={"/(pages)/test_keyboard"} asChild style={{
+            alignItems: "center",
+            flex: 1,
+          }}>
+            <Pressable>
+              <Text style={{
+                  fontSize: 30,
+                }}>go test_keyboard</Text>
+              </Pressable>
+          </Link>
         </SafeAreaView>
       </SafeAreaView>
       
