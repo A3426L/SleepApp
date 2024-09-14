@@ -7,12 +7,13 @@ import { Dimensions } from "react-native";
 export default function RootLayout() {
   return (
     <Tabs screenOptions={{
-      tabBarActiveTintColor: "pink",
-      tabBarStyle:{backgroundColor:'#9370db'},
+      tabBarActiveTintColor: "white",
+      tabBarStyle:{backgroundColor:'#001125'},
     }}>
       <Tabs.Screen
         name="(pages)"
         options={{
+          title:"",
           headerShown:false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
@@ -22,6 +23,7 @@ export default function RootLayout() {
       <Tabs.Screen
         name="test_tabs"
         options={{
+          title:"",
           headerShown:false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search" size={size} color={color} />
