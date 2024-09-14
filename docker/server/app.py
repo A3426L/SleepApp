@@ -66,7 +66,7 @@ def join_room(data):
      session['room'] = room
 
      join_room(room)
-     
+
      emit('status',{'msg':session['username']+'has entered the room'}, to=room)
 
 #ユーザーがメッセージを送信した時の処理
@@ -95,25 +95,21 @@ def notification(message):
      room = session.get('room')
      emit('status',{'msg':f"{session.get('name')}が入室しました"},to=room)
      
+#退出した通知
+@app.route('/leave_room',methods=['POST'])
+def leave_room():
+     room = session.get('room')
+     username = session.get('username')
 
-@app.route('/')
-def hello():
-	return "Hello World!"
+     if not room or not username:
+          return redirect(url_for('login'))
+     
+     #ユーザーを部屋から退出させる
+     session.pop('room',None)
 
-@app.route('/check-db')
-def check_db():
-    try:
-        result = db.session.execute(text('SELECT 1')).scalar()
-        if result == 1:
-            return "Database connection successful!", 200
-        else:
-            return "Database connection failed!", 500
-    except Exception as e:
-        return str(e), 500
-    
-@app.route('/api/data', methods=['GET'])
-def get_data():
-    return jsonify({"message": "Hello from Flask!"})
+     #他のクライアントに退出を退出
+     emit('status',{'mag':f'{username} が退出しました'},to=room)
 
-if __name__ == "__main__":
-	app.run(debug=True)
+     leave_room(room)
+     
+
