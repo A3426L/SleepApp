@@ -17,10 +17,7 @@ export default function Home() {
   return (
       <SafeAreaView style = {styles.Container}>
         <View style={{flex: 0.3, backgroundColor: "#001125"}}>
-          <View style={{flex: 0.3, backgroundColor: "#4b58c8",}}>
-
-          </View>
-          <View style={{flex: 0.7, backgroundColor: "#4b58c8",borderBottomLeftRadius: 50, borderBottomRightRadius: 50, justifyContent:"center"}}>
+          <View style={{flex: 1, backgroundColor: "#4b58c8",borderBottomLeftRadius: 50, borderBottomRightRadius: 50, justifyContent:"center"}}>
                 <Text style={{color: "white",fontSize:45,textAlign:"center"}}>
                   はじめまして！
                 </Text>
