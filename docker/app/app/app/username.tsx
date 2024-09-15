@@ -69,7 +69,7 @@ export default function UserName() {
               <View style={{flex: 0.15,minHeight: 10}}>
                 <View style={{flex: 0.4,justifyContent:"center"}}>
                   <Text style={{color: "white",fontSize:20,marginHorizontal:"5%"}}>
-                    UserID
+                    UserName
                   </Text>
                 </View>
                 <View style={{flex: 0.6,}}>
