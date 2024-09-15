@@ -30,6 +30,9 @@ export default function RootLayout() {
         //headerBackVisible: false,
         //gestureEnabled: false,
       }}/>
+      <Stack.Screen name="test_keyboard" options={{
+        headerShown: false,
+      }}/>
 
     </Stack>
   );

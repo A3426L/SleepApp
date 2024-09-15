@@ -9,7 +9,6 @@ import { Header, } from "react-native/Libraries/NewAppScreen";
 export default function Home() {
   const [text, onChangeText] = useState('Useless Text');
 
-
   const [value, setValue] = useState("");
   const handleTextChange = (text: string) => {
     // 正規表現で英数字のみ許可
@@ -27,7 +26,7 @@ export default function Home() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
       keyboardVerticalOffset={Platform.select({
-        ios: 25,
+        //ios: 25,
       })}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
@@ -58,6 +57,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     height: 40,
+    flex: 1,
     borderColor: '#000000',
     borderBottomWidth: 1,
     marginBottom: 36,
