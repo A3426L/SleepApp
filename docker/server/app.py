@@ -137,7 +137,7 @@ def chat(user_id):
 @app.route('/send_message',methods=['POST'])
 def send_message():
           message_content = request.form.get('message')
-          current_user_id = session.get('user_id')
+          current_user_id = request.form.get('user_id')
           #メッセージを保存
           message = Message(user_id=current_user_id,message=message_content)
           db.session.add(message)
