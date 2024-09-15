@@ -1,12 +1,14 @@
 import React, { forwardRef, useState, createRef, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, Animated , TouchableOpacity} from 'react-native';
-import { GiftedChat, IMessage, Send, InputToolbar } from 'react-native-gifted-chat';
+import { View, StyleSheet, Text, SafeAreaView, TextInput, ImageBackground, Animated , TouchableOpacity} from 'react-native';
+import { GiftedChat, IMessage, Send, InputToolbar, Bubble } from 'react-native-gifted-chat';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Link} from 'expo-router';
 
 interface AppState {
   messages: IMessage[];
 }
+
+const home_image = require("@/assets/images/chat_image.png");
 
 export default class App extends React.Component<{}, AppState> {
   private topInputRef = createRef<TextInput>();
@@ -49,42 +51,79 @@ export default class App extends React.Component<{}, AppState> {
     }
   };
 
+  // バブルの色をカスタマイズ
+  renderBubble = (props: any) => {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          left: {
+            backgroundColor: '#4b58c8', // 相手の吹き出しの色
+          },
+          right: {
+            backgroundColor: '#ffffff', // 自分の吹き出しの色
+          },
+        }}
+        textStyle={{
+          left: {
+            color: '#ffffff', // 相手のテキストの色を黒に変更
+          },
+          right: {
+            color: '#ffffff', // 自分のテキストの色を白に変更
+          },
+        }}
+      />
+    );
+  };
+
   render() {
     return (
-      <SafeAreaView style={styles.container}>
-        {/* ///////////////////////////////////////////////////////////////////// */}
-        <View style={{flex: 0.1}}>
-          <Link href={"/(tabs)/home"} asChild>
-              <TouchableOpacity style={{flex: 1, height: 100}}>
-                <Text style={{fontSize: 30, color: "bule", textAlign: "center"}}>
-                  back home
-                </Text>
+      <View style={styles.outWrapper}>
+        <SafeAreaView style={styles.topSafeArea} />
+        <SafeAreaView style={styles.safeAreaWrapper}>
+          <View style={styles.container}>
+          {/* ///////////////////////////////////////////////////////////////////// */}
+          <View style={styles.backHomeButton}>
+            <Link href={"/(tabs)/home"} asChild>
+              <TouchableOpacity style={styles.backButton}>
+                <Icon name="arrow-back" size={30} color="white" />
               </TouchableOpacity>
             </Link>
-        </View>
-        {/* ///////////////////////////////////////////////////////////////////////// */}
-          <View style={styles.topInputContainer}>
             <ProgressBar duration={10000} />
-            <TextInput
-              style={styles.textInput}
-              placeholder="上部のテキスト入力"
-              ref={this.topInputRef}
-              onFocus={this.handleTopInputFocus} // フォーカスイベントを処理
-            />
           </View>
-          <GiftedChat
-            messages={this.state.messages}
-            placeholder="メッセージを入力"
-            onSend={(messages) => this.onSend(messages)}
-            user={{
-              _id: 1,
-            }}
-            renderSend={(props) => <CustomSend {...props} />}
-            renderInputToolbar={(props) => <CustomInputToolbar {...props} />} // カスタム入力ボックス
-            alwaysShowSend={true}
-            keyboardShouldPersistTaps='handled'
-          />
-      </SafeAreaView>
+          {/* ///////////////////////////////////////////////////////////////////////// */}
+          
+            <View style={styles.chatContainer}>
+              <ImageBackground source={home_image} style={styles.HomeImage}>
+                <View style={styles.topInputContainer}>
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="お題"
+                    ref={this.topInputRef}
+                    onFocus={this.handleTopInputFocus} // フォーカスイベントを処理
+                  />
+                  <TouchableOpacity style={styles.randomButton}>
+                    <Icon name="casino" size={30} color="black" style={styles.icon} />
+                  </TouchableOpacity>
+                </View>
+                  <GiftedChat
+                    messages={this.state.messages}
+                    placeholder="メッセージを入力"
+                    onSend={(messages) => this.onSend(messages)}
+                    user={{
+                      _id: 1,
+                    }}
+                    renderSend={(props) => <CustomSend {...props} />}
+                    renderInputToolbar={(props) => <CustomInputToolbar {...props} />} // カスタム入力ボックス
+                    renderBubble={this.renderBubble}
+                    alwaysShowSend={true}
+                    keyboardShouldPersistTaps='handled'
+                  />
+              </ImageBackground>
+            </View>
+          </View>
+        </SafeAreaView>
+      </View>
     );
   }
 }
@@ -137,19 +176,31 @@ const ProgressBar = ({ duration }: { duration: number }) => {
 
 // スタイルシート
 const styles = StyleSheet.create({
+  outWrapper: {
+    flex: 1
+  },
+  topSafeArea: {
+    backgroundColor: '#4b58c8'
+  },
+  safeAreaWrapper: {
+    flex: 1,
+    backgroundColor: '#001125'
+  },
   container: {
     flex: 1,
-    backgroundColor: '#ffffff', // 画面全体の背景色
+    backgroundColor: '#4b58c8', // 画面全体の背景色
   },
   topInputContainer: {
-    backgroundColor: '#9370db',
+    backgroundColor: '#4b58c8',
+    flexDirection: 'row',  // 横に並べる
     borderBottomLeftRadius: 15,  // 下部左の角を丸くする
     borderBottomRightRadius: 15, // 下部右の角を丸くする
-    paddingTop: 30,
+    paddingTop: 0,
     paddingBottom: 20,
   },
   textInput: {
-    backgroundColor: '#6495ed',
+    backgroundColor: '#ffffff',
+    flex:1,
     textAlign: 'center',
     borderRadius: 4,
     padding: 10,
@@ -157,6 +208,8 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     fontSize: 30,
+    paddingRight: 50, // ボタン分のスペースを確保
+    paddingLeft: 50,
   },
   sendButton: {
     backgroundColor: "transparent",
@@ -170,6 +223,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
+  backHomeButton:{
+    backgroundColor: '#4b58c8',
+    flexDirection: 'row',  // 横に並べる
+    height: 30,
+  },
   inputToolbar: {
     backgroundColor: '#f5f5f5', // テキスト入力ボックスの背景色
     borderRadius: 50,
@@ -178,17 +236,50 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   progressBarBackground: {
-    height: 7,
+    flex:1,
+    height: 4,
     backgroundColor: '#ddd',
     borderRadius: 5,
     overflow: 'hidden',
-    marginLeft: 50,
+    marginLeft: 15,
     marginRight: 20,
-    marginTop: 40,
+    marginTop: 17,
     marginBottom:0
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#6495ed',
+    backgroundColor: '#38b26d',
+  },
+  chatContainer: {
+    flex: 1,  // Chatエリアを拡張
+    backgroundColor: '#001125',  // ここでGiftedChatの背景色を設定
+  },
+  backButton: {
+    marginTop:3,
+    marginLeft: 5,
+    marginRight: 0,
+    width: 25, // ボタンの幅を小さめに設定
+  },
+  HomeImage: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: 'flex-end', // 画像の下部に配置
+  },
+  randomButton: {
+    position: 'absolute', // テキストボックス内に配置
+    right: 30, // テキストボックスの右からの距離
+    top: 41, // テキストボックスの中央に縦に配置
+    transform: [{ translateY: -15 }], // ボタンを中央に合わせる
+    backgroundColor: 'transparent',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 4,
+  },
+  randomButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  icon: {
+    transform: [{ rotate: '20deg' }], // アイコンを90度回転
   },
 });
