@@ -24,17 +24,17 @@ export default class App extends React.Component<{}, AppState> {
 
   componentDidMount() {
     axios
-      .get('http://10.225.174.25/chat/1')
+      .get('http://192.168.0.104/chat/1')
         .then((response) => {
-          const fetchedMessages = response.data.map((message: any) => ({
-            _id: message.id,
-            text: message.message,
-            createdAt: new Date(message.createdAt),
-            user: {
-              _id: message.user_id,
-              name: 'developer',
-              avatar: 'https://www.example.com/default-avatar.png',
-            },
+          const fetchedMessages = response.data.messages.map((message: any) => ({
+            _id: message.user_id,
+            text: message.message
+            // createdAt: new Date(message.createdAt),
+            // user: {
+            //   _id: message.user_id,
+            //   name: 'developer',
+            //   avatar: 'https://www.example.com/default-avatar.png',
+            // },
           }));
           this.setState({ messages: fetchedMessages });
         })

@@ -124,14 +124,14 @@ def regist():
      return redirect("/login")
 
 #チャットメッセージ
-@app.route('/chat/<int:user_id>',methods=['GET'])
+@app.route("/chat/<int:user_id>")
 def chat(user_id):
      #送信データからルーム名を取得
      current_user_id = session['user_id']
      current_messages = Message.query.filter_by(user_id=user_id).all()
 
-     chat_info = [{'user_id': msg.user_id, 'messages': msg.message} for msg in current_messages]
-     return jsonify({'messages':chat_info.message, 'user_id':current_user_id})
+     chat_info = [{'user_id': msg.user_id, 'message': msg.message} for msg in current_messages]
+     return "Hello_world"#jsonify({'messages':chat_info, 'user_id':current_user_id})
 
 #ユーザーがメッセージを送信した時の処理
 @app.route('/send_message',methods=['POST'])
@@ -147,10 +147,10 @@ def send_message():
           #emit('receive_message',{'msg':session['username'] + ':' + message_content},to=user_id)
 
 
-@app.route('/chat')
-def chat():         #チャットに名前を表示
-     name = session.get('name','')
-     return render_template('chat.html',name=name)
+# @app.route('/chat')
+# def chat():         #チャットに名前を表示
+#      name = session.get('name','')
+#      return render_template('chat.html',name=name)
 
 #入室した通知がいるか聞く
 @app.route('notification',namespace='/chat')        #入室を通知する
