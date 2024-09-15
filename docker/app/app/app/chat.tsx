@@ -26,9 +26,9 @@ export default class App extends React.Component<{}, AppState> {
     axios
     .get('http://10.225.174.25/chat/1')
       .then((response) => {
-        const fetchedMessages = response.data.map((message: any) => ({
-          text: response.data.message,
-          _id: response.data.user_id
+        const fetchedMessages = response.data.map((messages: any) => ({
+          text: messages.message,
+          _id: messages.user_id
           // createdAt: new Date(),
           // user: {
           //   _id: response.data.user_id,
