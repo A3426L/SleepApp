@@ -6,6 +6,8 @@ from flask_cors import CORS
 from flask_socketio import SocketIO , emit , join_room
 import eventlet
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash #パスワードのハッシュ化
+
 
 
 app = Flask(__name__)
@@ -63,7 +65,7 @@ class oldRoom(db.Model):
 db.create_all()
 
 def index():
-     return render_template('chat.html')
+     return render_template('home.html')
 
 #ログイン画面表示
 @app.route("/login")
@@ -74,18 +76,45 @@ def login_get():
 @app.route('/login',methods=['POST'])
 def login():
      userid = request.form.get('user_id')
-     userpass = request.form.get('userpass')
-     if userid:
-        user = Userdate.query.filter_by(userid=userid).first()
-        if not user:
-            user = Userdate(userid=userid)
-            db.session.add(user)
-            db.session.commit()
+     password = request.form.get('userpass')
+
+     user = Userdate.query.filter_by(userid=userid).first()
+     #ユーザidとパスを確認
+     if userid and check_password_hash(Userdate.userpass,password):
+        session['user_id'] = userid
+        
+        if user:
+            #ユーザ存在すればセッションに保存
+            session['user_id'] = Userdate.user_id
+            return redirect(url_for('index'))
+        else :
+            
+          return render_template('login.html', error="入力したIDかパスワードが存在していません")
+            user = Userdate(userid=userid,userpass=userpass)
+            db.execute("insert into user values(null,?,?)",(userpass,userid))
+            db.commit()
         session['userpass'] = userpass
         session['user_id'] = userid
         #ユーザをリダイレクト,動的URL生成
         return redirect(url_for('index'))
-     return redirect(url_for('index'))
+     return render_template('login.html', error="IDとパスワード両方を入力してください")
+
+#パスワードのハッシュ化
+@app.route('/regist',methods=['POST'])
+def regist():
+     user_name = request.form.get('username')
+     user_id = request.form.get('userid')
+     password = request.form.get('userpass')
+
+     #パスワードをハッシュ化
+     hash_password = generate_password_hash(password,method='pbkdf2:sha256',salt_length=16)
+     new_user = Userdate(username=user_name,userid=user_id,userpass=hash_password)
+     db.session.add(new_user)
+     db.session.commit()
+     #確認用
+     return "ユーザ登録完了"
+
+
 
 #アカウントの新規作成
 @app.route("/regist",methods=['POST'])
@@ -93,8 +122,10 @@ def regist():
      name = request.form.get("name"),
      user_pass = request.form.get("password"),
      user_id = request.form.get("id")
-     db.execute("insert into user values(null,?,?,?)",(name,user_pass,user_id))
-     db.commit()
+
+     userdata = Userdate(username=name,userpass=user_pass,ruser_id=user_id,)
+     db.session.add(userdata)
+     db.sesssion.commit()
      return redirect("/login")
 
 #チャットメッセージ
