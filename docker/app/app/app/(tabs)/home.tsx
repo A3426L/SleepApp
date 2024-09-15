@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import TabsHeaderText from "@/components/TabsHeaderText";
 import React, { useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
-import Diditaltimer from "./test_comp";
+import DigitalClock from "@/components/ DigitalClock";
 
 
 export default function Home() {
@@ -29,17 +29,19 @@ export default function Home() {
                 こんばんは！
               </Text>
             </View>
-            <Diditaltimer>
+            <DigitalClock>
 
-            </Diditaltimer>
+            </DigitalClock>
           </View>
           <View style={{backgroundColor:"#001125",flex:0.5}}>
             <ImageBackground source={home_image} style={styles.HomeImage}>
-              <TouchableOpacity style={{flex:0.35, backgroundColor: "#4b58c8",justifyContent: 'center',marginBottom: "20%",marginHorizontal:"7%", borderRadius:20}}>
-                <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
-                  夢を決める
-                </Text>
-              </TouchableOpacity>
+              <Link href={"/chat"} asChild>
+                <TouchableOpacity style={{flex:0.35, backgroundColor: "#4b58c8",justifyContent: 'center',marginBottom: "20%",marginHorizontal:"7%", borderRadius:20}}>
+                  <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
+                    夢を決める
+                  </Text>
+                </TouchableOpacity>
+              </Link>
             </ImageBackground>
           </View>   
           

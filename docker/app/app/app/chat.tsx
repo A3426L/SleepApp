@@ -1,7 +1,8 @@
 import React, { forwardRef, useState, createRef, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, Animated } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, Animated , TouchableOpacity} from 'react-native';
 import { GiftedChat, IMessage, Send, InputToolbar } from 'react-native-gifted-chat';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {Link} from 'expo-router';
 
 interface AppState {
   messages: IMessage[];
@@ -50,7 +51,18 @@ export default class App extends React.Component<{}, AppState> {
 
   render() {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        {/* ///////////////////////////////////////////////////////////////////// */}
+        <View style={{flex: 0.1}}>
+          <Link href={"/(tabs)/home"} asChild>
+              <TouchableOpacity style={{flex: 1, height: 100}}>
+                <Text style={{fontSize: 30, color: "bule", textAlign: "center"}}>
+                  back home
+                </Text>
+              </TouchableOpacity>
+            </Link>
+        </View>
+        {/* ///////////////////////////////////////////////////////////////////////// */}
           <View style={styles.topInputContainer}>
             <ProgressBar duration={10000} />
             <TextInput
@@ -72,7 +84,7 @@ export default class App extends React.Component<{}, AppState> {
             alwaysShowSend={true}
             keyboardShouldPersistTaps='handled'
           />
-      </View>
+      </SafeAreaView>
     );
   }
 }

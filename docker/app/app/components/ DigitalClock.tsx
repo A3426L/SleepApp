@@ -4,7 +4,7 @@ import {LayoutChangeEvent } from "react-native";
 
 
 
-const Diditaltimer = () => {
+const  DigitalClock = () => {
   const[time, settime] = useState<String[]>([]);
 
 
@@ -56,4 +56,4 @@ const styles = StyleSheet.create({
   },
 
 });
-export default Diditaltimer;
+export default DigitalClock;
