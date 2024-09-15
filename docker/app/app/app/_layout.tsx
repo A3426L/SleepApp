@@ -20,7 +20,7 @@ export default function RootLayout() {
         //headerBackVisible: false,
         //gestureEnabled: false,
       }}/>
-      <Stack.Screen name="new" options={{
+      <Stack.Screen name="first_page" options={{
         headerShown: false,
         headerStyle:{
           backgroundColor:'#9370db',
@@ -28,7 +28,22 @@ export default function RootLayout() {
         //headerBackVisible: false,
         //gestureEnabled: false,
       }}/>
-
+      <Stack.Screen name="account_two" options={{
+        headerShown: false,
+        headerStyle:{
+          backgroundColor:'#9370db',
+        }
+        //headerBackVisible: false,
+        //gestureEnabled: false,
+      }}/>
+      <Stack.Screen name="username" options={{
+        headerShown: false,
+        headerStyle:{
+          backgroundColor:'#9370db',
+        }
+        //headerBackVisible: false,
+        //gestureEnabled: false,
+      }}/>
 
     </Stack>
   );
