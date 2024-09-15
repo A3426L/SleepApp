@@ -130,14 +130,14 @@ def chat(user_id):
      current_user_id = session['user_id']
      messages = Message.query.filter_by(user_id=user_id).all()
 
-     chat_info = [{'user': Userdate.query.get(msg.user_id).username, 'message': msg.message} for msg in messages]
-     return render_template('chat.html', messages=chat_info, user_id = current_user_id)
+     chat_info = [{'user_id': msg.user_id, 'message': msg.message} for msg in messages]
+     return jsonify({'message':chat_info, 'user_id':current_user_id})
 
 #ユーザーがメッセージを送信した時の処理
 @app.route('/send_message',methods=['POST'])
 def send_message():
           message_content = request.form.get('message')
-          current_user_id = session.get('user_id')
+          current_user_id = request.form.get('user_id')
           #メッセージを保存
           message = Message(user_id=current_user_id,message=message_content)
           db.session.add(message)
