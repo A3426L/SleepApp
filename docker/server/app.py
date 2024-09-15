@@ -78,54 +78,29 @@ def login():
      userid = request.form.get('user_id')
      password = request.form.get('userpass')
 
-     user = Userdate.query.filter_by(userid=userid).first()
+     user = Userdate.query.filter_by(user_id=userid).first()
      #ユーザidとパスを確認
-     if userid and check_password_hash(Userdate.userpass,password):
+     if user and check_password_hash(Userdate.userpass,password):
         session['user_id'] = userid
+        return redirect(url_for('login.html'))
         
-        if user:
-            #ユーザ存在すればセッションに保存
-            session['user_id'] = Userdate.user_id
-            return redirect(url_for('index'))
-        else :
-            
-          return render_template('login.html', error="入力したIDかパスワードが存在していません")
-            user = Userdate(userid=userid,userpass=userpass)
-            db.execute("insert into user values(null,?,?)",(userpass,userid))
-            db.commit()
-        session['userpass'] = userpass
-        session['user_id'] = userid
-        #ユーザをリダイレクト,動的URL生成
-        return redirect(url_for('index'))
-     return render_template('login.html', error="IDとパスワード両方を入力してください")
-
-#パスワードのハッシュ化
-@app.route('/regist',methods=['POST'])
-def regist():
-     user_name = request.form.get('username')
-     user_id = request.form.get('userid')
-     password = request.form.get('userpass')
-
-     #パスワードをハッシュ化
-     hash_password = generate_password_hash(password,method='pbkdf2:sha256',salt_length=16)
-     new_user = Userdate(username=user_name,userid=user_id,userpass=hash_password)
-     db.session.add(new_user)
-     db.session.commit()
-     #確認用
-     return "ユーザ登録完了"
-
-
+     else:
+          return render_template('login.html', error="入力したIDかパスワードが間違っています")
+       
 
 #アカウントの新規作成
 @app.route("/regist",methods=['POST'])
 def regist():
      name = request.form.get("name"),
-     user_pass = request.form.get("password"),
+     password = request.form.get("password"),
      user_id = request.form.get("id")
 
-     userdata = Userdate(username=name,userpass=user_pass,ruser_id=user_id,)
-     db.session.add(userdata)
-     db.sesssion.commit()
+     #パスワードをハッシュ化
+     hash_password = generate_password_hash(password,method='pbkdf2:sha256',salt_length=16)
+     new_user = Userdate(username=name,userid=user_id,userpass=hash_password)
+     db.session.add(new_user)
+     db.session.commit()
+
      return redirect("/login")
 
 #チャットメッセージ
