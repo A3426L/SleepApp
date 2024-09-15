@@ -5,7 +5,7 @@ from sqlalchemy import text
 from flask_cors import CORS
 from flask_socketio import SocketIO , emit , join_room
 import eventlet
-
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -28,7 +28,7 @@ class Userdate(db.Model):
 #データベース見るよう
 class info(db.Model):
      id = db.Column(db.Integer,primary_key=True)
-     create_time = db.Column(db.)
+     create_time = db.Column(db.DateTime,nullable=False,default=datetime.now)
      number = db.Column(db.Integer,nullable=False)
 
 #各ルームモデル
@@ -39,23 +39,24 @@ class Room(db.Model):
      user_id3 = db.Column(db.String(10),db.ForeignKey('userdate.user_id'),nullable=False)
      user_id4 = db.Column(db.String(10),db.ForeignKey('userdate.user_id'),nullable=False)
      user_id5 = db.Column(db.String(10),db.ForeignKey('userdate.user_id'),nullable=False)
-     chat_time = db.Column()
+     chat_time = db.Column(db.DateTime,nullable=False)
      theme = db.Column(db.String(20),nullable=False)         #リーダかそれ以外か
 
 #メッセージモデル
 class Message(db.Model):
      id = db.Column(db.Integer,primary_key=True)
-     user_id = db.Column(db.Integer,db.ForeignKey('userdate.id'),nullable=False)  
+     user_id = db.Column(db.Integer,db.ForeignKey('userdate.user_id'),nullable=False)  
      message = db.Column(db.String(100),nullable=False)          #メッセージ
 
-class Message(db.Model):
+class oldRoom(db.Model):
      id = db.Column(db.Integer,primary_key=True)
+     time = db.Column(db.DateTime,db.ForeignKey('info.create_time'),nullable=False)
      theme = db.Column(db.String(20),nullable=False)
-     user_id1 = db.Column(db.String(10),db.ForeignKey('userdate.user_id'),nullable=False)     #名前
-     user_id2 = db.Column(db.String(10),db.ForeignKey('userdate.user_id'),nullable=False)
-     user_id3 = db.Column(db.String(10),db.ForeignKey('userdate.user_id'),nullable=False)
-     user_id4 = db.Column(db.String(10),db.ForeignKey('userdate.user_id'),nullable=False)
-     user_id5 = db.Column(db.String(10),db.ForeignKey('userdate.user_id'),nullable=False)
+     user_id1 = db.Column(db.String(10),db.ForeignKey('Room.user_id1'),nullable=False)     #名前
+     user_id2 = db.Column(db.String(10),db.ForeignKey('Room.user_id2'),nullable=False)
+     user_id3 = db.Column(db.String(10),db.ForeignKey('Room.user_id3'),nullable=False)
+     user_id4 = db.Column(db.String(10),db.ForeignKey('Room.user_id4'),nullable=False)
+     user_id5 = db.Column(db.String(10),db.ForeignKey('Room.user_id5'),nullable=False)
 
 
 #データベース初期化
@@ -64,50 +65,62 @@ db.create_all()
 def index():
      return render_template('chat.html')
 
-#ログイン
+#ログイン画面表示
+@app.route("/login")
+def login_get():
+     return render_template("login.html")
+
+#ログイン(後で編集する)
 @app.route('/login',methods=['POST'])
 def login():
-     username = request.form.get('username')
-     if username:
-        user = Userdate.query.filter_by(username=username).first()
+     userid = request.form.get('user_id')
+     userpass = request.form.get('userpass')
+     if userid:
+        user = Userdate.query.filter_by(userid=userid).first()
         if not user:
-            user = Userdate(username=username)
+            user = Userdate(userid=userid)
             db.session.add(user)
             db.session.commit()
-        session['username'] = username
-        session['user_id'] = user.id
+        session['userpass'] = userpass
+        session['user_id'] = userid
         #ユーザをリダイレクト,動的URL生成
         return redirect(url_for('index'))
      return redirect(url_for('index'))
 
-@app.route('/join_room',nmethods=['POST'])
-def join_room(data):
+#アカウントの新規作成
+@app.route("/regist",methods=['POST'])
+def regist():
+     name = request.form.get("name"),
+     user_pass = request.form.get("password"),
+     user_id = request.form.get("id")
+     db.execute("insert into user values(null,?,?,?)",(name,user_pass,user_id))
+     db.commit()
+     return redirect("/login")
+
+#チャットメッセージ
+@app.route('/chat/<int:user_id>',methods=['GET'])
+def chat(user_id):
      #送信データからルーム名を取得
-     room = request.form.get('room')
+     user_id = session['user_id']
+     messages = Message.query.filter_by(chat_id=user_id).all()
 
-     if 'username' not in session:      #ログインしてない場合
-          return redirect(url_for('login'))
-     
-     session['room'] = room
-
-     join_room(room)
-
-     emit('status',{'msg':session['username']+'has entered the room'}, to=room)
+     chat_info = [{'user': Userdate.query.get(msg.user_id).username, 'message': msg.message} for msg in messages]
+     return render_template('chat.html', messages=chat_info, user_id = user_id)
 
 #ユーザーがメッセージを送信した時の処理
 @app.route('/send_message',methods=['POST'])
 def send_message():
-     if 'user_id' in session:
           message_content = request.form.get('message')
-          room = request.form.get('room')
+          user_id = request.form.get('message',type = int)
 
           #メッセージを保存
-          message = Message(room=room, user_id=session['user_id'],message=message_content)
+          message = Message(user_id=user_id,message=message_content)
           db.session.add(message)
           db.session.commit()
 
           #部屋にメッセージを送信
-          emit('receive_message',{'msg':session['username'] + ':' + message_content},to=room)
+          #emit('receive_message',{'msg':session['username'] + ':' + message_content},to=room)
+
 
 @app.route('/chat')
 def chat():         #チャットに名前を表示
