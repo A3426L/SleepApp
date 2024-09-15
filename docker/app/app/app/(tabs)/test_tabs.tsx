@@ -8,6 +8,9 @@ import TabsHeaderText from "@/components/TabsHeaderText";
 import { red } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 import React, { useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
+import SlideInPage from "../account_menu";
+import HalfScreenSlider from "../account_menu";
+
 
 export default function Home() {
   const router = useRouter();
@@ -15,12 +18,13 @@ export default function Home() {
 
   return (
       <SafeAreaView style = {styles.Container}>
-        <View style = {styles.TabsHeaderContainer}>
+        {/* <View style = {styles.TabsHeaderContainer}>
           <View style = {styles.TabsHeaderTextContainer}>
           </View>
           <TabsHeaderIcon/>
         </View>
-        <View style = {{flex :0.9, backgroundColor: "white"}}/>
+        <View style = {{flex :0.9, backgroundColor: "white"}}/> */}
+        <HalfScreenSlider/>
       </SafeAreaView>
   );
 }
