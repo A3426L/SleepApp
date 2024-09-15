@@ -27,7 +27,10 @@ export default function HalfScreenSlider() {
 
   return (
     <View style={styles.container}>
+      <View style ={{flex:1, backgroundColor:"red",}}>
       <Button title="スライダーを表示" onPress={toggleSlider} />
+      </View>
+
 
       {/* 背景タッチで閉じる */}
       {isVisible && (
