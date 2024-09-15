@@ -3,7 +3,6 @@ import { View, StyleSheet, Text, SafeAreaView, TextInput, ImageBackground, Anima
 import { GiftedChat, IMessage, Send, InputToolbar, Bubble, Time } from 'react-native-gifted-chat';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Link} from 'expo-router';
-import axios from 'axios';
 
 interface AppState {
   messages: IMessage[];
@@ -23,24 +22,20 @@ export default class App extends React.Component<{}, AppState> {
   }
 
   componentDidMount() {
-    axios
-      .get('http://10.225.174.25/chat/1')
-        .then((response) => {
-          const fetchedMessages = response.data.map((message: any) => ({
-            _id: message.id,
-            text: message.message,
-            createdAt: new Date(message.createdAt),
-            user: {
-              _id: message.user_id,
-              name: 'developer',
-              avatar: 'https://www.example.com/default-avatar.png',
-            },
-          }));
-          this.setState({ messages: fetchedMessages });
-        })
-        .catch((error) => {
-          console.error('Error fetching messages:', error);
-        });
+    this.setState({
+      messages: [
+        {
+          _id: 1,
+          text: 'Hello developer!!',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://www.profuture.co.jp/mk/wp-content/uploads/2022/04/img_34670_02.png',
+          },
+        },
+      ],
+    });
   }
 
   // Operation when the send button is pressed
