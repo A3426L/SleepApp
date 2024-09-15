@@ -6,5 +6,5 @@ export default function Page() {
   // ルートナビゲーターが準備できている場合にのみ、リダイレクトをレンダリング
   if (rootNavigationState?.key == null) return null;
 
-  return <Redirect href={"/username"} />;
+  return <Redirect href={"/first_page"} />;
 }

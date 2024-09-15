@@ -34,7 +34,7 @@ export default function UserName() {
           <View style = {{flex:1,backgroundColor: "#001125"}}>
             <View style={{flex: 1, backgroundColor: "#4b58c8",borderBottomLeftRadius: 50, borderBottomRightRadius: 50, justifyContent:"center"}}>
               <Text style={{color: "white",fontSize:45,textAlign:"center"}}>
-                Log in
+                User Name
               </Text>
             </View>
           </View>
@@ -79,7 +79,7 @@ export default function UserName() {
               <View style={{flex: 0.10,}}/>
             <View style={{flex: 0.15, flexDirection: "row"}}>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {router.replace("/first_page");}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {router.navigate({pathname:"/account_two", params:{mode:"Sign Up"}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}
                     {/* Linkに置き換え */}
@@ -89,7 +89,7 @@ export default function UserName() {
               </View>
               <View style={{flex: 1, flexDirection: "row",}}></View>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {router.replace("/home");}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {router.dismissAll(),router.replace("/home")}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}                    
                     ⇨

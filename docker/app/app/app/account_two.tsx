@@ -1,7 +1,7 @@
 import { Pressable, Text, SafeAreaView, LayoutChangeEvent } from "react-native";
 import {StyleSheet} from 'react-native';
 import { Button , Alert, View, TouchableOpacity, ImageBackground,Keyboard,TouchableWithoutFeedback} from "react-native";
-import {Link,useRouter} from 'expo-router';
+import {Link,useLocalSearchParams,useRouter} from 'expo-router';
 import { Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import TabsHeaderText from "@/components/TabsHeaderText";
@@ -12,6 +12,7 @@ import { KeyboardAvoidingView ,Platform, TextInput} from "react-native";
 
 
 export default function Acccount_two() {
+  const getmode = useLocalSearchParams();
   const router = useRouter();
   const home_image = require("@/assets/images/sheep_image.png");
   const [userid, setuserid] = useState("");
@@ -40,7 +41,7 @@ export default function Acccount_two() {
           <View style = {{flex:1,backgroundColor: "#001125"}}>
             <View style={{flex: 1, backgroundColor: "#4b58c8",borderBottomLeftRadius: 50, borderBottomRightRadius: 50, justifyContent:"center"}}>
               <Text style={{color: "white",fontSize:45,textAlign:"center"}}>
-                Log in
+                {getmode.mode}
               </Text>
             </View>
           </View>
@@ -94,17 +95,16 @@ export default function Acccount_two() {
             </View>
             <View style={{flex: 0.15, flexDirection: "row"}}>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {router.replace("/first_page");}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {router.navigate("/first_page");}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}
-                    {/* Linkに置き換え */}
                     ⇦
                   </Text>
                 </TouchableOpacity>
               </View>
               <View style={{flex: 1, flexDirection: "row",}}></View>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {router.replace("/home");}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {(getmode.mode==="Sign Up")?router.push("/username"):(router.dismissAll(),router.replace("/home"))}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}                    
                     ⇨

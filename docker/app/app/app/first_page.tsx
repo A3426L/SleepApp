@@ -53,7 +53,7 @@ export default function First_page() {
           </View>
           <View style={{flex: 0.15,}}>
             {/* Linkに置き換え */}
-            <TouchableOpacity onPress={() => {router.replace("/home");}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal:"5%"}}>
+            <TouchableOpacity onPress={() => {router.push({pathname:"/account_two", params:{mode:"Sign Up"}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal:"5%"}}>
               <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                 Sign up
               </Text>
@@ -62,7 +62,7 @@ export default function First_page() {
           <View style={{flex: 0.05, }}/>
           <View style={{flex: 0.15,}}>
             {/* Linkに置き換え */}
-            <TouchableOpacity onPress={() => {router.replace("/account_two");}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal:"5%"}}>
+            <TouchableOpacity onPress={() => {router.push({pathname:"/account_two", params:{mode:"Log In"}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal:"5%"}}>
               <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                   Log in
                 </Text>

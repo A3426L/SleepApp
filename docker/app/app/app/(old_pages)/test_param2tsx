@@ -1,0 +1,16 @@
+// pages/Details.tsx
+import { useLocalSearchParams } from 'expo-router';
+import { View, Text } from 'react-native';
+
+export default function DetailsPage() {
+  // useLocalSearchParamsでクエリパラメータを取得
+  const { name, age } = useLocalSearchParams();
+
+  return (
+    <View>
+      <Text>Details Page</Text>
+      <Text>Name: {name}</Text>
+      <Text>Age: {age}</Text>
+    </View>
+  );
+}
