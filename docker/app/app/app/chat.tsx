@@ -27,14 +27,14 @@ export default class App extends React.Component<{}, AppState> {
     .get('http://10.225.174.25/chat/1')
       .then((response) => {
         const fetchedMessages = response.data.map((message: any) => ({
-          _id: 1,
-          text: response.data.messages,
-          createdAt: new Date(),
-          user: {
-            _id: response.data.user_id,
-            name: 'developer',
-            avatar: 'https://www.example.com/default-avatar.png',
-          },
+          text: response.data.message,
+          _id: response.data.user_id
+          // createdAt: new Date(),
+          // user: {
+          //   _id: response.data.user_id,
+          //   name: 'developer',
+          //   avatar: 'https://www.example.com/default-avatar.png',
+          // },
         }));
         this.setState({ messages: fetchedMessages });
       })
