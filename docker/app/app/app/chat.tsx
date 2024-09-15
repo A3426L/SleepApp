@@ -1,6 +1,6 @@
 import React, { forwardRef, useState, createRef, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, TextInput, ImageBackground, Animated , TouchableOpacity} from 'react-native';
-import { GiftedChat, IMessage, Send, InputToolbar, Bubble } from 'react-native-gifted-chat';
+import { GiftedChat, IMessage, Send, InputToolbar, Bubble, Time } from 'react-native-gifted-chat';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Link} from 'expo-router';
 
@@ -51,7 +51,7 @@ export default class App extends React.Component<{}, AppState> {
     }
   };
 
-  // バブルの色をカスタマイズ
+  // 吹き出しの色をカスタマイズ
   renderBubble = (props: any) => {
     return (
       <Bubble
@@ -61,7 +61,7 @@ export default class App extends React.Component<{}, AppState> {
             backgroundColor: '#4b58c8', // 相手の吹き出しの色
           },
           right: {
-            backgroundColor: '#ffffff', // 自分の吹き出しの色
+            backgroundColor: '#e1e1e1', // 自分の吹き出しの色
           },
         }}
         textStyle={{
@@ -69,7 +69,24 @@ export default class App extends React.Component<{}, AppState> {
             color: '#ffffff', // 相手のテキストの色を黒に変更
           },
           right: {
-            color: '#ffffff', // 自分のテキストの色を白に変更
+            color: '#000000', // 自分のテキストの色を白に変更
+          },
+        }}
+      />
+    );
+  };
+
+  //時刻表示の文字色指定
+  renderTime = (props: any) => {
+    return (
+      <Time
+        {...props}
+        timeTextStyle={{
+          left: {
+            color: '#ffffff', // 相手の時間表示の色を黒に変更
+          },
+          right: {
+            color: '#000000', // 自分の時間表示の色を白に変更
           },
         }}
       />
@@ -116,6 +133,7 @@ export default class App extends React.Component<{}, AppState> {
                     renderSend={(props) => <CustomSend {...props} />}
                     renderInputToolbar={(props) => <CustomInputToolbar {...props} />} // カスタム入力ボックス
                     renderBubble={this.renderBubble}
+                    renderTime={this.renderTime}
                     alwaysShowSend={true}
                     keyboardShouldPersistTaps='handled'
                   />
@@ -229,7 +247,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
   inputToolbar: {
-    backgroundColor: '#f5f5f5', // テキスト入力ボックスの背景色
+    backgroundColor: '#e1e1e1', // テキスト入力ボックスの背景色
     borderRadius: 50,
     paddingTop: 0,    // 上部の内側の余白を調整
     paddingBottom: 0,  // 下部の内側の余白を減らし、背景を見せる
