@@ -10,9 +10,17 @@ export default function RootLayout() {
       <Stack.Screen name="(tabs)" options={{
         headerShown: false,
         headerBackVisible: false,
-        gestureEnabled: false,
+        //gestureEnabled: false,
       }}/>
       <Stack.Screen name="chat" options={{
+        headerShown: false,
+        headerStyle:{
+          backgroundColor:'#9370db',
+        }
+        //headerBackVisible: false,
+        //gestureEnabled: false,
+      }}/>
+      <Stack.Screen name="new" options={{
         headerShown: false,
         headerStyle:{
           backgroundColor:'#9370db',

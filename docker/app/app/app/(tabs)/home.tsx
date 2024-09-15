@@ -33,7 +33,7 @@ export default function Home() {
 
             </DigitalClock>
           </View>
-          <View style={{backgroundColor:"#001125",flex:0.5}}>
+          <View style={{backgroundColor:"#001125",flex:0.5,}}>
             <ImageBackground source={home_image} style={styles.HomeImage}>
               <Link href={"/chat"} asChild>
                 <TouchableOpacity style={{flex:0.35, backgroundColor: "#4b58c8",justifyContent: 'center',marginBottom: "20%",marginHorizontal:"7%", borderRadius:20}}>
@@ -77,6 +77,6 @@ const styles = StyleSheet.create({
   HomeImage: {
     flex: 1,
     resizeMode: "cover",
-    justifyContent: "center"
+    justifyContent: "center",
   },
 });
