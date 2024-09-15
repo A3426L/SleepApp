@@ -4,7 +4,6 @@ from flask_migrate import Migrate
 from sqlalchemy import text 
 from flask_cors import CORS
 from flask_socketio import SocketIO , emit , join_room
-import eventlet
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash #パスワードのハッシュ化
 
@@ -125,7 +124,7 @@ def send_message():
           db.session.commit()
 
           #部屋にメッセージを送信
-          #emit('receive_message',{'msg':session['username'] + ':' + message_content},to=room)
+          emit('receive_message',{'msg':session['username'] + ':' + message_content},to=user_id)
 
 
 @app.route('/chat')
