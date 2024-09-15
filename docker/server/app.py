@@ -46,7 +46,7 @@ class Room(db.Model):
 #メッセージモデル
 class Message(db.Model):
      id = db.Column(db.Integer,primary_key=True)
-     user_id = db.Column(db.Integer,db.ForeignKey('userdate.user_id'),nullable=False)  
+     user_id = db.Column(db.String(15),nullable=False)  
      message = db.Column(db.String(100),nullable=False)          #メッセージ
 
 class oldRoom(db.Model):
@@ -61,7 +61,28 @@ class oldRoom(db.Model):
 
 
 #データベース初期化
-db.create_all()
+with app.app_context():
+     db.create_all()
+
+with app.app_context():
+     user1 = Userdate(username="松田",userpass="gyasg",user_id="1")
+     user2 = Userdate(username="田島",userpass="gyasq",user_id="2")
+     user3 = Userdate(username="山本",userpass="gyasr",user_id="3")
+     massage1 = Message(user_id="1",message="おはよう")
+     massage2 = Message(user_id="2",message="おはよう")
+     massage3 = Message(user_id="3",message="おはよう")
+     massage4 = Message(user_id="1",message="今日も仕事です")
+     massage5 = Message(user_id="2",message="仕事は嫌です")
+
+     db.session.add(user1)
+     db.session.add(user2)
+     db.session.add(user3)
+     db.session.add(massage1)
+     db.session.add(massage2)
+     db.session.add(massage3)
+     db.session.add(massage4)
+     db.session.add(massage5)
+     db.session.cmmit()
 
 def index():
      return render_template('home.html')
@@ -106,17 +127,17 @@ def regist():
 @app.route('/chat/<int:user_id>',methods=['GET'])
 def chat(user_id):
      #送信データからルーム名を取得
-     user_id = session['user_id']
+     current_user_id = session['user_id']
      messages = Message.query.filter_by(chat_id=user_id).all()
 
      chat_info = [{'user': Userdate.query.get(msg.user_id).username, 'message': msg.message} for msg in messages]
-     return render_template('chat.html', messages=chat_info, user_id = user_id)
+     return render_template('chat.html', messages=chat_info, user_id = current_user_id)
 
 #ユーザーがメッセージを送信した時の処理
 @app.route('/send_message',methods=['POST'])
 def send_message():
           message_content = request.form.get('message')
-          user_id = request.form.get('message',type = int)
+          user_id = request.form.get('user_id',type = int)
 
           #メッセージを保存
           message = Message(user_id=user_id,message=message_content)
@@ -124,7 +145,7 @@ def send_message():
           db.session.commit()
 
           #部屋にメッセージを送信
-          emit('receive_message',{'msg':session['username'] + ':' + message_content},to=user_id)
+          #emit('receive_message',{'msg':session['username'] + ':' + message_content},to=user_id)
 
 
 @app.route('/chat')
