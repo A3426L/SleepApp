@@ -33,6 +33,10 @@ def check_db():
 def get_data():
     return jsonify({"message": "Hello from Flask!"})
 
+@app.route('/chat/<int:user_id>', methods=['GET'])
+def chat(user_id):
+    return jsonify({"message": "Hello from Flask!"})
+
 @app.route('/api/data/post', methods=['POST'])
 def post_data():
     data = request.get_json()  # POSTリクエストのJSONデータを取得
