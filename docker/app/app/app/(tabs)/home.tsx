@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import DigitalClock from "@/components/ DigitalClock";
 import TabsHeaderText from "@/components/TabsHeaderText";
 import {Link,useRouter} from 'expo-router';
+import { useGlobalContext } from '../GlobalContext';
 import {
   View,
   Button,
@@ -27,6 +28,7 @@ import { TouchableOpacity } from "react-native";
 import { useFocusEffect } from "expo-router";
 
 export default function Test_tabs() {
+  const { userIdglobal, setUserIdglobal } = useGlobalContext();
   const translateX = useSharedValue(width); // 初期状態は画面の外にある
   const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
@@ -101,7 +103,7 @@ export default function Test_tabs() {
           <View style={{backgroundColor:"#001125",flex:0.5}}>
             <View style ={{flex:0.3, backgroundColor: "#001125",justifyContent: 'center', marginLeft: "5%"}}>
               <Text style={{color: "white", backgroundColor: "#001125", fontSize: 25 }}>
-                こんばんは！
+              Current User ID: {userIdglobal}
               </Text>
             </View>
             <DigitalClock>

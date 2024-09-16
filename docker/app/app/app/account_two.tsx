@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
 import DigitalClock from "@/components/ DigitalClock";
 import { KeyboardAvoidingView ,Platform, TextInput} from "react-native";
+import { useGlobalContext } from './GlobalContext';
 
 
 export default function Acccount_two() {
@@ -16,6 +17,7 @@ export default function Acccount_two() {
   const router = useRouter();
   const home_image = require("@/assets/images/sheep_image.png");
   const [userid, setuserid] = useState("");
+  const { userIdglobal, setUserIdglobal } = useGlobalContext();
   const handleuseridChange = (text: string) => {
     // 正規表現で英数字のみ許可
     const filteredText = text.replace(/[^a-zA-Z0-9]/g, "");
@@ -104,7 +106,7 @@ export default function Acccount_two() {
               </View>
               <View style={{flex: 1, flexDirection: "row",}}></View>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {(getmode.mode==="Sign Up"||"Edit")?router.push("/username"):(router.dismissAll(),router.replace("/home"))}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {setUserIdglobal(userid),(getmode.mode==="Sign Up"||"Edit")?router.push("/username"):(router.dismissAll(),router.replace("/home"))}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}                    
                     ⇨

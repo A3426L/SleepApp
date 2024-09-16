@@ -1,17 +1,17 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface GlobalContextType {
-  userId: string | null;
-  setUserId: (id: string | null) => void;
+  userIdglobal: string | null;
+  setUserIdglobal: (id: string | null) => void;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
 export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [userId, setUserId] = useState<string | null>(null);
+    const [userIdglobal, setUserIdglobal] = useState<string | null>(null);
   
     return (
-      <GlobalContext.Provider value={{ userId, setUserId }}>
+      <GlobalContext.Provider value={{ userIdglobal, setUserIdglobal }}>
         {children}
       </GlobalContext.Provider>
     );

@@ -4,7 +4,7 @@ import { useGlobalContext } from './GlobalContext';
 import {Link,useRouter} from 'expo-router';
 
 export const SomeComponent: React.FC = () => {
-  const { userId, setUserId } = useGlobalContext();
+  const { userIdglobal, setUserIdglobal } = useGlobalContext();
 
   return (
     <View>
@@ -15,8 +15,8 @@ export const SomeComponent: React.FC = () => {
                   </Text>
                 </TouchableOpacity>
               </Link>
-      <Text>Current User ID: {userId}</Text>
-      <Button title="Set User ID" onPress={() => setUserId('111111')} />
+      <Text>Current User ID: {userIdglobal}</Text>
+      <Button title="Set User ID" onPress={() => setUserIdglobal('111111')} />
     </View>
   );
 };
