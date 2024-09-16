@@ -1,7 +1,7 @@
 import { Pressable, Text, SafeAreaView, LayoutChangeEvent } from "react-native";
 import {StyleSheet} from 'react-native';
 import { Button , Alert, View, TouchableOpacity, ImageBackground,Keyboard,TouchableWithoutFeedback} from "react-native";
-import {Link,useRouter} from 'expo-router';
+import {Link,useRouter,useLocalSearchParams} from 'expo-router';
 import { Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import TabsHeaderText from "@/components/TabsHeaderText";
@@ -13,6 +13,7 @@ import { KeyboardAvoidingView ,Platform, TextInput} from "react-native";
 
 export default function UserName() {
   const router = useRouter();
+  const getmode = useLocalSearchParams();
   const home_image = require("@/assets/images/sheep_image.png");
   const [username, setusername] = useState("");
   const handleusernameChange = (text: string) => {
@@ -79,7 +80,7 @@ export default function UserName() {
               <View style={{flex: 0.10,}}/>
             <View style={{flex: 0.15, flexDirection: "row"}}>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {router.navigate({pathname:"/account_two", params:{mode:"Edit"}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {router.navigate({pathname:"/account_two",params:{mode:getmode.mode}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}
                     {/* Linkに置き換え */}
@@ -89,7 +90,7 @@ export default function UserName() {
               </View>
               <View style={{flex: 1, flexDirection: "row",}}></View>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {router.dismissAll(),router.replace("/home")}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {router.dismissAll(),router.replace({pathname:"/home",params:{mode:getmode.mode}})}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}                    
                     ⇨

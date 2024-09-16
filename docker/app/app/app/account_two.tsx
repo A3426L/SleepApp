@@ -97,7 +97,7 @@ export default function Acccount_two() {
             </View>
             <View style={{flex: 0.15, flexDirection: "row"}}>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {(getmode.mode==="Edit")?router.navigate("/home") : router.navigate("/first_page")}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {(getmode.mode==="Edit")?router.navigate("/home") : router.navigate({pathname:"/first_page"})}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}
                     ⇦
@@ -106,7 +106,7 @@ export default function Acccount_two() {
               </View>
               <View style={{flex: 1, flexDirection: "row",}}></View>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {setUserIdglobal(userid),(getmode.mode==="Sign Up"||"Edit")?router.push("/username"):(router.dismissAll(),router.replace("/home"))}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {setUserIdglobal(userid),(getmode.mode==="Sign Up"||getmode.mode==="Edit")?(router.push({pathname:"/username",params:{mode:getmode.mode}})):(router.dismissAll(),router.replace("/home"))}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}                    
                     ⇨
