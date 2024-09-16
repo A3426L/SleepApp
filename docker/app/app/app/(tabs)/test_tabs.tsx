@@ -7,6 +7,9 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   SafeAreaView,
+  ImageBackground,
+  ScrollView,
+  FlatList,
 } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -19,6 +22,7 @@ import { LayoutChangeEvent } from "react-native";
 import TabsHeaderText from "@/components/TabsHeaderText";
 const { height, width } = Dimensions.get("window");
 import { Ionicons } from "@expo/vector-icons";
+import TestListComp from "../../components/test_list_comp";
 
 import { TouchableOpacity } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -27,6 +31,7 @@ export default function Test_tabs() {
   const translateX = useSharedValue(width); // 初期状態は画面の外にある
   const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
+  const home_image = require("@/assets/images/result_image.png");
   const toggleSlider = () => {
     if (isVisible) {
       translateX.value = withTiming(width); // 隠すアニメーション
@@ -60,6 +65,9 @@ export default function Test_tabs() {
       };
     }, [])
   );
+
+  const[selectTabColor, setSelectTabColor] = useState(false);
+
   const [dimensions_2, setDimensions_2] = useState({ width: 0, height: 0 });
   const handleLayout_2 = (event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
@@ -75,7 +83,79 @@ export default function Test_tabs() {
     const { width, height } = event.nativeEvent.layout;
     setDimensions_4({ width, height });
   };
+  const [dimensions_5, setDimensions_5] = useState({ width: 0, height: 0 });
+  const handleLayout_5 = (event: LayoutChangeEvent) => {
+    const { width, height } = event.nativeEvent.layout;
+    setDimensions_5({ width, height });
+  };
+////////////////////////////////////
+const test_data =[
+  {
+    id:1,
+    text:"眠い",
+  },
+  {
+    id:2,
+    text:"眠い",
+  },
+  {
+    id:3,
+    text:"眠い",
+  },
+  {
+    id:4,
+    text:"眠い",
+  },
+  {
+    id:5,
+    text:"眠い",
+  },
+  {
+    id:6,
+    text:"眠い",
+  },
+  {
+    id:7,
+    text:"眠い",
+  },
+  {
+    id:8,
+    text:"眠い",
+  },
+  {
+    id:9,
+    text:"眠い",
+  },
+  {
+    id:10,
+    text:"眠い",
+  },
+  {
+    id:11,
+    text:"眠い",
+  },
+  {
+    id:12,
+    text:"眠い",
+  },
+  {
+    id:13,
+    text:"眠い",
+  },
+  {
+    id:14,
+    text:"眠い",
+  },
+];
 
+const test_data2 =[
+  {
+    id:1,
+    text:"疲れた！",
+  },
+]
+
+/////////////////////////////////////////
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.Container}>
@@ -93,7 +173,78 @@ export default function Test_tabs() {
             />
           </TouchableOpacity>
         </View>
-        <View style={{ flex: 0.9, backgroundColor: "white" }} />
+        <View style={{ flex: 0.9,}} >
+        <ImageBackground source={home_image} style={styles.ResultImage}>
+          <View style={{flex: 0.2,flexDirection:"row"}}>
+            <View style={{flex: 1,}}>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectTabColor(false);
+              }}
+              style={{
+                flex: 1,
+                backgroundColor: (selectTabColor === true)?"#012045":"#4b58c8",
+                borderTopLeftRadius:20,
+                borderTopRightRadius:20,
+                justifyContent: "center",
+                marginTop: "20%",
+                marginLeft: 30
+              }}
+            >
+              <Text style={{ fontSize: 25, textAlign: "center" ,color:"white"}}>Group</Text>
+            </TouchableOpacity>
+            </View>
+            <View style={{flex: 1,}}>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectTabColor(true);
+              }}
+              style={{
+                flex: 1,
+                backgroundColor: (selectTabColor === false)?"#012045":"#4b58c8",
+                borderTopLeftRadius:20,
+                borderTopRightRadius:20,
+                justifyContent: "center",
+                marginTop: "20%",
+                marginRight: 30
+              }}
+            >
+              <Text style={{ fontSize: 25, textAlign: "center" ,color:"white"}}>All</Text>
+            </TouchableOpacity>
+
+            </View>
+
+          </View>
+          <View style={{flex: 0.8,}}>
+            <FlatList
+              style={{flex:1,marginTop:"5%"}}
+              data={(selectTabColor===true)?test_data:test_data2}
+              renderItem={({ item }) => <TestListComp id={item.id} text={item.text} />}
+              keyExtractor={(item) => item.id.toString()}
+            >
+            </FlatList>
+            <TouchableOpacity
+              style={{
+                 height:100,
+                 width:100,
+                justifyContent: "center",
+                alignItems: "center",
+                position:"absolute",
+                right:0,
+                bottom:0
+              }}
+              onLayout={handleLayout_5}
+              onPress={() =>{router.navigate({pathname:"/EditPost"})}}
+            >
+              <Ionicons
+                name="add-circle"
+                size={dimensions_5.height}
+                color={"rgba(0,17,37,0.5)"}
+              />
+            </TouchableOpacity>
+          </View>
+          </ImageBackground>
+        </View>
       </SafeAreaView>
 
       {/* <View style ={{flex:0.1, backgroundColor:"red",}}>
@@ -204,7 +355,7 @@ export default function Test_tabs() {
               onPress={() => {
                 router.push({
                   pathname: "/account_two",
-                  params: { mode: "Sign Up" },
+                  params: { mode: "Edit" },
                 });
               }}
               style={{
@@ -290,6 +441,19 @@ const styles = StyleSheet.create({
     flex: 0.9,
     justifyContent: "center",
     alignItems: "center",
+  },
+  welcome: {
+    flex: 1,
+    margin: 20,
+    backgroundColor: 'orange',
+    textAlign: 'center',
+    fontSize: 20,
+    paddingTop: 70,
+  },
+  ResultImage: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
   },
 });
 

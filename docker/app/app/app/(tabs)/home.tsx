@@ -32,7 +32,7 @@ export default function Test_tabs() {
   const translateX = useSharedValue(width); // 初期状態は画面の外にある
   const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
-  const home_image = require("@/assets/images/home_image.png");
+  const home_image = require("@/assets/images/result_image.png");
   const toggleSlider = () => {
     if (isVisible) {
       translateX.value = withTiming(width); // 隠すアニメーション
@@ -99,7 +99,10 @@ export default function Test_tabs() {
             />
           </TouchableOpacity>
         </View>
+
+        
         <View style={styles.MainContainer}>
+        <ImageBackground source={home_image} style={styles.HomeImage}>
           <View style={{backgroundColor:"#001125",flex:0.5}}>
             <View style ={{flex:0.3, backgroundColor: "#001125",justifyContent: 'center', marginLeft: "5%"}}>
               <Text style={{color: "white", backgroundColor: "#001125", fontSize: 25 }}>
@@ -110,8 +113,8 @@ export default function Test_tabs() {
 
             </DigitalClock>
           </View>
-          <View style={{backgroundColor:"#001125",flex:0.5,}}>
-            <ImageBackground source={home_image} style={styles.HomeImage}>
+          <View style={{flex:0.5,justifyContent:"center"}}>
+            
               <Link href={"/chat"} asChild>
                 <TouchableOpacity style={{flex:0.35, backgroundColor: "#4b58c8",justifyContent: 'center',marginBottom: "20%",marginHorizontal:"7%", borderRadius:20}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
@@ -119,9 +122,9 @@ export default function Test_tabs() {
                   </Text>
                 </TouchableOpacity>
               </Link>
-            </ImageBackground>
+            
           </View>   
-          
+          </ImageBackground>
         </View>
       </SafeAreaView>
       {isVisible && (

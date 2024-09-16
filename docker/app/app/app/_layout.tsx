@@ -46,6 +46,15 @@ export default function RootLayout() {
         //headerBackVisible: false,
         //gestureEnabled: false,
       }}/>
+      <Stack.Screen name="EditPost" options={{
+        headerShown: false,
+        headerStyle:{
+          backgroundColor:'#9370db',
+        },
+        presentation:"modal"
+        //headerBackVisible: false,
+        //gestureEnabled: false,
+      }}/>
 
     </Stack>
     </GlobalProvider>
