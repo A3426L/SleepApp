@@ -1,4 +1,4 @@
-from flask import Flask , jsonify
+from flask import Flask , jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import text 
@@ -34,22 +34,29 @@ def get_data():
         "messages": [
             {
                 "text": "Final message",
-                "id": 4
+                "id": "4"
             },
             {
                 "text": "Another message",
-                "id": 3
+                "id": "3"
             },
             {
                 "text": "Yet another message",
-                "id": 1
+                "id": "1"
             },
             {
                 "text": "Hello from Flask!",
-                "id": 2
+                "id": "2"
             }
         ],
     })
+
+@app.route('/api/data/post', methods=['POST'])
+def post_data():
+     # POSTリクエストのボディからJSONデータを取得
+    data = request.json
+    # 取得したデータをそのまま返す
+    return jsonify(data)
 
 if __name__ == "__main__":
      app.run(debug=True)

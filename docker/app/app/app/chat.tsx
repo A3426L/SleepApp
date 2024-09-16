@@ -18,25 +18,50 @@ export const App: React.FC = () => {
     axios
       .get('http://172.20.10.8/api/data')
       .then((response) => {
-        const fetchedMessages = response.data.messages.map((msg: any) => ({
-          text: msg.text,
-          _id: msg.id,
-          createdAt: new Date(),
-          user: {
+        const fetchedMessages = response.data.messages.map((msg: any) => {
+          // userIdGlobalとmsg.idが同じかどうかをチェック
+          const isUserMessage = userIdglobal === msg.id;
+
+          return {
+            text: msg.text,
             _id: msg.id,
-            name: 'developer',
-            avatar: 'https://www.example.com/default-avatar.png',
-          },
-        }));
+            createdAt: new Date(),
+            user: {
+              _id: isUserMessage ? 1 : msg.id, // 同じ場合は1、それ以外はmsg.id
+              name: 'developer',
+              avatar: 'https://www.example.com/default-avatar.png',
+            },
+          };
+        });
         setMsg(fetchedMessages);
       })
       .catch((error) => {
         console.error('Error fetching messages:', error);
       });
-  }, []);
+  }, []); // userIdglobalが変更されると再実行
 
   const onSend = (messages: IMessage[] = []) => {
+    // メッセージをGiftedChatの状態に追加
     setMsg((previousMessages) => GiftedChat.append(previousMessages, messages));
+  
+    // メッセージをPOSTリクエストでサーバーに送信
+    const messageData = messages.map(msg => ({
+      _id: msg._id,
+      text: msg.text,
+      // createdAt: msg.createdAt,
+      user: userIdglobal
+    }));
+  
+    axios.post('http://172.20.10.8/api/data/post', 
+      { messages: messageData },  // メッセージデータをサーバーに送信
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
   };
 
   const handleTopInputFocus = () => {
@@ -82,11 +107,13 @@ export const App: React.FC = () => {
   );
 
   const test = () => {
-    axios.get('http://172.20.10.8/api/data')
-      .then(test_data => {
-        console.log(test_data.data);
-      })
-      .catch(error => console.error("error", error));
+    // axios.get('http://172.20.10.8/api/data')
+    //   .then(test_data => {
+    //     console.log(test_data.data);
+    //   })
+    //   .catch(error => console.error("error", error));
+    const newUserId = '111111'; // ここに設定したい値を設定
+    setUserIdglobal(newUserId);
   };
 
   return (
