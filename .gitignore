@@ -3,3 +3,4 @@
 docker/db/data/
 docker/app/.env
 docker/db/.env
+docker/server/app.sock

@@ -1,10 +1,12 @@
 import { Stack} from "expo-router";
 import {useRouter} from 'expo-router';
 import { Modal } from "react-native";
+import { GlobalProvider } from './GlobalContext';
 
 export default function RootLayout() {
   const router = useRouter();
   return (
+    <GlobalProvider>
     <Stack>
 
       <Stack.Screen name="(tabs)" options={{
@@ -46,6 +48,7 @@ export default function RootLayout() {
       }}/>
 
     </Stack>
+    </GlobalProvider>
   );
 }
 /*
