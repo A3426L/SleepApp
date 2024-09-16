@@ -76,28 +76,6 @@ def get_data():
     return jsonify({"message": "Hello from Flask!", "user_id": 1})
 
 
-#チャット用
-@app.route('/chat/',methods=['POST','GET'])
-def chat(user_id):
-     #送信データからルーム名を取得
-     current_user_id = 'abc123'
-     current_messages = Message.query.filter_by(user_id=user_id).all()
-
-     #chat_info = [{'user_id': msg.user_id, 'messages': msg.message} for msg in current_messages]
-     return jsonify({'messages':current_messages, 'user_id':current_user_id})
-
-#ユーザーがメッセージを送信した時の処理
-@app.route('/send_message',methods=['POST'])
-def send_message():
-          message_content = request.form.get('messages')
-          user_id_content = request.form.get('user_id')
-          #メッセージを保存
-          message = Message(user_id=user_id_content,message=message_content)
-          db.session.add(message)
-          db.session.commit()
-
-
-
 if __name__ == "__main__":
      
      app.run(debug=True)
