@@ -23,39 +23,39 @@ export default class App extends React.Component<{}, AppState> {
   }
 
   componentDidMount() {
-    axios
-    .get('http://10.225.174.25/chat/1')
-      .then((response) => {
-        const fetchedMessages = response.data.map((messages: any) => ({
-          text: messages.message,
-          _id: messages.user_id
-          // createdAt: new Date(),
-          // user: {
-          //   _id: response.data.user_id,
-          //   name: 'developer',
-          //   avatar: 'https://www.example.com/default-avatar.png',
-          // },
-        }));
-        this.setState({ messages: fetchedMessages });
-      })
-      .catch((error) => {
-        console.error('Error fetching messages:', error);
-      });
+    // axios
+    // .get('http://10.225.174.25/chat/1')
+    //   .then((response) => {
+    //     const fetchedMessages = response.data.map((messages: any) => ({
+    //       text: messages.message,
+    //       _id: messages.user_id
+    //       // createdAt: new Date(),
+    //       // user: {
+    //       //   _id: response.data.user_id,
+    //       //   name: 'developer',
+    //       //   avatar: 'https://www.example.com/default-avatar.png',
+    //       // },
+    //     }));
+    //     this.setState({ messages: fetchedMessages });
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error fetching messages:', error);
+    //   });
 
-    // this.setState({
-    //   messages: [
-    //     {
-    //       _id: 1,
-    //       text: 'Hello developer!!',
-    //       createdAt: new Date(),
-    //       user: {
-    //         _id: 2,
-    //         name: 'React Native',
-    //         avatar: 'https://www.profuture.co.jp/mk/wp-content/uploads/2022/04/img_34670_02.png',
-    //       },
-    //     },
-    //   ],
-    // });
+    this.setState({
+      messages: [
+        {
+          _id: 1,
+          text: 'Hello developer!!',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://www.profuture.co.jp/mk/wp-content/uploads/2022/04/img_34670_02.png',
+          },
+        },
+      ],
+    });
   }
 
   // Operation when the send button is pressed
@@ -113,6 +113,11 @@ export default class App extends React.Component<{}, AppState> {
     );
   };
 
+  test = ()=>{axios.get('http://172.20.10.8/api/data')
+    .then(test_data=>{
+      console.log(test_data.data)})
+    .catch(error => console.error("error",error))}
+
   render() {
     return (
       <View style={styles.outWrapper}>
@@ -139,7 +144,7 @@ export default class App extends React.Component<{}, AppState> {
                     ref={this.topInputRef}
                     onFocus={this.handleTopInputFocus} // フォーカスイベントを処理
                   />
-                  <TouchableOpacity style={styles.randomButton}>
+                  <TouchableOpacity style={styles.randomButton} onPress={this.test}>
                     <Icon name="casino" size={30} color="black" style={styles.icon} />
                   </TouchableOpacity>
                 </View>
