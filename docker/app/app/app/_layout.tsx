@@ -1,89 +1,37 @@
-import { Stack} from "expo-router";
-import {useRouter} from 'expo-router';
-import { Modal } from "react-native";
-import { GlobalProvider } from './GlobalContext';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import 'react-native-reanimated';
+
+import { useColorScheme } from '@/hooks/useColorScheme';
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const router = useRouter();
+  const colorScheme = useColorScheme();
+  const [loaded] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  });
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
-    <GlobalProvider>
-    <Stack>
-
-      <Stack.Screen name="(tabs)" options={{
-        headerShown: false,
-        headerBackVisible: false,
-        //gestureEnabled: false,
-      }}/>
-      <Stack.Screen name="chat" options={{
-        headerShown: false,
-        headerStyle:{
-          backgroundColor:'#9370db',
-        }
-        //headerBackVisible: false,
-        //gestureEnabled: false,
-      }}/>
-      <Stack.Screen name="first_page" options={{
-        headerShown: false,
-        headerStyle:{
-          backgroundColor:'#9370db',
-        }
-        //headerBackVisible: false,
-        //gestureEnabled: false,
-      }}/>
-      <Stack.Screen name="account_two" options={{
-        headerShown: false,
-        headerStyle:{
-          backgroundColor:'#9370db',
-        }
-        //headerBackVisible: false,
-        //gestureEnabled: false,
-      }}/>
-      <Stack.Screen name="username" options={{
-        headerShown: false,
-        headerStyle:{
-          backgroundColor:'#9370db',
-        }
-        //headerBackVisible: false,
-        //gestureEnabled: false,
-      }}/>
-
-    </Stack>
-    </GlobalProvider>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+    </ThemeProvider>
   );
 }
-/*
-      <Stack.Screen name="home" options={{
-        title: "Home",
-        headerShown: false,
-        headerBackVisible: false,
-        gestureEnabled: false,
-      }}/>
-
-      <Stack.Screen name="waiting" options={{
-        headerShown: false,
-        headerBackVisible: false,
-        gestureEnabled: false,
-      }}/>
-      <Stack.Screen name="demo_chat" options={{
-        title: "demo_chat",
-        //headerBackVisible: false,
-        //gestureEnabled: false,
-      }}/>
-      <Stack.Screen name="test_keyboard" options={{
-        headerShown: false,
-      }}/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
