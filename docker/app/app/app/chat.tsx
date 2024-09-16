@@ -4,11 +4,13 @@ import { GiftedChat, IMessage, Send, InputToolbar, Bubble, Time } from 'react-na
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Link} from 'expo-router';
 import axios from 'axios';
+import { useGlobalContext } from './GlobalContext';
 
 interface AppState {
-  messages: IMessage[];
+  msg: IMessage[];
 }
 
+const { userIdglobal, setUserIdglobal } = useGlobalContext();
 const home_image = require("@/assets/images/chat_image.png");
 
 export default class App extends React.Component<{}, AppState> {
@@ -18,50 +20,51 @@ export default class App extends React.Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
     this.state = {
-      messages: [],
+      msg: [],
     };
   }
 
   componentDidMount() {
-    // axios
-    // .get('http://10.225.174.25/chat/1')
-    //   .then((response) => {
-    //     const fetchedMessages = response.data.map((messages: any) => ({
-    //       text: messages.message,
-    //       _id: messages.user_id
-    //       // createdAt: new Date(),
-    //       // user: {
-    //       //   _id: response.data.user_id,
-    //       //   name: 'developer',
-    //       //   avatar: 'https://www.example.com/default-avatar.png',
-    //       // },
-    //     }));
-    //     this.setState({ messages: fetchedMessages });
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error fetching messages:', error);
-    //   });
-
-    this.setState({
-      messages: [
-        {
+    axios
+    .get('http://172.20.10.8/api/data')
+      .then((response) => {
+        const fetchedMessages = response.data.messages.map((msg: any) => ({
+          text: msg.text,
           _id: 1,
-          text: 'Hello developer!!',
           createdAt: new Date(),
           user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://www.profuture.co.jp/mk/wp-content/uploads/2022/04/img_34670_02.png',
+            _id: msg.id,
+            name: 'developer',
+            avatar: 'https://www.example.com/default-avatar.png',
           },
-        },
-      ],
-    });
+          key: msg.id  // ここで一意のキーを設定
+        }));
+        this.setState({ msg: fetchedMessages });
+      })
+      .catch((error) => {
+        console.error('Error fetching messages:', error);
+      });
+
+    // this.setState({
+    //   messages: [
+    //     {
+    //       _id: 1,
+    //       text: 'Hello developer!!',
+    //       createdAt: new Date(),
+    //       user: {
+    //         _id: 2,
+    //         name: 'React Native',
+    //         avatar: 'https://www.profuture.co.jp/mk/wp-content/uploads/2022/04/img_34670_02.png',
+    //       },
+    //     },
+    //   ],
+    // });
   }
 
   // Operation when the send button is pressed
   onSend = (messages: IMessage[] = []) => {
     this.setState((previousState) => ({
-      messages: GiftedChat.append(previousState.messages, messages),
+      msg: GiftedChat.append(previousState.msg, messages),
     }));
   };
 
@@ -149,7 +152,7 @@ export default class App extends React.Component<{}, AppState> {
                   </TouchableOpacity>
                 </View>
                   <GiftedChat
-                    messages={this.state.messages}
+                    messages={this.state.msg}
                     placeholder="メッセージを入力"
                     onSend={(messages) => this.onSend(messages)}
                     user={{

@@ -30,7 +30,26 @@ def check_db():
     
 @app.route('/api/data', methods=['GET'])
 def get_data():
-    return jsonify({"message": "Hello from Flask!", "user_id": 1})
+    return jsonify({
+        "messages": [
+            {
+                "text": "Final message",
+                "id": 4
+            },
+            {
+                "text": "Another message",
+                "id": 3
+            },
+            {
+                "text": "Yet another message",
+                "id": 1
+            },
+            {
+                "text": "Hello from Flask!",
+                "id": 2
+            }
+        ],
+    })
 
 if __name__ == "__main__":
      app.run(debug=True)
