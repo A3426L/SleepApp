@@ -77,10 +77,10 @@ def get_data():
 
 
 #チャット用
-@app.route('/chat/<int:user_id>',methods=['POST','GET'])
+@app.route('/chat/',methods=['POST','GET'])
 def chat(user_id):
      #送信データからルーム名を取得
-     current_user_id = request.form.get('user_id')
+     current_user_id = 'abc123'
      current_messages = Message.query.filter_by(user_id=user_id).all()
 
      #chat_info = [{'user_id': msg.user_id, 'messages': msg.message} for msg in current_messages]
