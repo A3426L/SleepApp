@@ -79,7 +79,7 @@ export default function UserName() {
               <View style={{flex: 0.10,}}/>
             <View style={{flex: 0.15, flexDirection: "row"}}>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {router.navigate({pathname:"/account_two", params:{mode:"Sign Up"}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {router.navigate({pathname:"/account_two", params:{mode:"Edit"}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}
                     {/* Linkに置き換え */}

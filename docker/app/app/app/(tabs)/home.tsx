@@ -225,7 +225,7 @@ export default function Test_tabs() {
               onPress={() => {
                 router.push({
                   pathname: "/account_two",
-                  params: { mode: "Sign Up" },
+                  params: { mode: "Edit" },
                 });
               }}
               style={{
