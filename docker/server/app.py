@@ -47,17 +47,6 @@ def add_user_test():
         db.session.add(new_user)
         db.session.commit()
     return "Add data succusess."
-#チャット用
-@app.route('/add-chat-test', methods=['GET'])
-def add_chat_test():
-    id = "1"
-    user_id = "abc123"
-    message = "おはよう"
-    new_chat = Message(id=id, user_id=user_id,message=message)
-    with app.app_context():
-        db.session.add(new_chat)
-        db.session.commit()
-    return "Add chatdata succusess."
 
 
 @app.route('/check-db')
