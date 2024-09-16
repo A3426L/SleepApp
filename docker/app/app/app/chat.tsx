@@ -1,132 +1,99 @@
-import React, { forwardRef, useState, createRef, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, TextInput, ImageBackground, Animated , TouchableOpacity} from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, StyleSheet, Text, SafeAreaView, TextInput, ImageBackground, Animated, TouchableOpacity } from 'react-native';
 import { GiftedChat, IMessage, Send, InputToolbar, Bubble, Time } from 'react-native-gifted-chat';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {Link} from 'expo-router';
+import { Link } from 'expo-router';
 import axios from 'axios';
 import { useGlobalContext } from './GlobalContext';
 
-interface AppState {
-  msg: IMessage[];
-}
-
-const { userIdglobal, setUserIdglobal } = useGlobalContext();
 const home_image = require("@/assets/images/chat_image.png");
 
-export default class App extends React.Component<{}, AppState> {
-  private topInputRef = createRef<TextInput>();
-  private bottomInputRef = createRef<TextInput>();
+export const App: React.FC = () => {
+  const { userIdglobal, setUserIdglobal } = useGlobalContext();
+  const [msg, setMsg] = useState<IMessage[]>([]);
+  const topInputRef = useRef<TextInput>(null);
+  const bottomInputRef = useRef<TextInput>(null);
 
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      msg: [],
-    };
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     axios
-    .get('http://172.20.10.8/api/data')
+      .get('http://172.20.10.8/api/data')
       .then((response) => {
         const fetchedMessages = response.data.messages.map((msg: any) => ({
           text: msg.text,
-          _id: 1,
+          _id: msg.id,
           createdAt: new Date(),
           user: {
             _id: msg.id,
             name: 'developer',
             avatar: 'https://www.example.com/default-avatar.png',
           },
-          key: msg.id  // ここで一意のキーを設定
         }));
-        this.setState({ msg: fetchedMessages });
+        setMsg(fetchedMessages);
       })
       .catch((error) => {
         console.error('Error fetching messages:', error);
       });
+  }, []);
 
-    // this.setState({
-    //   messages: [
-    //     {
-    //       _id: 1,
-    //       text: 'Hello developer!!',
-    //       createdAt: new Date(),
-    //       user: {
-    //         _id: 2,
-    //         name: 'React Native',
-    //         avatar: 'https://www.profuture.co.jp/mk/wp-content/uploads/2022/04/img_34670_02.png',
-    //       },
-    //     },
-    //   ],
-    // });
-  }
-
-  // Operation when the send button is pressed
-  onSend = (messages: IMessage[] = []) => {
-    this.setState((previousState) => ({
-      msg: GiftedChat.append(previousState.msg, messages),
-    }));
+  const onSend = (messages: IMessage[] = []) => {
+    setMsg((previousMessages) => GiftedChat.append(previousMessages, messages));
   };
 
-  handleTopInputFocus = () => {
-    if (this.bottomInputRef.current) {
-      this.bottomInputRef.current.blur(); // 下部のテキストボックスのフォーカスを解除
+  const handleTopInputFocus = () => {
+    if (bottomInputRef.current) {
+      bottomInputRef.current.blur(); // 下部のテキストボックスのフォーカスを解除
     }
   };
 
-  // 吹き出しの色をカスタマイズ
-  renderBubble = (props: any) => {
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          left: {
-            backgroundColor: '#4b58c8', // 相手の吹き出しの色
-          },
-          right: {
-            backgroundColor: '#e1e1e1', // 自分の吹き出しの色
-          },
-        }}
-        textStyle={{
-          left: {
-            color: '#ffffff', // 相手のテキストの色を黒に変更
-          },
-          right: {
-            color: '#000000', // 自分のテキストの色を白に変更
-          },
-        }}
-      />
-    );
+  const renderBubble = (props: any) => (
+    <Bubble
+      {...props}
+      wrapperStyle={{
+        left: {
+          backgroundColor: '#4b58c8', // 相手の吹き出しの色
+        },
+        right: {
+          backgroundColor: '#e1e1e1', // 自分の吹き出しの色
+        },
+      }}
+      textStyle={{
+        left: {
+          color: '#ffffff', // 相手のテキストの色
+        },
+        right: {
+          color: '#000000', // 自分のテキストの色
+        },
+      }}
+    />
+  );
+
+  const renderTime = (props: any) => (
+    <Time
+      {...props}
+      timeTextStyle={{
+        left: {
+          color: '#ffffff', // 相手の時間表示の色
+        },
+        right: {
+          color: '#000000', // 自分の時間表示の色
+        },
+      }}
+    />
+  );
+
+  const test = () => {
+    axios.get('http://172.20.10.8/api/data')
+      .then(test_data => {
+        console.log(test_data.data);
+      })
+      .catch(error => console.error("error", error));
   };
 
-  //時刻表示の文字色指定
-  renderTime = (props: any) => {
-    return (
-      <Time
-        {...props}
-        timeTextStyle={{
-          left: {
-            color: '#ffffff', // 相手の時間表示の色を黒に変更
-          },
-          right: {
-            color: '#000000', // 自分の時間表示の色を白に変更
-          },
-        }}
-      />
-    );
-  };
-
-  test = ()=>{axios.get('http://172.20.10.8/api/data')
-    .then(test_data=>{
-      console.log(test_data.data)})
-    .catch(error => console.error("error",error))}
-
-  render() {
-    return (
-      <View style={styles.outWrapper}>
-        <SafeAreaView style={styles.topSafeArea} />
-        <SafeAreaView style={styles.safeAreaWrapper}>
-          <View style={styles.container}>
+  return (
+    <View style={styles.outWrapper}>
+      <SafeAreaView style={styles.topSafeArea} />
+      <SafeAreaView style={styles.safeAreaWrapper}>
+        <View style={styles.container}>
           {/* ///////////////////////////////////////////////////////////////////// */}
           <View style={styles.backHomeButton}>
             <Link href={"/(tabs)/home"} asChild>
@@ -138,65 +105,61 @@ export default class App extends React.Component<{}, AppState> {
           </View>
           {/* ///////////////////////////////////////////////////////////////////////// */}
           
-            <View style={styles.chatContainer}>
-              <ImageBackground source={home_image} style={styles.HomeImage}>
-                <View style={styles.topInputContainer}>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="お題"
-                    ref={this.topInputRef}
-                    onFocus={this.handleTopInputFocus} // フォーカスイベントを処理
-                  />
-                  <TouchableOpacity style={styles.randomButton} onPress={this.test}>
-                    <Icon name="casino" size={30} color="black" style={styles.icon} />
-                  </TouchableOpacity>
-                </View>
-                  <GiftedChat
-                    messages={this.state.msg}
-                    placeholder="メッセージを入力"
-                    onSend={(messages) => this.onSend(messages)}
-                    user={{
-                      _id: 1,
-                    }}
-                    renderSend={(props) => <CustomSend {...props} />}
-                    renderInputToolbar={(props) => <CustomInputToolbar {...props} />} // カスタム入力ボックス
-                    renderBubble={this.renderBubble}
-                    renderTime={this.renderTime}
-                    alwaysShowSend={true}
-                    keyboardShouldPersistTaps='handled'
-                  />
-              </ImageBackground>
-            </View>
+          <View style={styles.chatContainer}>
+            <ImageBackground source={home_image} style={styles.HomeImage}>
+              <View style={styles.topInputContainer}>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="お題"
+                  ref={topInputRef}
+                  onFocus={handleTopInputFocus} // フォーカスイベントを処理
+                />
+                <TouchableOpacity style={styles.randomButton} onPress={test}>
+                  <Icon name="casino" size={30} color="black" style={styles.icon} />
+                </TouchableOpacity>
+              </View>
+              <GiftedChat
+                messages={msg}
+                placeholder="メッセージを入力"
+                onSend={(messages) => onSend(messages)}
+                user={{
+                  _id: 1,
+                }}
+                renderSend={(props) => <CustomSend {...props} />}
+                renderInputToolbar={(props) => <CustomInputToolbar {...props} />}
+                renderBubble={renderBubble}
+                renderTime={renderTime}
+                alwaysShowSend={true}
+                keyboardShouldPersistTaps='handled'
+              />
+            </ImageBackground>
           </View>
-        </SafeAreaView>
-      </View>
-    );
-  }
-}
-
-// カスタム送信ボタンを forwardRef でラップする
-const CustomSend = forwardRef((props: any, ref: any) => {
-  return (
-    <Send {...props} ref={ref}>
-      <View style={styles.sendButton}>
-        <Icon name="send" size={24} color="#000000" />
-      </View>
-    </Send>
-  );
-});
-
-// カスタム入力ツールバー
-const CustomInputToolbar = (props: any) => {
-  return (
-    <InputToolbar
-      {...props}
-      containerStyle={styles.inputToolbar} // スタイルを適用
-      textInputProps={{
-        ref: props.bottomInputRef, // ここで ref を渡す
-      }}
-    />
+        </View>
+      </SafeAreaView>
+    </View>
   );
 };
+export default App;
+
+// カスタム送信ボタンを forwardRef でラップする
+const CustomSend = React.forwardRef((props: any, ref: any) => (
+  <Send {...props} ref={ref}>
+    <View style={styles.sendButton}>
+      <Icon name="send" size={24} color="#000000" />
+    </View>
+  </Send>
+));
+
+// カスタム入力ツールバー
+const CustomInputToolbar = (props: any) => (
+  <InputToolbar
+    {...props}
+    containerStyle={styles.inputToolbar} // スタイルを適用
+    textInputProps={{
+      ref: props.bottomInputRef, // ここで ref を渡す
+    }}
+  />
+);
 
 // プログレスバーコンポーネント
 const ProgressBar = ({ duration }: { duration: number }) => {
@@ -212,10 +175,12 @@ const ProgressBar = ({ duration }: { duration: number }) => {
 
   return (
     <View style={styles.progressBarBackground}>
-      <Animated.View style={[styles.progressBarFill, { width: widthAnim.interpolate({
-        inputRange: [0, 100],
-        outputRange: ['100%', '0%']
-      }) }]} />
+      <Animated.View style={[styles.progressBarFill, {
+        width: widthAnim.interpolate({
+          inputRange: [0, 100],
+          outputRange: ['100%', '0%']
+        })
+      }]} />
     </View>
   );
 };
