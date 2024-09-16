@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import text 
 from flask_cors import CORS
-from flask_socketio import SocketIO , emit , join_room
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash #パスワードのハッシュ化
 
@@ -85,12 +84,12 @@ with app.app_context():
      db.session.commit()
 
 def index():
-     return render_template('home.html')
+     return app.send_static_file('home.html')
 
 #ログイン画面表示
 @app.route("/login")
 def login_get():
-     return render_template("login.html")
+     return app.send_static_file('login.html')
 
 #ログイン(後で編集する)
 @app.route('/login',methods=['POST'])
@@ -98,22 +97,23 @@ def login():
      userid = request.form.get('user_id')
      password = request.form.get('userpass')
 
+
      user = Userdate.query.filter_by(user_id=userid).first()
      #ユーザidとパスを確認
      if user and check_password_hash(Userdate.userpass,password):
-        session['user_id'] = userid
-        return redirect(url_for('login.html'))
+        userid = session['user_id']
+        return app.send_static_file('login.html')
         
      else:
-          return render_template('login.html', error="入力したIDかパスワードが間違っています")
+          return jsonify({'status': 'error', 'message': '入力したIDかパスワードが間違っています'})
        
 
 #アカウントの新規作成
 @app.route("/regist",methods=['POST'])
 def regist():
-     name = request.form.get("name"),
-     password = request.form.get("password"),
-     user_id = request.form.get("id")
+     name = request.form.get('name')
+     password = request.form.get('password')
+     user_id = request.form.get('id')
 
      #パスワードをハッシュ化
      hash_password = generate_password_hash(password,method='pbkdf2:sha256',salt_length=16)
@@ -121,7 +121,7 @@ def regist():
      db.session.add(new_user)
      db.session.commit()
 
-     return redirect("/login")
+     return app.send_static_file('/login')
 
 #チャットメッセージ
 @app.route('/chat/<int:user_id>',methods=['GET'])
@@ -143,23 +143,28 @@ def send_message():
           db.session.add(message)
           db.session.commit()
 
-          #部屋にメッセージを送信
-          #emit('receive_message',{'msg':session['username'] + ':' + message_content},to=user_id)
+         
 
+#チャットに名前を表示
+@app.route('/chat_name',methods=['GET'])
+def chat_name():        
+     username = session.get('name')
+     return jsonify({'chat_name':username})
 
-@app.route('/chat')
-def chat():         #チャットに名前を表示
-     name = session.get('name','')
-     return render_template('chat.html',name=name)
+#入室した通知
+@app.route('/room_in',methods=['GET'])        
+def room_in():
+     name = session.get('name')
+     return jsonify({'in_message':f'{name}が入室しました'})
 
-#入室した通知がいるか聞く
-@app.route('notification',namespace='/chat')        #入室を通知する
-def notification(message):
-     room = session.get('room')
-     emit('status',{'msg':f"{session.get('name')}が入室しました"},to=room)
+#退室した通知
+@app.route('/room_out',methods=['GET'])        
+def room_out():
+     name = session.get('name')
+     return jsonify({'out_message':f'{name}が退室しました'})     
      
-#退出した通知
-@app.route('/leave_room',methods=['POST'])
+#退出
+@app.route('/leave_room',methods=['GET'])
 def leave_room():
      room = session.get('room')
      username = session.get('username')
@@ -170,11 +175,11 @@ def leave_room():
      #ユーザーを部屋から退出させる
      session.pop('room',None)
 
-     #他のクライアントに退出を退出
-     emit('status',{'mag':f'{username} が退出しました'},to=room)
-
      leave_room(room)
 
 
+if __name__ == "__main__":
+     
+     app.run(debug=True)
 #投稿機能
 
