@@ -8,9 +8,16 @@ import TabsHeaderText from "@/components/TabsHeaderText";
 import { red } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 import React, { useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
+import axios from 'axios';
 
 export default function Home() {
+
   const router = useRouter();
+
+  const test = ()=>{axios.get('http://192.168.0.103/add-user-test')
+    .then(username=>{
+      console.log(username.data)})
+    .catch(error => console.error("error",error))}
 
 
   return (
@@ -20,7 +27,11 @@ export default function Home() {
           </View>
           <TabsHeaderIcon/>
         </View>
-        <View style = {{flex :0.9, backgroundColor: "white"}}/>
+        <View style = {{flex :0.9, backgroundColor: "white"}}>
+        <TouchableOpacity style={{flex:1}} onPress={test}>
+          <Text>test</Text>
+        </TouchableOpacity>
+        </View>
       </SafeAreaView>
   );
 }

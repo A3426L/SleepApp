@@ -22,26 +22,11 @@ export default class App extends React.Component<{}, AppState> {
     };
   }
 
-  componentDidMount() {
-    axios
-      .get('http://192.168.0.104/chat/1')
-        .then((response) => {
-          const fetchedMessages = response.data.messages.map((message: any) => ({
-            _id: message.user_id,
-            text: message.message
-            // createdAt: new Date(message.createdAt),
-            // user: {
-            //   _id: message.user_id,
-            //   name: 'developer',
-            //   avatar: 'https://www.example.com/default-avatar.png',
-            // },
-          }));
-          this.setState({ messages: fetchedMessages });
-        })
-        .catch((error) => {
-          console.error('Error fetching messages:', error);
-        });
+  componentDidMount(){
+    this.setState({ messages: fetchedMessages });
   }
+
+ 
 
   // Operation when the send button is pressed
   onSend = (messages: IMessage[] = []) => {
@@ -124,7 +109,7 @@ export default class App extends React.Component<{}, AppState> {
                     ref={this.topInputRef}
                     onFocus={this.handleTopInputFocus} // フォーカスイベントを処理
                   />
-                  <TouchableOpacity style={styles.randomButton}>
+                  <TouchableOpacity style={styles.randomButton} >
                     <Icon name="casino" size={30} color="black" style={styles.icon} />
                   </TouchableOpacity>
                 </View>

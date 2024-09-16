@@ -9,12 +9,10 @@ services:
       - 8081:8081
 
   server:
-    image: python:3.11
+    image: python:3.8
     build: ./docker/server
-
     volumes:
       - ./docker/server:/var/www/html/
-
     restart: always
     tty: true
 
