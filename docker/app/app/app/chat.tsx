@@ -16,7 +16,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get('http://172.20.10.8/api/data')
+      .get('http://172.16.42.21/api/data')
       .then((response) => {
         const fetchedMessages = response.data.messages.map((msg: any) => {
           // userIdGlobalとmsg.idが同じかどうかをチェック
@@ -52,7 +52,7 @@ export const App: React.FC = () => {
       user: userIdglobal
     }));
   
-    axios.post('http://172.20.10.8/api/data/post', 
+    axios.post('http://172.16.42.21/api/data/post', 
       { messages: messageData },  // メッセージデータをサーバーに送信
       { headers: { 'Content-Type': 'application/json' } }
     )
@@ -107,7 +107,7 @@ export const App: React.FC = () => {
   );
 
   const test = () => {
-    // axios.get('http://172.20.10.8/api/data')
+    // axios.get('http://172.16.42.21/api/data')
     //   .then(test_data => {
     //     console.log(test_data.data);
     //   })
@@ -128,7 +128,7 @@ export const App: React.FC = () => {
                 <Icon name="arrow-back" size={30} color="white" />
               </TouchableOpacity>
             </Link>
-            <ProgressBar duration={10000} />
+            <ProgressBar />
           </View>
           {/* ///////////////////////////////////////////////////////////////////////// */}
           
@@ -188,26 +188,71 @@ const CustomInputToolbar = (props: any) => (
   />
 );
 
-// プログレスバーコンポーネント
-const ProgressBar = ({ duration }: { duration: number }) => {
+const ProgressBar = () => {
+  const [loading, setLoading] = useState(true);
   const widthAnim = useRef(new Animated.Value(100)).current;
+  const [totalTime, setTotalTime] = useState(0);  // プログレスバーの全体の時間
+  const [startTime, setStartTime] = useState(0);   // 開始時刻
+  const [endTime, setEndTime] = useState(0);       // 終了時刻
 
   useEffect(() => {
-    Animated.timing(widthAnim, {
-      toValue: 0,
-      duration: duration,
-      useNativeDriver: false,
-    }).start();
-  }, [widthAnim, duration]);
+    const fetchTimes = async () => {
+      try {
+        const response = await axios.get('http://172.16.42.21/api/get-end-time');
+        const now = new Date().getTime();
+        const start = new Date(response.data.startTime).getTime();
+        const end = new Date(response.data.endTime).getTime();
+
+        const remainingTime = end - now;
+        const totalDuration = end - start;
+        const elapsedTime = now - start;
+
+        setTotalTime(totalDuration);
+        setStartTime(start);
+        setEndTime(end);
+
+        console.log('サーバーからの開始時刻（JST）:', new Date(response.data.startTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+        console.log('サーバーからの終了時刻（JST）:', new Date(response.data.endTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+        console.log('クライアントの現在時刻:', new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+
+        if (totalDuration > 0) {
+          setLoading(false);
+
+          // 経過時間に基づいてプログレスバーの開始位置を設定
+          widthAnim.setValue((elapsedTime / totalDuration) * 100);
+
+          Animated.timing(widthAnim, {
+            toValue: 0,
+            duration: remainingTime,
+            useNativeDriver: false,
+          }).start();
+        }
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
+    };
+
+    fetchTimes();
+  }, [widthAnim]);
 
   return (
     <View style={styles.progressBarBackground}>
-      <Animated.View style={[styles.progressBarFill, {
-        width: widthAnim.interpolate({
-          inputRange: [0, 100],
-          outputRange: ['100%', '0%']
-        })
-      }]} />
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : (
+        <Animated.View
+          style={[
+            styles.progressBarFill,
+            {
+              width: widthAnim.interpolate({
+                inputRange: [0, 100],
+                outputRange: ['100%', '0%'],
+              }),
+            },
+          ]}
+        />
+      )}
     </View>
   );
 };
