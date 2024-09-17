@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import text 
 from flask_cors import CORS
+from datetime import datetime, timedelta
 
 
 app = Flask(__name__)
@@ -57,6 +58,16 @@ def post_data():
     data = request.json
     # 取得したデータをそのまま返す
     return jsonify(data)
+
+@app.route('/api/get-end-time', methods=['GET'])
+def get_endtime():
+    # 固定された開始時刻と終了時刻を設定（JSTのISOフォーマット）
+    fixed_start_time = "2024-09-17T15:25:00+09:00"  # 固定された開始時刻
+    fixed_end_time = "2024-09-17T15:35:00+09:00"    # 固定された終了時刻
+    
+    # 開始時刻と終了時刻をJSONで返す
+    return jsonify({'startTime': fixed_start_time, 'endTime': fixed_end_time})
+
 
 if __name__ == "__main__":
      app.run(debug=True)

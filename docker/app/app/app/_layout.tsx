@@ -22,6 +22,14 @@ export default function RootLayout() {
         //headerBackVisible: false,
         //gestureEnabled: false,
       }}/>
+      <Stack.Screen name="title_page" options={{
+        headerShown: false,
+        headerStyle:{
+          backgroundColor:'#9370db',
+        }
+        //headerBackVisible: false,
+        //gestureEnabled: false,
+      }}/>
       <Stack.Screen name="first_page" options={{
         headerShown: false,
         headerStyle:{
