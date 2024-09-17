@@ -17,6 +17,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useGlobalContext } from '../GlobalContext';
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
 import { LayoutChangeEvent } from "react-native";
 import TabsHeaderText from "@/components/TabsHeaderText";
@@ -40,7 +41,8 @@ export default function Test_tabs() {
     }
     setIsVisible(!isVisible);
   };
-
+  const { userIdglobal, setUserIdglobal } = useGlobalContext();
+  const accountmenu_image = require("@/assets/images/accountmenu_image.png");
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: translateX.value }],
@@ -314,7 +316,7 @@ const test_data2 =[
           </TouchableOpacity>
         </View>
         <View style={{ flex: 0.02 }}></View>
-        <View style={{ flex: 0.4 }}>
+        <View style={{ flex: 0.45 }}>
           <View style={{ flex: 1 }}>
             <View
               style={{
@@ -346,7 +348,7 @@ const test_data2 =[
               }}
             >
               <Text style={{ fontSize: 25, textAlign: "center" }}>
-                ユーザーID
+                {userIdglobal}
               </Text>
             </View>
           </View>
@@ -370,7 +372,9 @@ const test_data2 =[
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{ flex: 0.4, backgroundColor: "#4b58c8" }}></View>
+        <View style={{ flex: 0.55,}}>
+          <ImageBackground source={accountmenu_image} style={styles.ResultImage}></ImageBackground>
+        </View>
 
         {/* <Text style={styles.sliderText}>横からスライドするビュー</Text>
         <Button title="閉じる" onPress={toggleSlider} /> */}

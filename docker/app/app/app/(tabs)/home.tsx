@@ -33,6 +33,7 @@ export default function Test_tabs() {
   const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
   const home_image = require("@/assets/images/result_image.png");
+  const accountmenu_image = require("@/assets/images/accountmenu_image.png");
   const toggleSlider = () => {
     if (isVisible) {
       translateX.value = withTiming(width); // 隠すアニメーション
@@ -106,7 +107,7 @@ export default function Test_tabs() {
           <View style={{backgroundColor:"#001125",flex:0.5}}>
             <View style ={{flex:0.3, backgroundColor: "#001125",justifyContent: 'center', marginLeft: "5%"}}>
               <Text style={{color: "white", backgroundColor: "#001125", fontSize: 25 }}>
-              Current User ID: {userIdglobal}
+               こんばんは！
               </Text>
             </View>
             <DigitalClock>
@@ -189,7 +190,7 @@ export default function Test_tabs() {
           </TouchableOpacity>
         </View>
         <View style={{ flex: 0.02 }}></View>
-        <View style={{ flex: 0.4 }}>
+        <View style={{ flex: 0.45 }}>
           <View style={{ flex: 1 }}>
             <View
               style={{
@@ -221,7 +222,7 @@ export default function Test_tabs() {
               }}
             >
               <Text style={{ fontSize: 25, textAlign: "center" }}>
-                ユーザーID
+                {userIdglobal}
               </Text>
             </View>
           </View>
@@ -245,7 +246,9 @@ export default function Test_tabs() {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{ flex: 0.4, backgroundColor: "#4b58c8" }}></View>
+        <View style={{ flex: 0.55, }}>
+          <ImageBackground source={accountmenu_image} style={styles.HomeImage}></ImageBackground>
+        </View>
 
         {/* <Text style={styles.sliderText}>横からスライドするビュー</Text>
         <Button title="閉じる" onPress={toggleSlider} /> */}
