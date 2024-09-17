@@ -9,13 +9,17 @@ import React, { useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
 import DigitalClock from "@/components/ DigitalClock";
 
-
 export default function First_page() {
   const router = useRouter();
   const home_image = require("@/assets/images/sheep_image.png");
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const handleLayout = (event: LayoutChangeEvent) => {
+    const { width, height } = event.nativeEvent.layout;
+    setDimensions({ width, height });
+  };
 
   return (
-    <SafeAreaView style = {{flex:1,backgroundColor: "#4b58c8"}}>
+    <SafeAreaView style = {{flex:1,borderTopLeftRadius:30,borderTopRightRadius:30}}>
       <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
@@ -23,17 +27,42 @@ export default function First_page() {
         //ios: 25,
       })}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.inner}>
-          <TextInput placeholder="Username" style={styles.textInput} /*value={value} */keyboardType="email-address" /*onChangeText={handleTextChange}*//>
-          <View style={styles.btnContainer}>
-            <Button title="Submit" onPress={() => null} />
+        <View style={{flex:1}}>
+          <View style={{flex:0.15,borderTopLeftRadius:30,borderTopRightRadius:30,flexDirection:"row"}}>
+          
+            <View style={{flex:0.3,justifyContent:"center"}}>
+            <TouchableOpacity
+              style={styles.AccountCross}
+              onLayout={handleLayout}
+              onPress={()=>{router.navigate("/test_tabs")}}
+            >
+              <Ionicons
+                name="close"
+                size={dimensions.height}
+                color={"black"}
+              />
+            </TouchableOpacity>
+              </View>
+              <View style={{flex:0.4}}>
+
+              </View>
+              <View style={{flex:0.3,justifyContent:"center"}}>
+                <TouchableOpacity style={{flex:1,backgroundColor: 'blue',marginVertical:25,marginHorizontal:10,borderRadius:15,justifyContent:"center"}} onPress={()=>{router.navigate("/test_tabs")}}>
+                  <Text style={{color:"white",textAlign:"center",fontSize:20,}}>
+                    POST
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          <View style={styles.inner}>
+            <TextInput placeholder="テーマ名を薄く入れる" style={styles.textInput} /*value={value} */ /*onChangeText={handleTextChange}*//>
+            {/* <View style={{flex:0.1, backgroundColor:"gray"}}></View> */}
           </View>
-          <View style={{flex:0.1, backgroundColor:"gray"}}></View>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
 
-      </SafeAreaView>
+    </SafeAreaView>
   );
 }
 
@@ -43,7 +72,7 @@ const styles = StyleSheet.create({
   },
   inner: {
     padding: 24,
-    flex: 1,
+    flex: 0.85,
     justifyContent: 'space-around',
   },
   header: {
@@ -51,15 +80,21 @@ const styles = StyleSheet.create({
     marginBottom: 48,
   },
   textInput: {
-    height: 40,
     flex: 1,
     borderColor: '#000000',
     borderBottomWidth: 1,
     marginBottom: 36,
   },
   btnContainer: {
+    flex:0.2,
     backgroundColor: 'white',
-    marginTop: 12,
+    marginTop: 15,
+  },
+  AccountCross: {
+    flex: 0.9,
+    justifyContent: "center",
+    alignItems: "center",
+    margin:20
   },
 
 });
