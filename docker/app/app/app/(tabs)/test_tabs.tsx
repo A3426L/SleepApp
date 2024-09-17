@@ -17,6 +17,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useGlobalContext } from '../GlobalContext';
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
 import { LayoutChangeEvent } from "react-native";
 import TabsHeaderText from "@/components/TabsHeaderText";
@@ -24,7 +25,7 @@ const { height, width } = Dimensions.get("window");
 import { Ionicons } from "@expo/vector-icons";
 import TestListComp from "../../components/test_list_comp";
 
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity ,RefreshControl} from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
 export default function Test_tabs() {
@@ -40,7 +41,8 @@ export default function Test_tabs() {
     }
     setIsVisible(!isVisible);
   };
-
+  const { userIdglobal, setUserIdglobal } = useGlobalContext();
+  const accountmenu_image = require("@/assets/images/accountmenu_image.png");
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: translateX.value }],
@@ -88,65 +90,68 @@ export default function Test_tabs() {
     const { width, height } = event.nativeEvent.layout;
     setDimensions_5({ width, height });
   };
+
 ////////////////////////////////////
-const test_data =[
-  {
-    id:1,
-    text:"眠い",
-  },
-  {
-    id:2,
-    text:"眠い",
-  },
-  {
-    id:3,
-    text:"眠い",
-  },
-  {
-    id:4,
-    text:"眠い",
-  },
-  {
-    id:5,
-    text:"眠い",
-  },
-  {
-    id:6,
-    text:"眠い",
-  },
-  {
-    id:7,
-    text:"眠い",
-  },
-  {
-    id:8,
-    text:"眠い",
-  },
-  {
-    id:9,
-    text:"眠い",
-  },
-  {
-    id:10,
-    text:"眠い",
-  },
-  {
-    id:11,
-    text:"眠い",
-  },
-  {
-    id:12,
-    text:"眠い",
-  },
-  {
-    id:13,
-    text:"眠い",
-  },
-  {
-    id:14,
-    text:"眠い",
-  },
-];
+  
+  const [refreshing, setRefreshing] = useState(false);
+  const [test_data, settest_data] = useState([
+    {
+      id:1,
+      text:"眠い",
+    },
+    {
+      id:2,
+      text:"眠い",
+    },
+    {
+      id:3,
+      text:"眠い",
+    },
+    {
+      id:4,
+      text:"眠い",
+    },
+    {
+      id:5,
+      text:"眠い",
+    },
+    {
+      id:6,
+      text:"眠い",
+    },
+    {
+      id:7,
+      text:"眠い",
+    },
+    {
+      id:8,
+      text:"眠い",
+    },
+    {
+      id:9,
+      text:"眠い",
+    },
+    {
+      id:10,
+      text:"眠い",
+    },
+    {
+      id:11,
+      text:"眠い",
+    },
+    {
+      id:12,
+      text:"眠い",
+    },
+    {
+      id:13,
+      text:"眠い",
+    },
+    {
+      id:14,
+      text:"眠い",
+    },
+  ])
 
 const test_data2 =[
   {
@@ -156,6 +161,26 @@ const test_data2 =[
 ]
 
 /////////////////////////////////////////
+const onRefresh = () => {
+  // 再読み込みが始まるときにrefreshingをtrueに設定
+  setRefreshing(true);
+
+  // 仮のデータフェッチをシミュレート
+  setTimeout(() => {
+    // 新しいデータをセット
+    settest_data([
+      { id: 1, text: 'New Item 1' },
+      { id: 2, text: 'New Item 2' },
+      { id: 3, text: 'New Item 3' },
+      { id: 4, text: 'New Item 4' }, // 新しいアイテムを追加
+    ]);
+
+    // データのリフレッシュ完了
+    setRefreshing(false);
+  }, 1000); // 2秒後に再読み込みが完了するシミュレーション
+};
+
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.Container}>
@@ -221,6 +246,9 @@ const test_data2 =[
               data={(selectTabColor===true)?test_data:test_data2}
               renderItem={({ item }) => <TestListComp id={item.id} text={item.text} />}
               keyExtractor={(item) => item.id.toString()}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+              }
             >
             </FlatList>
             <TouchableOpacity
@@ -314,7 +342,7 @@ const test_data2 =[
           </TouchableOpacity>
         </View>
         <View style={{ flex: 0.02 }}></View>
-        <View style={{ flex: 0.4 }}>
+        <View style={{ flex: 0.45 }}>
           <View style={{ flex: 1 }}>
             <View
               style={{
@@ -346,17 +374,17 @@ const test_data2 =[
               }}
             >
               <Text style={{ fontSize: 25, textAlign: "center" }}>
-                ユーザーID
+                {userIdglobal}
               </Text>
             </View>
           </View>
           <View style={{ flex: 1 }}>
             <TouchableOpacity
               onPress={() => {
-                router.push({
-                  pathname: "/account_two",
-                  params: { mode: "Edit" },
-                });
+                router.dismissAll,
+                router.replace({
+                  pathname: "/first_page",
+                }),setUserIdglobal(null)
               }}
               style={{
                 flex: 1,
@@ -366,11 +394,13 @@ const test_data2 =[
                 margin: "5%",
               }}
             >
-              <Text style={{ fontSize: 25, textAlign: "center" }}>編集</Text>
+              <Text style={{ fontSize: 25, textAlign: "center" }}>ログアウト</Text>
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{ flex: 0.4, backgroundColor: "#4b58c8" }}></View>
+        <View style={{ flex: 0.55,}}>
+          <ImageBackground source={accountmenu_image} style={styles.ResultImage}></ImageBackground>
+        </View>
 
         {/* <Text style={styles.sliderText}>横からスライドするビュー</Text>
         <Button title="閉じる" onPress={toggleSlider} /> */}
