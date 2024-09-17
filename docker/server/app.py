@@ -33,22 +33,26 @@ def check_db():
 def get_data():
     return jsonify({
         "messages": [
-            {
-                "text": "Final message",
-                "id": "4"
-            },
-            {
-                "text": "Another message",
-                "id": "3"
-            },
-            {
-                "text": "Yet another message",
-                "id": "1"
-            },
-            {
-                "text": "Hello from Flask!",
-                "id": "2"
-            }
+          {
+               "text": "Hello from Flask!",
+               "msg_id": "1",
+               "user_id": "3"
+          },
+          {
+               "text": "Another message",
+               "msg_id": "2",
+               "user_id": "1"
+          },
+          {
+               "text": "Yet another message",
+               "msg_id": "3",
+               "user_id": "2"
+          },
+          {
+               "text": "Final message",
+               "msg_id": "4",
+               "user_id": "4"
+          },
         ],
     })
 
@@ -62,12 +66,37 @@ def post_data():
 @app.route('/api/get-end-time', methods=['GET'])
 def get_endtime():
     # 固定された開始時刻と終了時刻を設定（JSTのISOフォーマット）
-    fixed_start_time = "2024-09-17T15:25:00+09:00"  # 固定された開始時刻
-    fixed_end_time = "2024-09-17T15:35:00+09:00"    # 固定された終了時刻
+    fixed_start_time = "2024-09-17T23:30:00+09:00"  # 固定された開始時刻
+    fixed_end_time = "2024-09-18T02:09:30+09:00"    # 固定された終了時刻
     
     # 開始時刻と終了時刻をJSONで返す
     return jsonify({'startTime': fixed_start_time, 'endTime': fixed_end_time})
 
+# リーダーかどうかを判断
+@app.route('/api/leader', methods=['POST'])
+def post_leader():
+    # POSTリクエストからJSONデータを取得
+    data = request.json
+
+    # 'value'キーがリクエストボディに存在するか確認
+    if 'value' in data:
+        # 'value'の値が1の場合は1を返す
+        if data['value'] == 1:
+            return jsonify({'result': 1})
+        else:
+            return jsonify({'result': 0})
+    else:
+        # 'value'キーが存在しない場合はエラーメッセージを返す
+        return jsonify({'error': 'Missing "value" in request'}), 400
+
+#タイトル受け取る
+@app.route('/api/title', methods=['POST'])
+def post_and_return():
+    # POSTリクエストからJSONデータを取得
+    data = request.json
+
+    # 受け取ったデータをそのまま返す
+    return jsonify(data)
 
 if __name__ == "__main__":
      app.run(debug=True)

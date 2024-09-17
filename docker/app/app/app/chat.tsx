@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, TextInput, ImageBackground, Animated, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, TextInput, ImageBackground, Animated, TouchableOpacity, Alert } from 'react-native';
 import { GiftedChat, IMessage, Send, InputToolbar, Bubble, Time } from 'react-native-gifted-chat';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import axios from 'axios';
 import { useGlobalContext } from './GlobalContext';
 
@@ -13,32 +13,90 @@ export const App: React.FC = () => {
   const [msg, setMsg] = useState<IMessage[]>([]);
   const topInputRef = useRef<TextInput>(null);
   const bottomInputRef = useRef<TextInput>(null);
+  const [result, setResult] = useState(null); //リーダーかどうかを0,1で格納
+  const [title, setTitle] = useState(''); //titleを格納
+  const [isEditable, setIsEditable] = useState(false); // 編集可能かどうかの状態
+  const previousMessagesRef = useRef<IMessage[]>([]); // 型を明示的に指定
 
   useEffect(() => {
-    axios
-      .get('http://172.16.42.21/api/data')
-      .then((response) => {
-        const fetchedMessages = response.data.messages.map((msg: any) => {
+    // メッセージを取得する関数
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get('http://10.225.174.30/api/data');
+        // メッセージを逆順に並び替える
+        const reversedMessages = response.data.messages.reverse();
+        const fetchedMessages = reversedMessages.map((msg: any) => {
           // userIdGlobalとmsg.idが同じかどうかをチェック
-          const isUserMessage = userIdglobal === msg.id;
+          const isUserMessage = userIdglobal === msg.user_id;
 
           return {
             text: msg.text,
-            _id: msg.id,
+            _id: msg.msg_id,
             createdAt: new Date(),
             user: {
-              _id: isUserMessage ? 1 : msg.id, // 同じ場合は1、それ以外はmsg.id
+              _id: isUserMessage ? 1 : msg.user_id, // 同じ場合は1、それ以外はmsg.id
               name: 'developer',
-              avatar: 'https://www.example.com/default-avatar.png',
+              avatar: 'https://png.pngtree.com/png-clipart/20191122/original/pngtree-user-icon-isolated-on-abstract-background-png-image_5192004.jpg',
             },
           };
         });
-        setMsg(fetchedMessages);
-      })
-      .catch((error) => {
+
+        // 前回のメッセージと新しいメッセージを比較し、新しいメッセージだけをフィルタリング
+        const previousMessages = previousMessagesRef.current;
+        const newMessages = fetchedMessages.filter((message: IMessage) => 
+          !previousMessages.some((prev) => prev._id === message._id)
+        );
+
+        // 新しいメッセージがある場合にのみ状態を更新
+        if (newMessages.length > 0) {
+          setMsg((previousMessages) => [...previousMessages, ...newMessages]);
+        }
+
+        // 現在のメッセージリストを保存
+        previousMessagesRef.current = [...previousMessagesRef.current, ...newMessages];
+      } catch (error) {
         console.error('Error fetching messages:', error);
-      });
-  }, []); // userIdglobalが変更されると再実行
+      }
+    };
+
+    // 初回実行
+    fetchMessages();
+
+    // 0.1秒ごとにメッセージを取得するためのインターバルを設定
+    const intervalId = setInterval(fetchMessages, 100); // 100ミリ秒 = 0.1秒
+
+    // クリーンアップ関数
+    return () => clearInterval(intervalId);
+  }, []); // 空の依存配列で初回マウント時のみに実行
+
+  useEffect(() => {
+    console.log('Messages:', msg); // msgの中身を表示
+  }, [msg]); // msgが変更されたら実行
+
+  useEffect(() => {
+    // コンポーネントがマウントされた際にPOSTリクエストを送信
+    const checkLeader = async () => {
+      try {
+        const response = await axios.post('http://10.225.174.30/api/leader', {
+          value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
+        });
+        // レスポンスデータを確認して編集可能状態を設定
+        if (response.data.result === 1) {
+          setIsEditable(true); // リーダーの場合
+        } else {
+          setIsEditable(false); // リーダーでない場合
+        }
+        // レスポンスデータを結果として保存
+        setResult(response.data.result);
+        console.log(response.data.result);
+      } catch (err) {
+        // エラーが発生した場合はエラーメッセージを保存
+        console.error('Error fetching messages:', err);
+      }
+    };
+
+    checkLeader();
+  }, []);  // 空の依存配列で初回マウント時のみに実行
 
   const onSend = (messages: IMessage[] = []) => {
     // メッセージをGiftedChatの状態に追加
@@ -52,7 +110,7 @@ export const App: React.FC = () => {
       user: userIdglobal
     }));
   
-    axios.post('http://172.16.42.21/api/data/post', 
+    axios.post('http://10.225.174.30/api/data/post', 
       { messages: messageData },  // メッセージデータをサーバーに送信
       { headers: { 'Content-Type': 'application/json' } }
     )
@@ -64,34 +122,46 @@ export const App: React.FC = () => {
     });
   };
 
+  //下部のテキストボックスのフォーカスを解除するためのコンポーネント
   const handleTopInputFocus = () => {
     if (bottomInputRef.current) {
       bottomInputRef.current.blur(); // 下部のテキストボックスのフォーカスを解除
     }
   };
 
-  const renderBubble = (props: any) => (
-    <Bubble
-      {...props}
-      wrapperStyle={{
-        left: {
-          backgroundColor: '#4b58c8', // 相手の吹き出しの色
-        },
-        right: {
-          backgroundColor: '#e1e1e1', // 自分の吹き出しの色
-        },
-      }}
-      textStyle={{
-        left: {
-          color: '#ffffff', // 相手のテキストの色
-        },
-        right: {
-          color: '#000000', // 自分のテキストの色
-        },
-      }}
-    />
-  );
+  //メッセージの吹き出しの色を変更するためのコンポーネント
+  const renderBubble = (props: any) => {
+    const { currentMessage } = props;
 
+    return (
+      <View>
+        {/* ユーザーIDを表示する部分 */}
+        <Text style={styles.userId}>{currentMessage.user._id}</Text>
+        {/* Bubble コンポーネント */}
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            left: {
+              backgroundColor: '#4b58c8', // 相手の吹き出しの色
+            },
+            right: {
+              backgroundColor: '#e1e1e1', // 自分の吹き出しの色
+            },
+          }}
+          textStyle={{
+            left: {
+              color: '#ffffff', // 相手のテキストの色
+            },
+            right: {
+              color: '#000000', // 自分のテキストの色
+            },
+          }}
+        />
+      </View>
+    );
+  };
+
+  //チャットの時刻表示の色を変更するためのコンポーネント
   const renderTime = (props: any) => (
     <Time
       {...props}
@@ -106,13 +176,118 @@ export const App: React.FC = () => {
     />
   );
 
+  //タイトルを変更した際その中身を格納するためのコンポーネント
+  const handleTextChange = (newTitle: string) => {
+    setTitle(newTitle);
+  };
+
+  // カーソルが離れた際に呼ばれる関数
+  const handleBlur = async () => {
+    if (title.trim() !== '') {
+      try {
+        const response = await axios.post('http://10.225.174.30/api/title', {
+          text: title,
+        });
+
+        // レスポンスの処理
+        console.log('API Response:', response.data);
+        Alert.alert('Success', 'Text has been posted successfully!');
+      } catch (error) {
+        console.error('Error posting text:', error);
+        Alert.alert('Error', 'Failed to post text.');
+      }
+    }
+  }
+
+  //プログレスバー
+  const ProgressBar = () => {
+    const [loading, setLoading] = useState(true);
+    const widthAnim = useRef(new Animated.Value(0)).current;
+    const [startTime, setStartTime] = useState(0); // 開始時刻
+    const [endTime, setEndTime] = useState(0); // 終了時刻
+    const router = useRouter(); // useRouterを使って画面遷移を行う
+
+    useEffect(() => {
+      const fetchTimes = async () => {
+        try {
+          const response = await axios.get('http://10.225.174.30/api/get-end-time');
+          const now = new Date().getTime();
+          const start = new Date(response.data.startTime).getTime();
+          const end = new Date(response.data.endTime).getTime();
+
+          // 現在時刻が開始時刻より前の場合は開始時刻に設定
+          const current = Math.max(now, start);
+          const totalDuration = end - start;
+          const elapsedTime = current - start;
+
+          setStartTime(start);
+          setEndTime(end);
+
+          console.log('サーバーからの開始時刻（JST）:', new Date(response.data.startTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+          console.log('サーバーからの終了時刻（JST）:', new Date(response.data.endTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+          console.log('クライアントの現在時刻:', new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+
+          if (totalDuration > 0) {
+            setLoading(false);
+
+            // プログレスバーの幅を計算
+            const progress = (elapsedTime / totalDuration) * 100;
+
+            widthAnim.setValue(progress);
+
+            // プログレスバーが終了したときに画面遷移を実行
+            Animated.timing(widthAnim, {
+              toValue: 100,
+              duration: end - current,
+              useNativeDriver: false,
+            }).start(() => {
+              // アニメーション終了後にわずかに遅延させてから画面遷移
+              setTimeout(() => {
+                router.navigate({
+                  pathname: "/title_page",
+                  params: { title: title }
+                });
+              }, 2000); // 適切な遅延時間を設定
+              console.log("なんでだよ！！！")
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          setLoading(false);
+        }
+      };
+
+      fetchTimes();
+    }, [widthAnim, router, title]);
+
+    return (
+      <View style={styles.progressBarBackground}>
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : (
+          <Animated.View
+            style={[
+              styles.progressBarFill,
+              {
+                width: widthAnim.interpolate({
+                  inputRange: [0, 100],
+                  outputRange: ['0%', '100%'],
+                }),
+              },
+            ]}
+          />
+        )}
+      </View>
+    );
+  };
+
   const test = () => {
-    // axios.get('http://172.16.42.21/api/data')
+    // axios.get('http://10.225.174.30/api/data')
     //   .then(test_data => {
     //     console.log(test_data.data);
     //   })
     //   .catch(error => console.error("error", error));
-    const newUserId = '111111'; // ここに設定したい値を設定
+    const newUserId = '2'; // ここに設定したい値を設定
     setUserIdglobal(newUserId);
   };
 
@@ -140,6 +315,9 @@ export const App: React.FC = () => {
                   placeholder="お題"
                   ref={topInputRef}
                   onFocus={handleTopInputFocus} // フォーカスイベントを処理
+                  onChangeText={handleTextChange} // テキスト変更を処理
+                  onBlur={handleBlur} // フォーカスが外れたときに処理
+                  editable={isEditable} // 編集可能/不可を制御
                 />
                 <TouchableOpacity style={styles.randomButton} onPress={test}>
                   <Icon name="casino" size={30} color="black" style={styles.icon} />
@@ -188,75 +366,6 @@ const CustomInputToolbar = (props: any) => (
   />
 );
 
-const ProgressBar = () => {
-  const [loading, setLoading] = useState(true);
-  const widthAnim = useRef(new Animated.Value(100)).current;
-  const [totalTime, setTotalTime] = useState(0);  // プログレスバーの全体の時間
-  const [startTime, setStartTime] = useState(0);   // 開始時刻
-  const [endTime, setEndTime] = useState(0);       // 終了時刻
-
-  useEffect(() => {
-    const fetchTimes = async () => {
-      try {
-        const response = await axios.get('http://172.16.42.21/api/get-end-time');
-        const now = new Date().getTime();
-        const start = new Date(response.data.startTime).getTime();
-        const end = new Date(response.data.endTime).getTime();
-
-        const remainingTime = end - now;
-        const totalDuration = end - start;
-        const elapsedTime = now - start;
-
-        setTotalTime(totalDuration);
-        setStartTime(start);
-        setEndTime(end);
-
-        console.log('サーバーからの開始時刻（JST）:', new Date(response.data.startTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
-        console.log('サーバーからの終了時刻（JST）:', new Date(response.data.endTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
-        console.log('クライアントの現在時刻:', new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
-
-        if (totalDuration > 0) {
-          setLoading(false);
-
-          // 経過時間に基づいてプログレスバーの開始位置を設定
-          widthAnim.setValue((elapsedTime / totalDuration) * 100);
-
-          Animated.timing(widthAnim, {
-            toValue: 0,
-            duration: remainingTime,
-            useNativeDriver: false,
-          }).start();
-        }
-      } catch (error) {
-        console.error(error);
-        setLoading(false);
-      }
-    };
-
-    fetchTimes();
-  }, [widthAnim]);
-
-  return (
-    <View style={styles.progressBarBackground}>
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : (
-        <Animated.View
-          style={[
-            styles.progressBarFill,
-            {
-              width: widthAnim.interpolate({
-                inputRange: [0, 100],
-                outputRange: ['100%', '0%'],
-              }),
-            },
-          ]}
-        />
-      )}
-    </View>
-  );
-};
-
 // スタイルシート
 const styles = StyleSheet.create({
   outWrapper: {
@@ -293,6 +402,12 @@ const styles = StyleSheet.create({
     fontSize: 30,
     paddingRight: 50, // ボタン分のスペースを確保
     paddingLeft: 50,
+  },
+  userId: {
+    fontSize: 13,
+    color: '#fff',
+    marginBottom: 7,
+    marginLeft: 10
   },
   sendButton: {
     backgroundColor: "transparent",
@@ -339,7 +454,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginTop:3,
-    marginLeft: 5,
+    marginLeft: 20,
     marginRight: 0,
     width: 25, // ボタンの幅を小さめに設定
   },
