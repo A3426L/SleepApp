@@ -229,10 +229,10 @@ export default function Test_tabs() {
           <View style={{ flex: 1 }}>
             <TouchableOpacity
               onPress={() => {
-                router.push({
-                  pathname: "/account_two",
-                  params: { mode: "Edit" },
-                });
+                router.dismissAll,
+                router.replace({
+                  pathname: "/first_page",
+                }),setUserIdglobal(null)
               }}
               style={{
                 flex: 1,
@@ -242,7 +242,7 @@ export default function Test_tabs() {
                 margin: "5%",
               }}
             >
-              <Text style={{ fontSize: 25, textAlign: "center" }}>編集</Text>
+              <Text style={{ fontSize: 25, textAlign: "center" }}>ログアウト</Text>
             </TouchableOpacity>
           </View>
         </View>
