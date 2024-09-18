@@ -28,28 +28,7 @@ class User(db.Model):
 class User2(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-
-class user(db.Model):
-    user_name = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(20), nullable=False)
-    password = db.Column(db.String(20), nullable=False)
-#     #メッセージモデル
-class message(db.Model):
-     id = db.Column(db.Integer,primary_key=True)
-     user_id = db.Column(db.String(15),nullable=False)  
-     message = db.Column(db.String(100),nullable=False)
-
-# #各ルームモデル
-class Room(db.Model):
-     id = db.Column(db.Integer,primary_key=True)
-     user_id1 = db.Column(db.String(10),nullable=True)     #名前
-     user_id2 = db.Column(db.String(10),nullable=True)
-     user_id3 = db.Column(db.String(10),nullable=True)
-     user_id4 = db.Column(db.String(10),nullable=True)
-     user_id5 = db.Column(db.String(10),nullable=True)
-    #  time = db.Column(db.DateTime,nullabl=False)
-    #  finishtime = db.Column(db.DateTime,nullabl=False)
-     theme = db.Column(db.String(20),nullable=False)         
+      
 
 @app.route('/')
 def hello():
@@ -66,7 +45,7 @@ def create_db():
 def add_user_test():
     id = "4"
     name = "ううう"
-    new_user = User1(id=id, name=name)
+    new_user = User(id=id, name=name)
     with app.app_context():
         db.session.add(new_user)
         db.session.commit()
