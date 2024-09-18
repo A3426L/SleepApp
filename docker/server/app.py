@@ -1,10 +1,11 @@
-from flask import Flask , jsonify , request
+from flask import Flask , jsonify , request 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import text , or_ , Table, Column, Integer, String, MetaData
+from sqlalchemy import text , and_ , Table, Column, Integer, String, MetaData
 from flask_cors import CORS
-
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime as dt
+
 
 
 app = Flask(__name__)
@@ -15,16 +16,35 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-
-##############-test-########################
-
-class User(db.Model):
+class User1(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
 class User2(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+
+class user(db.Model):
+    user_name = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+#     #メッセージモデル
+class message(db.Model):
+     id = db.Column(db.Integer,primary_key=True)
+     user_id = db.Column(db.String(15),nullable=False)  
+     message = db.Column(db.String(100),nullable=False)
+
+# #各ルームモデル
+class Room(db.Model):
+     id = db.Column(db.Integer,primary_key=True)
+     user_id1 = db.Column(db.String(10),nullable=True)     #名前
+     user_id2 = db.Column(db.String(10),nullable=True)
+     user_id3 = db.Column(db.String(10),nullable=True)
+     user_id4 = db.Column(db.String(10),nullable=True)
+     user_id5 = db.Column(db.String(10),nullable=True)
+    #  time = db.Column(db.DateTime,nullabl=False)
+    #  finishtime = db.Column(db.DateTime,nullabl=False)
+     theme = db.Column(db.String(20),nullable=False)         
 
 @app.route('/')
 def hello():
@@ -36,26 +56,16 @@ def create_db():
     with app.app_context():
         db.create_all()
         return "Database tables created."
-
+#お試し用
 @app.route('/add-user-test', methods=['GET'])
 def add_user_test():
-    id = "2"
+    id = "4"
     name = "ううう"
-    new_user = User(id=id, name=name)
+    new_user = User1(id=id, name=name)
     with app.app_context():
         db.session.add(new_user)
         db.session.commit()
     return "Add data succusess."
-
-
-@app.route('/testpost', methods=['POST'])
-def testpost():
-    data = request.get_json() 
-    if 'user_id' in data:
-        return jsonify({"received_user_id": data['user_id']}) 
-    else:
-        return jsonify({"error": "user_id not provided"}), 400
-    
 
 @app.route('/check-db')
 def check_db():
@@ -68,167 +78,116 @@ def check_db():
     except Exception as e:
         return str(e), 500
     
-
-    
 @app.route('/api/data', methods=['GET'])
 def get_data():
     return jsonify({"message": "Hello from Flask!", "user_id": 1})
 
 
-metadata = MetaData()
+@app.route('/api/chat',methods=['POST'])
+def chat():
+     get_chat = request.get_json()
+     get_id = get_chat['id']
+     get_user_id = get_chat['user_id']
 
-@app.route('/create_table')
-def create_table():
-    try:
-        table_name = "tabletest"
-
-        # 動的にテーブルを作成
-        new_table = Table(
-            table_name, 
-            metadata,
-            Column('id', Integer, primary_key=True),
-            Column('name', String(50)),
-            Column('email', String(100))
-        )
-
-        # テーブル作成
-        metadata.create_all(db.engine)
-
-        return jsonify({"message": f"Table {table_name} created successfully."}), 200
-
-    except Exception as e:
-        return jsonify({"message": f"Failed to create table: {str(e)}"}), 500
-
-######################################################
-
-class Old(db.Model):
-    __tablename__ = 'old' 
-
-    room_name = db.Column(db.String(50), primary_key=True)
-    user_id0 = db.Column(db.String(50), nullable=True)
-    user_id1 = db.Column(db.String(50), nullable=True)
-    user_id2 = db.Column(db.String(50), nullable=True)
-    user_id3 = db.Column(db.String(50), nullable=True)
-    user_id4 = db.Column(db.String(50), nullable=True)
-    end_time = db.Column(db.DateTime, nullable=True)
-    theme = db.Column(db.String(50))
-
-class Post(db.Model):
-    __tablename__ = 'post'
-
-    id = db.Column(db.Integer, primary_key=True)
-    room_name = db.Column(db.String(50))
-    user_id = db.Column(db.String(50), nullable=False)
-    theme = db.Column(db.String(50), nullable=True)
-    post_txt = db.Column(db.Text, nullable=True)
-
-
-
-def format_datetime_to_string(dt_obj):
-    return dt_obj.strftime('%Y%m%d%H%M%S%f')
-
-
-@app.route('/date')
-def get_current_datetime():
-    datetime = dt.now()
-    strdatatime = format_datetime_to_string(datetime)
-    return strdatatime
-
-
-@app.route('/postView_group',methods=['POST'])
-def postView_group():
-    data = request.get_json()
-    user_id = data['user_id']
-    old_results = Old.query.filter(
-        or_(
-            Old.user_id0 == user_id,
-            Old.user_id1 == user_id,
-            Old.user_id2 == user_id,
-            Old.user_id3 == user_id,
-            Old.user_id4 == user_id
-        )
-    ).order_by(Old.end_time.desc()).all()
-    if old_results:
-        latest_old = old_results[0]
-        latest_room_name = latest_old.room_name,
-        # old_list = {
-        #         "room_name": latest_old.room_name,
-        #         "user_id0": latest_old.user_id0,
-        #         "user_id1": latest_old.user_id1,
-        #         "user_id2": latest_old.user_id2,
-        #         "user_id3": latest_old.user_id3,
-        #         "user_id4": latest_old.user_id4,
-        #         "end_time": latest_old.end_time
-        #     } 
-    else:
-        old_list = {}
-    posts = Post.query.filter_by(room_name=latest_room_name).all()
-    post_list = [
-        {
-            "id": post.id,
-            "user_name": post.user_id,
-            "theme": post.theme,
-            "post_txt": post.post_txt
-        }
-        for post in posts
-    ]
-    return jsonify(post_list)
-
-
-@app.route('/postView_all')
-def postView_all():
-    posts = Post.query.limit(20).all()
-    post_list = [
-        {
-            "id": post.id,
-            "user_name": post.user_id,
-            "theme": post.theme,
-            "post_txt": post.post_txt
-        }
-        for post in posts
-    ]
-    return jsonify(post_list)
-
-
-@app.route('/movePost',methods=['POST'])
-def movePost():
-    data = request.get_json()
-    user_id = data['user_id']
-    old_results = Old.query.filter(
-        or_(
-            Old.user_id0 == user_id,
-            Old.user_id1 == user_id,
-            Old.user_id2 == user_id,
-            Old.user_id3 == user_id,
-            Old.user_id4 == user_id
-        )
-    ).order_by(Old.end_time.desc()).all()
-    if old_results:
-        latest_old = old_results[0]
-        latest_room_name = latest_old.theme
-    else:
-        old_list = {}
-
-    return latest_room_name
-
-@app.route('/post',methods=['POST'])
-def post():
-    try:
-        data = request.get_json()
-        user_id = data['user_id']
-        post_txt = data['post_txt']
-
-        #db書き込み
-        new_post = Post(user_id=user_id, post_txt=post_txt)
-        db.session.add(new_post)
-        db.session.commit()
-
-        return jsonify({"flag":"true"})
+     if get_id and get_user_id:
+       #メッセージ
+       current_message = message.query.filter(
+                     and_(
+                         message.id > get_id,
+                         message.user_id==get_user_id
+                     )
+       ).all()
+       current_name = user.query(user.user_name)
     
-    except Exception:
-        # エラーが発生した場合
-        return jsonify({"flag":"false"}), 500
+       return jsonify({
+                 'id':current_message.id,
+                 'messages':current_message.message,
+                 'user_id':current_message.user_id',
+                 'name':current_name
+              })
 
+     else:
+           return jsonify({'flag':'false'})
+     
+#ユーザーがメッセージを送信した時の処理
+@app.route('/api/get_message',methods=['POST'])
+def get_message():
+          send_message = request.get_json()
+          content_user_id = send_message['user_id']
+          content_message = send_message['messages']         
+
+          #メッセージを保存
+          Message = message(user_id=content_user_id,message=content_message)
+          db.session.add(Message)
+          db.session.commit()
+          
+          return jsonify({'flag':'true'})
+
+@app.route('/api/change_theme',methods=['POST'])
+def change_theme():
+       get_theme = request.get_json()
+       theme0 = get_theme('theme')
+
+       Theme = Room(theme=theme0)
+       db.session.add(Theme)
+       db.session.commit()
+
+       return jsonify({'flag':'true'})
+@app.route('/api/post_theme',methods=['POST'])
+def post_theme():
+       post_theme = request.get_json()
+       user_id0 = post_theme('user_id')
+
+       room = Room.query.filter(user_id=user_id0).all()
+       
+       return jsonify({'theme':room.theme})
+
+# #ログイン
+# @app.route('/login',methods=['POST'])
+# def login():
+#      login_data = request.get_json()
+#      get_user_id = login_data['user_id']
+#      password = login_data['user_pass']
+
+#      user = user.query.filter(user_id==get_user_id).first()
+#      #ユーザidとパスを確認
+#      if user and check_password_hash(user.password,password):
+        
+#         return jsonify({'flag':'true'})
+        
+#      else:
+#           return jsonify({'flag':'false'})
+       
+
+# #アカウントの新規作成
+# @app.route("/signup",methods=['POST'])
+# def signup():
+#      name = request.form.get('user_name')
+#      user_id1 = request.form.get('user_id')
+#      password1 = request.form.get('password')
+
+#      catch_user_id = user.query.filter(user_id == user_id1)
+#      catch_password = user.query.filter(password == password1)
+#      if user.query(catch_user_id.exists()).scalar() and user.query(catch_password.exists()).scalar():
+
+#           return jsonify({'flag':'false'})
+#      else:
+#           #パスワードをハッシュ化
+#           hash_password = generate_password_hash(password1,method='pbkdf2:sha256',salt_length=16)
+#           new_user = user(user_name=name,user_id=user_id1,password=hash_password)
+#           db.session.add(new_user)
+#           db.session.commit()
+
+#           return jsonify({'flag':'true'})
+
+
+# @app.route("/get_userName",methods=['POST'])
+# def get_userName():
+#      id = request.form.get('user_id')
+
+#      name = user.query.filter(user.user_id==id).all()
+
+#      return jsonify({'user_name':name.user_id})
 
 
 
@@ -236,3 +195,4 @@ if __name__ == "__main__":
      
      app.run(debug=True)
      #create_db()
+     
