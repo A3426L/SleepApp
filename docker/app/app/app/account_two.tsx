@@ -5,11 +5,12 @@ import {Link,useLocalSearchParams,useRouter} from 'expo-router';
 import { Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import TabsHeaderText from "@/components/TabsHeaderText";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
 import DigitalClock from "@/components/ DigitalClock";
 import { KeyboardAvoidingView ,Platform, TextInput} from "react-native";
 import { useGlobalContext } from './GlobalContext';
+import { login, LOGIN ,postData} from "@/components/ApiFunc";
 
 
 export default function Acccount_two() {
@@ -30,6 +31,22 @@ export default function Acccount_two() {
     setpassword(filteredText);
   };
 
+  const [loginapiResult, setloginApiResult] = useState<LOGIN | undefined>(undefined); // API結果のステート
+  const loginAPI = async (param:postData) => {
+    try {
+      // test関数を非同期で呼び出し、結果を取得
+      const buf: LOGIN | undefined = await login(param);
+      setloginApiResult(buf);
+      // 結果をステートにセット
+      //setApiResult(buf);
+    } catch (error) {
+      console.error('エラーが発生しました:', error);
+    }
+  };
+
+  useEffect(() => {
+    (loginapiResult?.flag==="true")?(setUserIdglobal(userid),router.dismissAll(),router.replace("/home")):{}
+  },[loginapiResult]);
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}> 
       <View style={{flex: 1}}>
@@ -106,7 +123,7 @@ export default function Acccount_two() {
               </View>
               <View style={{flex: 1, flexDirection: "row",}}></View>
               <View style={{flex: 1, flexDirection: "row",}}>
-                <TouchableOpacity onPress={() => {setUserIdglobal(userid),(getmode.mode==="Sign Up"||getmode.mode==="Edit")?(router.push({pathname:"/username",params:{mode:getmode.mode}})):(router.dismissAll(),router.replace("/home"))}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
+                <TouchableOpacity onPress={() => {(getmode.mode==="Sign Up"||getmode.mode==="Edit")?(router.push({pathname:"/username",params:{mode:getmode.mode,userid:userid,password:password}})):loginAPI({user_id:userid,pass:password})}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal: "5%", marginTop:"15%"}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     {/* アイコンに変える */}                    
                     ⇨

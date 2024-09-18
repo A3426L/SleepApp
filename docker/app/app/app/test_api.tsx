@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity ,FlatList,StyleSheet} from 'react-native';
 import { useRouter } from 'expo-router'; // ルーターを使いたい場合はここでインポート
-import { test ,postView_group } from '@/components/ApiFunc';
+import { test ,POSTVIEW_GROUP } from '@/components/ApiFunc';
 
 
 
 export default function YourComponent() {
-  const [apiResult, setApiResult] = useState<postView_group[] | undefined>(undefined); // API結果のステート
+  const [apiResult, setApiResult] = useState<POSTVIEW_GROUP[] | undefined>(undefined); // API結果のステート
 
   const handleSignUp = async () => {
     try {
       // test関数を非同期で呼び出し、結果を取得
-      const buf: postView_group[] | undefined = await test({ user_id: "testtest" });
+      const buf: POSTVIEW_GROUP[] | undefined = await test({ user_id: "testtest" });
 
       // 結果をステートにセット
       setApiResult(buf);

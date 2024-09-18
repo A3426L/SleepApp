@@ -23,6 +23,9 @@ import { LayoutChangeEvent } from "react-native";
 import TabsHeaderText from "@/components/TabsHeaderText";
 const { height, width } = Dimensions.get("window");
 import { Ionicons } from "@expo/vector-icons";
+import { get_userName, GET_USERNAME ,postData} from "@/components/ApiFunc";
+import { postView_group, POSTVIEW_GROUP } from "@/components/ApiFunc";
+import { postView_all, POSTVIEW_ALL } from "@/components/ApiFunc";
 import TestListComp from "../../components/test_list_comp";
 
 import { TouchableOpacity ,RefreshControl} from "react-native";
@@ -96,67 +99,62 @@ export default function Test_tabs() {
   const [refreshing, setRefreshing] = useState(false);
   const [test_data, settest_data] = useState([
     {
-      id:1,
-      text:"眠い",
+      id:"1",
+      user_name:"name1",
+      theme:"theme1",
+      post_txt:"眠い",
     },
     {
-      id:2,
-      text:"眠い",
+      id:"2",
+      user_name:"name2",
+      theme:"theme2",
+      post_txt:"眠い",
     },
     {
-      id:3,
-      text:"眠い",
+      id:"3",
+      user_name:"name3",
+      theme:"theme3",
+      post_txt:"眠い",
     },
     {
-      id:4,
-      text:"眠い",
+      id:"4",
+      user_name:"name4",
+      theme:"theme4",
+      post_txt:"眠い",
     },
     {
-      id:5,
-      text:"眠い",
+      id:"5",
+      user_name:"name5",
+      theme:"theme5",
+      post_txt:"眠い",
     },
     {
-      id:6,
-      text:"眠い",
+      id:"6",
+      user_name:"name6",
+      theme:"theme8",
+      post_txt:"眠い",
     },
     {
-      id:7,
-      text:"眠い",
+      id:"7",
+      user_name:"name7",
+      theme:"theme7",
+      post_txt:"眠い",
     },
     {
-      id:8,
-      text:"眠い",
+      id:"8",
+      user_name:"name8",
+      theme:"theme8",
+      post_txt:"眠い",
     },
-    {
-      id:9,
-      text:"眠い",
-    },
-    {
-      id:10,
-      text:"眠い",
-    },
-    {
-      id:11,
-      text:"眠い",
-    },
-    {
-      id:12,
-      text:"眠い",
-    },
-    {
-      id:13,
-      text:"眠い",
-    },
-    {
-      id:14,
-      text:"眠い",
-    },
+
   ])
 
 const test_data2 =[
   {
-    id:1,
-    text:"疲れた！",
+    id:"8",
+    user_name:"name8",
+    theme:"theme8",
+    post_txt:"疲れた",
   },
 ]
 
@@ -168,17 +166,91 @@ const onRefresh = () => {
   // 仮のデータフェッチをシミュレート
   setTimeout(() => {
     // 新しいデータをセット
-    settest_data([
-      { id: 1, text: 'New Item 1' },
-      { id: 2, text: 'New Item 2' },
-      { id: 3, text: 'New Item 3' },
-      { id: 4, text: 'New Item 4' }, // 新しいアイテムを追加
-    ]);
+    postView_groupAPI({user_id:String(userIdglobal)});
+    postView_allAPI();
+    // settest_data([
+    //   {
+    //     id:"1",
+    //     user_name:"name1",
+    //     theme:"new1",
+    //     post_txt:"眠い",
+    //   },
+    //   {
+    //     id:"2",
+    //     user_name:"name2",
+    //     theme:"new2",
+    //     post_txt:"眠い",
+    //   },
+    //   {
+    //     id:"3",
+    //     user_name:"name3",
+    //     theme:"new3",
+    //     post_txt:"眠い",
+    //   },
+    //   {
+    //     id:"4",
+    //     user_name:"name4",
+    //     theme:"new4",
+    //     post_txt:"眠い",
+    //   }, // 新しいアイテムを追加
+    // ]);
 
     // データのリフレッシュ完了
     setRefreshing(false);
   }, 1000); // 2秒後に再読み込みが完了するシミュレーション
 };
+
+
+const [loginapiResult, setloginApiResult] = useState<GET_USERNAME | undefined>(undefined); // API結果のステート
+const loginAPI = async (param:postData) => {
+  try {
+    // test関数を非同期で呼び出し、結果を取得
+    const buf: GET_USERNAME | undefined = await get_userName(param);
+    setloginApiResult(buf);
+    // 結果をステートにセット
+    //setApiResult(buf);
+  } catch (error) {
+    console.error('エラーが発生しました:', error);
+  }
+};
+useEffect(() => {
+  loginAPI({user_id:String(userIdglobal)});
+},[])
+
+const [postView_groupapiResult, setpostView_groupApiResult] = useState<POSTVIEW_GROUP[] | undefined>(undefined); // API結果のステート
+const postView_groupAPI = async (param:postData) => {
+  try {
+    // test関数を非同期で呼び出し、結果を取得
+    const buf: POSTVIEW_GROUP[] | undefined = await postView_group(param);
+    setpostView_groupApiResult(buf);
+    // 結果をステートにセット
+    //setApiResult(buf);
+  } catch (error) {
+    console.error('エラーが発生しました:', error);
+  }
+};
+useEffect(() => {
+  postView_groupAPI({user_id:String(userIdglobal)});
+},[])
+
+const [postView_allapiResult, setpostView_allApiResult] = useState<POSTVIEW_ALL[] | undefined>(undefined); // API結果のステート
+const postView_allAPI = async () => {
+  try {
+    // test関数を非同期で呼び出し、結果を取得
+    const buf: POSTVIEW_ALL[] | undefined = await postView_all();
+    setpostView_allApiResult(buf);
+    // 結果をステートにセット
+    //setApiResult(buf);
+  } catch (error) {
+    console.error('エラーが発生しました:', error);
+  }
+};
+useEffect(() => {
+  postView_allAPI();
+},[])
+
+
+
 
 
   return (
@@ -243,8 +315,8 @@ const onRefresh = () => {
           <View style={{flex: 0.8,}}>
             <FlatList
               style={{flex:1,marginTop:"5%"}}
-              data={(selectTabColor===true)?test_data:test_data2}
-              renderItem={({ item }) => <TestListComp id={item.id} text={item.text} />}
+              data={(selectTabColor===true)?postView_allapiResult:postView_groupapiResult}
+              renderItem={({ item }) => <TestListComp user_name={item.user_name} post_txt={item.post_txt} theme={item.theme}/>}
               keyExtractor={(item) => item.id.toString()}
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
@@ -356,7 +428,7 @@ const onRefresh = () => {
               }}
             >
               <Text style={{ fontSize: 25, textAlign: "center" }}>
-                ユーザー名
+                {loginapiResult?.user_name}
               </Text>
             </View>
           </View>

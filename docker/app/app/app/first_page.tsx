@@ -57,7 +57,7 @@ export default function First_page() {
           </View>
           <View style={{flex: 0.15,}}>
             {/* Linkに置き換え */}
-            <TouchableOpacity onPress={() => {test({user_id:"testtest"}),router.push({pathname:"/account_two", params:{mode:"Sign Up"}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal:"5%"}}>
+            <TouchableOpacity onPress={() => {router.push({pathname:"/account_two", params:{mode:"Sign Up"}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal:"5%"}}>
               <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                 Sign up
               </Text>

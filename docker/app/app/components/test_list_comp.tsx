@@ -8,8 +8,9 @@ import {
 } from "react-native";
 
 interface TestListCompProps{
-  id:number;
-  text:string;
+  user_name:string,
+  theme:string,
+  post_txt:string,
 }
 
 
@@ -19,10 +20,13 @@ export default function TestListComp(TestData:TestListCompProps) {
   return (
       <View style={styles.container}>
         <Text style={styles.text}>
-          {TestData.id}
+          {TestData.theme}
         </Text>
         <Text style={styles.text}>
-          {TestData.text}
+          {TestData.user_name}
+        </Text>
+        <Text style={styles.text}>
+          {TestData.post_txt}
         </Text>
       </View>
     );
