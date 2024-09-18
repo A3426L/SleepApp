@@ -1,7 +1,7 @@
 from flask import Flask , jsonify , request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import text , or_
+from sqlalchemy import text , or_ , Table, Column, Integer, String, MetaData
 from flask_cors import CORS
 
 from datetime import datetime as dt
@@ -73,6 +73,31 @@ def check_db():
 @app.route('/api/data', methods=['GET'])
 def get_data():
     return jsonify({"message": "Hello from Flask!", "user_id": 1})
+
+
+metadata = MetaData()
+
+@app.route('/create_table')
+def create_table():
+    try:
+        table_name = "tabletest"
+
+        # 動的にテーブルを作成
+        new_table = Table(
+            table_name, 
+            metadata,
+            Column('id', Integer, primary_key=True),
+            Column('name', String(50)),
+            Column('email', String(100))
+        )
+
+        # テーブル作成
+        metadata.create_all(db.engine)
+
+        return jsonify({"message": f"Table {table_name} created successfully."}), 200
+
+    except Exception as e:
+        return jsonify({"message": f"Failed to create table: {str(e)}"}), 500
 
 ######################################################
 
