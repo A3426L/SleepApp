@@ -65,27 +65,6 @@ def add_user_test():
         db.session.commit()
     return "Add data succusess."
 
-# @app.route('/add-chat-test', methods=['GET'])
-# def add_chat_test():
-#     user_id = "abc123"
-#     message = "Hello"
-#     new_chat= Message( user_id=user_id, message = message)
-#     with app.app_context():
-#         db.session.add(new_chat)
-#         db.session.commit()
-#     return "Add data succusess."
-
-@app.route('/add-room-test',methods=['GET'])
-def add_room_test():
-     user_id = "abc123"
-     chat_time = datetime.strftime("%H:%M:%S",datetime.now())
-     finish_time = chat_time + timedelta(minutes=10)
-     new_room = Room(user_id1=user_id,time=chat_time,finishtime=finish_time)
-     with app.app_context():
-         db.session.add(new_room)
-         db.session.commit()
-     return "Add data succusess."
-
 @app.route('/check-db')
 def check_db():
     try:
@@ -101,25 +80,6 @@ def check_db():
 def get_data():
     return jsonify({"message": "Hello from Flask!", "user_id": 1})
 
-#チャットメッセージ
-@app.route('/chat',methods=['POST'])
-def chat():
-     #送信データからルームを取得
-     current_user_id = 
-     current_messages = 
-    
-     return jsonify({'messages':current_messages, 'user_id':current_user_id})
-
-#ユーザーがメッセージを送信した時の処理
-@app.route('/send_message',methods=['POST'])
-def send_message():
-          message_content = request.form.get('messages')
-          user_id_content = request.form.get('user_id')
-
-          #メッセージを保存
-          message = Message(user_id=user_id_content,message=message_content)
-          db.session.add(message)
-          db.session.commit()
 
 
 if __name__ == "__main__":

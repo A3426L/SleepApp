@@ -33,7 +33,23 @@ def send_message():
           
           return jsonify({'flag':'true'})
 
+@app.route('/theme_first',methods=['POST'])
+def theme_first():
+       theme0 = request.form.get('theme')
 
+       theme = Room(theme=theme0)
+       db.session.add(theme)
+       db.session.commit()
+
+       return jsonify({'flag':'true'})
+
+@app.route('/theme',methods=['POST'])
+def theme():
+       user_id = request.form('user_id')
+
+       room = Room(user_id=user_id)
+       
+       return jsonify({'thme':Room.theme})
 
 if __name__ == "__main__":
      
