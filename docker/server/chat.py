@@ -47,7 +47,7 @@ def theme_first():
 def theme():
        user_id = request.form('user_id')
 
-       room = Room.query.filter_by(user_id=user_id).all()
+       room = Room.query.filter(user_id=user_id).all()
        
        return jsonify({'theme':room.theme})
 
