@@ -9,12 +9,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #ログイン
 @app.route('/login',methods=['POST'])
 def login():
-     user_id = request.form.get('user_id')
-     password = request.form.get('userpass')
+     login_data = request.get_json()
+     get_user_id = login_data['user_id']
+     password = login_data['user_pass']
 
-     user = user.query.filter(user.user_id==user_id).first()
+     user = user.query.filter(user_id==get_user_id).first()
      #ユーザidとパスを確認
-     if user and check_password_hash(user.userpass,password):
+     if user and check_password_hash(user.password,password):
         
         return jsonify({'flag':'true'})
         
@@ -36,8 +37,8 @@ def signup():
           return jsonify({'flag':'false'})
      else:
           #パスワードをハッシュ化
-          hash_password = generate_password_hash(password,method='pbkdf2:sha256',salt_length=16)
-          new_user = user(user_name=name,user_id=user_id,password=hash_password)
+          hash_password = generate_password_hash(password1,method='pbkdf2:sha256',salt_length=16)
+          new_user = user(user_name=name,user_id=user_id1,password=hash_password)
           db.session.add(new_user)
           db.session.commit()
 
