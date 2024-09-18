@@ -173,13 +173,15 @@ def add_room(room_name, user_id0,user_id1=None, user_id2=None, user_id3=None, us
 def edit_room(user_id, room_name, number):
     room = Room.query.filter_by(room_name=room_name).first()
     if room:
-        if number == 1:
+        if room.user_id0 is None:
+            room.user_id0 = user_id
+        elif room.user_id1 is None:
             room.user_id1 = user_id
-        elif number == 2:
+        elif room.user_id2 is None:
             room.user_id2 = user_id
-        elif number == 3:
+        elif room.user_id3 is None:
             room.user_id3 = user_id
-        elif number == 4:
+        elif room.user_id4 is None:
             room.user_id4 = user_id
         db.session.commit()
 
@@ -272,9 +274,6 @@ def matching():
     
     # マッチングがまだ完了していない場合
     return jsonify({"flag": "false"})
-
-
-
 
 
 @app.route('/chat_start', methods=['POST'])
