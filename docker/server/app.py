@@ -135,10 +135,18 @@ def create_table(bind_key, table_name):#message専用
         return jsonify({"message": f"Failed to create table: {str(e)}"}), 500
 
 def get_rooms_with_number_leq_4():
-    rooms = Matching_info.query.filter(Matching_info.number <= 4).first()
-    if rooms:
-        return rooms.room_name, rooms.number
-    return None, None
+    rooms = Matching_info.query.filter(Matching_info.number <= 4).all()
+    return rooms
+
+def create_new_room(user_id):
+    datetime = dt.now()
+    strdatetime = format_datetime_to_string(datetime)
+    add_matching(strdatetime, 1)  # 作成者は1固定
+    add_room(strdatetime, user_id, None, None, None, None, None, None, None)
+    bind_key = request.args.get('bind_key', 'message_db')
+    create_table(bind_key, strdatetime)
+    return jsonify({"flag": "true"})
+
 
 def increment_room_number(room_name):
     room = Matching_info.query.filter_by(room_name=room_name).first()
@@ -162,7 +170,7 @@ def add_room(room_name, user_id0,user_id1=None, user_id2=None, user_id3=None, us
         db.session.commit()
     return "Room added successfully."
 
-def eddit_room(user_id, room_name, number):
+def edit_room(user_id, room_name, number):
     room = Room.query.filter_by(room_name=room_name).first()
     if room:
         if number == 1:
@@ -206,40 +214,32 @@ def create_db():
 #     return copy_record(room_name)
 
 
-
-@app.route('/matching_start',methods=['POST'])
+@app.route('/matching_start', methods=['POST'])
 def matching_start():
-
     data = request.get_json()
-    if data:
-        user_id = data['user_id']
-    else:
-        #return "Send it properly, you stupid fxxk you!"
+    if not data or 'user_id' not in data:
         return jsonify({"flag": "false"})
     
-    #room の すべてのレコードの中を検索し送信されてきたuser_idと同じuser_id0が見つかったとき
-    #そのレコードのroom_nameを取得しroom_nameを使用してそのレコードを削除する。
+    user_id = data['user_id']
+    
     existing_room = Room.query.filter_by(user_id0=user_id).first()
     if existing_room:
         room_name_to_delete = existing_room.room_name
         Room.query.filter_by(room_name=room_name_to_delete).delete()
         db.session.commit()
     
-    result = is_matching_db_empty()
-
-    if result:
-        datetime = dt.now()
-        strdatatime = format_datetime_to_string(datetime)
-        add_matching(strdatatime, 1)  # 作成者は1固定
-        add_room(strdatatime, user_id, None, None, None, None, None, None, None)
-        bind_key = request.args.get('bind_key', 'message_db')
-        create_table(bind_key, strdatatime)
-        return jsonify({"flag": "true"})
-    else:
-        room_name, number = get_rooms_with_number_leq_4()
-        increment_room_number(room_name)
-        eddit_room(user_id, room_name, number)
-        return jsonify({"flag": "true"})
+    if is_matching_db_empty():
+        return create_new_room(user_id)
+    
+    rooms = get_rooms_with_number_leq_4()
+    if not rooms:
+        return create_new_room(user_id)
+    
+    # 4以下のnumberを持つroomが存在する場合
+    room = rooms[0]  # 最初の適切なroomを選択
+    increment_room_number(room.room_name)
+    edit_room(user_id, room.room_name, room.number)
+    return jsonify({"flag": "true"})
 
 
 @app.route('/matching', methods=['POST'])
