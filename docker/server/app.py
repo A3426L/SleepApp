@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import text 
 from flask_cors import CORS
-from datetime import datetime,timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
@@ -22,8 +22,12 @@ class User2(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
+class user(db.Model):
+    user_name = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
     #メッセージモデル
-class Message(db.Model):
+class message(db.Model):
      id = db.Column(db.Integer,primary_key=True)
      user_id = db.Column(db.String(15),nullable=False)  
      message = db.Column(db.String(100),nullable=False)
@@ -31,11 +35,11 @@ class Message(db.Model):
 #各ルームモデル
 class Room(db.Model):
      id = db.Column(db.Integer,primary_key=True)
-     user_id1 = db.Column(db.String(10),nullable=False)     #名前
-     user_id2 = db.Column(db.String(10),nullable=False)
-     user_id3 = db.Column(db.String(10),nullable=False)
-     user_id4 = db.Column(db.String(10),nullable=False)
-     user_id5 = db.Column(db.String(10),nullable=False)
+     user_id1 = db.Column(db.String(10),nullable=True)     #名前
+     user_id2 = db.Column(db.String(10),nullable=True)
+     user_id3 = db.Column(db.String(10),nullable=True)
+     user_id4 = db.Column(db.String(10),nullable=True)
+     user_id5 = db.Column(db.String(10),nullable=True)
      time = db.Column(db.DateTime,nullabl=False)
      finishtime = db.Column(db.DateTime,nullabl=False)
      theme = db.Column(db.String(20),nullable=False)         
