@@ -3,9 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import text , or_ , Table, Column, Integer, String, MetaData
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime as dt
-
 
 from datetime import datetime as dt
 
@@ -28,7 +25,6 @@ class User(db.Model):
 class User2(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-      
 
 @app.route('/')
 def hello():
@@ -40,10 +36,10 @@ def create_db():
     with app.app_context():
         db.create_all()
         return "Database tables created."
-#お試し用
+
 @app.route('/add-user-test', methods=['GET'])
 def add_user_test():
-    id = "4"
+    id = "2"
     name = "ううう"
     new_user = User(id=id, name=name)
     with app.app_context():
@@ -240,8 +236,3 @@ if __name__ == "__main__":
      
      app.run(debug=True)
      #create_db()
-
-
-
-
-     
