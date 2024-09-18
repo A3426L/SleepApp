@@ -9,6 +9,10 @@ import React, { useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
 import DigitalClock from "@/components/ DigitalClock";
 
+//////////////////////////////
+import {test} from "@/components/ApiFunc";
+
+/////////////////////////////////////
 
 export default function First_page() {
   const router = useRouter();
@@ -53,7 +57,7 @@ export default function First_page() {
           </View>
           <View style={{flex: 0.15,}}>
             {/* Linkに置き換え */}
-            <TouchableOpacity onPress={() => {router.push({pathname:"/account_two", params:{mode:"Sign Up"}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal:"5%"}}>
+            <TouchableOpacity onPress={() => {test({user_id:"testtest"}),router.push({pathname:"/account_two", params:{mode:"Sign Up"}});}} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:20, justifyContent:"center", marginHorizontal:"5%"}}>
               <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                 Sign up
               </Text>
