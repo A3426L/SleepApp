@@ -12,7 +12,7 @@ def login():
      user_id = request.form.get('user_id')
      password = request.form.get('userpass')
 
-     user = user.query.filter(user.user_id==user_id).first()
+     user = user.query.filter_by(user.user_id==user_id).first()
      #ユーザidとパスを確認
      if user and check_password_hash(user.userpass,password):
         
@@ -42,6 +42,6 @@ def signup():
 def get_userName():
      id = request.form.get('user_id')
 
-     name = user.query.filter(user.user_id==id)
+     name = user.query.filter_by(user.user_id==id).all()
 
      return jsonify({'user_name':name.user_id})

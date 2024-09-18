@@ -14,7 +14,7 @@ def chat():
 
      
      #メッセージ
-     current_message = message.query.filter(message.id > get_id,message.user_id==get_user_id).all()
+     current_message = message.query.filter_by(message.id > get_id,message.user_id==get_user_id).all()
      current_name = user.query(user.user_name)
 
     
