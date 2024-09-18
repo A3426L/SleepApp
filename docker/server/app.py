@@ -102,7 +102,7 @@ def chat():
        return jsonify({
                  'id':current_message.id,
                  'messages':current_message.message,
-                 'user_id':current_message.user_id,
+                 'user_id':current_message.user_id',
                  'name':current_name
         })
 
