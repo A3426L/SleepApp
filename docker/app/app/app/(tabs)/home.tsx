@@ -26,6 +26,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { TouchableOpacity } from "react-native";
 import { useFocusEffect } from "expo-router";
+import { get_userName, GET_USERNAME ,postData} from "@/components/ApiFunc";
 
 export default function Test_tabs() {
   const { userIdglobal, setUserIdglobal } = useGlobalContext();
@@ -82,6 +83,21 @@ export default function Test_tabs() {
     const { width, height } = event.nativeEvent.layout;
     setDimensions_4({ width, height });
   };
+  const [apiResult, setApiResult] = useState<GET_USERNAME | undefined>(undefined); // API結果のステート
+  const loginAPI = async (param:postData) => {
+    try {
+      // test関数を非同期で呼び出し、結果を取得
+      const buf: GET_USERNAME | undefined = await get_userName(param);
+      setApiResult(buf);
+      // 結果をステートにセット
+      //setApiResult(buf);
+    } catch (error) {
+      console.error('エラーが発生しました:', error);
+    }
+  };
+  useEffect(() => {
+    loginAPI({user_id:String(userIdglobal)});
+  },[])
 
   return (
     <View style={styles.container}>
@@ -204,7 +220,7 @@ export default function Test_tabs() {
               }}
             >
               <Text style={{ fontSize: 25, textAlign: "center" }}>
-                ユーザー名
+                {apiResult?.user_name}
               </Text>
             </View>
           </View>
@@ -359,3 +375,154 @@ const styles = StyleSheet.create({
 //     justifyContent: "center",
 //   },
 // });
+
+
+
+
+
+
+
+
+
+
+/*
+    
+###########################################################################################################################################
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
+       "flag":"true"
+    },
+
+) 
+    else:
+        return jsonify({"error": "user_id not provided"}), 400
+    
+    
+    
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
+       "flag":"true"
+    },
+
+) 
+    else:
+        return jsonify({"error": "user_id not provided"}), 400
+    
+@app.route('/get_userName', methods=['POST'])
+def get_userName():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
+       "user_name":"sample"
+    },
+
+) 
+    else:
+        return jsonify({"error": "user_id not provided"}), 400
+@app.route('/postView_group', methods=['POST'])
+def postView_group():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    [{
+        "id":"8",
+        "user_name":"name8",
+        "theme":"theme8",
+        "post_txt":"疲れた",
+    },
+]
+
+) 
+    else:
+        return jsonify({"error": "user_id not provided"}), 400
+    
+    
+@app.route('/postView_all', methods=['GET'])
+def postView_all():
+    return jsonify(
+ [
+    {
+      "id":"1",
+      "user_name":"name1",
+      "theme":"theme1",
+      "post_txt":"眠い",
+    },
+    {
+      "id":"2",
+      "user_name":"name2",
+      "theme":"theme2",
+      "post_txt":"眠い",
+    },
+    {
+      "id":"3",
+      "user_name":"name3",
+      "theme":"theme3",
+      "post_txt":"眠い",
+    },
+    {
+      "id":"4",
+      "user_name":"name4",
+      "theme":"theme4",
+      "post_txt":"眠い",
+    },
+    {
+      "id":"5",
+      "user_name":"name5",
+      "theme":"theme5",
+      "post_txt":"眠い",
+    },
+    {
+      "id":"6",
+      "user_name":"name6",
+      "theme":"theme8",
+      "post_txt":"眠い",
+    },
+    {
+      "id":"7",
+      "user_name":"name7",
+      "theme":"theme7",
+      "post_txt":"眠い",
+    },
+    {
+      "id":"8",
+      "user_name":"name8",
+      "theme":"theme8",
+      "post_txt":"眠い",
+    },
+
+  ]
+
+) 
+    
+@app.route('/movePost', methods=['POST'])
+def movePost():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
+       "theme":"sample"
+    },
+
+) 
+        
+@app.route('/post', methods=['POST'])
+def post():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
+        "flag":"true" 
+    },
+
+) 
+###########################################################################################################################################
+*/

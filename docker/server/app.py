@@ -29,6 +29,27 @@ def check_db():
     except Exception as e:
         return str(e), 500
     
+@app.route('/testpost', methods=['POST'])
+def testpost():
+    data = request.get_json()
+    if 'user_id' in data:
+        return jsonify({"postView_group":[
+    {
+        "id" : "1",
+        "user_name": "sample",
+        "theme":   "sample",
+        "post_txt": "sample"
+    },
+    {
+        "id" : "2",
+        "user_name": "sample2",
+        "theme":   "sample2",
+        "post_txt": "sample2"
+    }
+]}) 
+    else:
+        return jsonify({"error": "user_id not provided"}), 400
+    
 @app.route('/api/data', methods=['GET'])
 def get_data():
     return jsonify({

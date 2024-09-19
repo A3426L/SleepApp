@@ -9,17 +9,21 @@ import React, { useEffect, useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
 import DigitalClock from "@/components/ DigitalClock";
 import { useRef } from "react";
+import { movePost, MOVEPOST ,postData} from "@/components/ApiFunc";
+import { post, POST } from "@/components/ApiFunc";
+import { useGlobalContext } from "./GlobalContext";
 
 export default function First_page() {
   const router = useRouter();
   const home_image = require("@/assets/images/sheep_image.png");
+  const { userIdglobal, setUserIdglobal } = useGlobalContext();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const handleLayout = (event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
     setDimensions({ width, height });
   };
   const inputRef = useRef<TextInput>(null);
-
+  const [value, setvalue] = useState("");
   useEffect(() => {
     // 画面が表示されたときにTextInputにフォーカスを当てる
 
@@ -28,6 +32,36 @@ export default function First_page() {
       }
 
   },[]);
+
+  const [movePostapiResult, setmovePostApiResult] = useState<MOVEPOST | undefined>(undefined); // API結果のステート
+  const movePostAPI = async (param:postData) => {
+    try {
+      // test関数を非同期で呼び出し、結果を取得
+      const buf: MOVEPOST | undefined = await movePost(param);
+      setmovePostApiResult(buf);
+      // 結果をステートにセット
+      //setApiResult(buf);
+    } catch (error) {
+      console.error('エラーが発生しました:', error);
+    }
+  };
+  useEffect(() => {
+    movePostAPI({user_id:String(userIdglobal)});
+  },[])
+
+  const [postapiResult, setpostApiResult] = useState<POST | undefined>(undefined); // API結果のステート
+  const postAPI = async (param:postData) => {
+    try {
+      // test関数を非同期で呼び出し、結果を取得
+      const buf: POST | undefined = await post(param);
+      setpostApiResult(buf);
+      // 結果をステートにセット
+      //setApiResult(buf);
+    } catch (error) {
+      console.error('エラーが発生しました:', error);
+    }
+  };
+
 
   return (
     <SafeAreaView style = {{flex:1,borderTopLeftRadius:30,borderTopRightRadius:30,backgroundColor:"#dde0f7"}}>
@@ -50,7 +84,7 @@ export default function First_page() {
 
             </View>
             <View style={{flex:0.3,justifyContent:"center"}}>
-              <TouchableOpacity style={{flex:1,backgroundColor: '#4b58c8',marginVertical:25,marginHorizontal:10,borderRadius:15,justifyContent:"center",minHeight:50}} onPress={()=>{router.navigate("/test_tabs")}}>
+              <TouchableOpacity style={{flex:1,backgroundColor: '#4b58c8',marginVertical:25,marginHorizontal:10,borderRadius:15,justifyContent:"center",minHeight:50}} onPress={()=>{postAPI({user_id:String(userIdglobal),post_txt:value}),router.navigate("/test_tabs")}}>
                 <Text style={{color:"white",textAlign:"center",fontSize:20,}}>
                   POST
                 </Text>
@@ -69,7 +103,7 @@ export default function First_page() {
 
 
           <View style={styles.inner}>
-            <TextInput ref={inputRef} placeholder="テーマ名を薄く入れる" style={styles.textInput} multiline={true} maxLength={100}/*value={value} */ /*onChangeText={handleTextChange}*//>
+            <TextInput ref={inputRef} placeholder={movePostapiResult?.theme} style={styles.textInput} multiline={true} maxLength={100} value={value} onChangeText={setvalue}/>
             {/* <View style={{flex:0.1, backgroundColor:"gray"}}></View> */}
           </View>
 

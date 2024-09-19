@@ -9,6 +9,10 @@ import React, { useState } from "react";
 import TabsHeaderIcon from "@/components/TabsHeaderIcon";
 import DigitalClock from "@/components/ DigitalClock";
 
+//////////////////////////////
+import {test} from "@/components/ApiFunc";
+
+/////////////////////////////////////
 
 export default function First_page() {
   const router = useRouter();
