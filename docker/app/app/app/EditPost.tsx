@@ -61,6 +61,10 @@ export default function First_page() {
       console.error('エラーが発生しました:', error);
     }
   };
+  
+  useEffect(() => {
+    (postapiResult?.flag==="true")?router.navigate("/test_tabs"):(postapiResult?.flag==="false")?Alert.alert("まずは夢を見ましょう"):{}
+  },[postapiResult]);
 
 
   return (
@@ -84,7 +88,7 @@ export default function First_page() {
 
             </View>
             <View style={{flex:0.3,justifyContent:"center"}}>
-              <TouchableOpacity style={{flex:1,backgroundColor: '#4b58c8',marginVertical:25,marginHorizontal:10,borderRadius:15,justifyContent:"center",minHeight:50}} onPress={()=>{postAPI({user_id:String(userIdglobal),post_txt:value}),router.navigate("/test_tabs")}}>
+              <TouchableOpacity style={{flex:1,backgroundColor: '#4b58c8',marginVertical:25,marginHorizontal:10,borderRadius:15,justifyContent:"center",minHeight:50}} onPress={()=>{postAPI({user_id:String(userIdglobal),post_txt:value})}}>
                 <Text style={{color:"white",textAlign:"center",fontSize:20,}}>
                   POST
                 </Text>
