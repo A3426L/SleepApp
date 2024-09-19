@@ -25,8 +25,8 @@ class User2(db.Model):
     name = db.Column(db.String(50), nullable=False)
 
 class user(db.Model):
-    user_name = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(20), nullable=False)
+    user_id = db.Column(db.String(20), primary_key=True)
+    user_name = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(20), nullable=False)
 #     #メッセージモデル
 class message(db.Model):
@@ -103,7 +103,7 @@ def chat():
         current_name = user.query(user.user_name)
 
         return jsonify({
-            'id':current_message.id,
+            'usersid':current_message.id,
             'messages':current_message.message,
             'user_id':current_message.user_id,
             'name':current_name
