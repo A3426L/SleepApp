@@ -26,7 +26,7 @@ export const App: React.FC = () => {
     // メッセージを取得する関数
     const fetchMessages = async () => {
       try {
-        const response = await axios.post('http://172.16.42.21/api/chat', {
+        const response = await axios.post('http://10.225.174.32/api/chat', {
             // 必要に応じて送信するデータをここに追加
             user_id: userIdglobal, // 例としてユーザーIDを送信する
             id: newMsgId
@@ -38,7 +38,7 @@ export const App: React.FC = () => {
         }
     
         // メッセージを逆順に並び替える
-        const reversedMessages = response.data.reverse();
+        const reversedMessages = response.data.messages.reverse();
         const fetchedMessages = reversedMessages.map((msg: any) => {
             // userIdglobalとmsg.user_idが同じかどうかをチェック
             const isUserMessage = userIdglobal === msg.user_id;
@@ -87,7 +87,7 @@ export const App: React.FC = () => {
     // コンポーネントがマウントされた際にPOSTリクエストを送信
   // const checkLeader = async () => {
   //   try {
-  //     const response = await axios.post('http://172.16.42.21/api/leader', {
+  //     const response = await axios.post('http://10.225.174.32/api/leader', {
   //       value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
   //     });
   //     // レスポンスデータを確認して編集可能状態を設定
@@ -117,7 +117,7 @@ export const App: React.FC = () => {
       user: userIdglobal
     }));
   
-    axios.post('http://172.16.42.21/api/get_message', 
+    axios.post('http://10.225.174.32/api/get_message', 
       { 
         id:  msg,
         user_id: userIdglobal
@@ -194,7 +194,7 @@ export const App: React.FC = () => {
   const handleBlur = async () => {
     if (title.trim() !== '') {
       try {
-        const response = await axios.post('http://172.16.42.21/api/change_theme', {
+        const response = await axios.post('http://10.225.174.32/api/change_theme', {
           theme_txt: title,
           user_id: userIdglobal
         });
@@ -237,12 +237,12 @@ export const App: React.FC = () => {
 
     const fetchDataAndStartProgress = async () => {
       try {
-        const response = await axios.post('http://172.16.42.21/chat_start',{
+        const response = await axios.post('http://10.225.174.32/chat_start',{
           user_id: userIdglobal,
         });
         const now = new Date().getTime();
-        const start = new Date(ChangeDate(response.data.startTime)).getTime();
-        const end = new Date(ChangeDate(response.data.endTime)).getTime();
+        const start = new Date(ChangeDate(response.data.start_time)).getTime();
+        const end = new Date(ChangeDate(response.data.end_time)).getTime();
         console.log("aaaaaaaaaaa",end);
         //リーダーかの判断
         if (response.data.user_id0 === "1") {
@@ -290,7 +290,7 @@ export const App: React.FC = () => {
 
 
   const test = () => {
-    // axios.post('http://172.16.42.21/randam_theme',{
+    // axios.post('http://10.225.174.32/randam_theme',{
     //   user_id: userIdglobal,
     // })
     //   .then(random_theme => {
