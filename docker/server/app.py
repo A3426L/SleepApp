@@ -482,12 +482,14 @@ def chat():
         user_db = User.query.get(message_db_user_id)
         user_db_user_name = user_db.user_name if user_db else None
 
-        return jsonify({
+        return jsonify({"msgs":[
+            {
             'id': message_db_id,
             'messages': message_db_message,
             'user_id': message_db_user_id,
             'name': user_db_user_name
-        })
+            }
+        ]})
     else:
         return jsonify({'flag': 'false'})
     
@@ -516,7 +518,8 @@ def change_theme():
        theme0 = get_theme['theme_txt']
        theme_id = get_theme['user_id']
 
-       room = Room.query.filter_by(user_id0=theme_id).first()
+       room = Room.query.filter_by(
+           user_id0=theme_id).first()
        
        room.theme = theme0
        db.session.commit()
@@ -530,11 +533,20 @@ def change_theme():
 def post_theme():
     try:
        post_theme = request.get_json()
-       user_id0 = post_theme['user_id']
+       user_id = post_theme['user_id']
 
-       room = Room.query.filter(user_id=user_id0).all()
+       room = Room.query.filter(
+           or_(
+               user_id0 = user_id,
+               user_id1 = user_id,
+               user_id2 = user_id,
+               user_id3 = user_id,
+               user_id4 = user_id
+            )
+        ).first()
+       get_theme = room.theme
        
-       return jsonify({'theme':room.theme})
+       return jsonify({'theme':get_theme})
     except Exception:
         return jsonify({'flag':'false'}),500
     
