@@ -482,14 +482,14 @@ def chat():
         user_db = User.query.get(message_db_user_id)
         user_db_user_name = user_db.user_name if user_db else None
 
-        return jsonify({"msgs":[
+        return jsonify([
             {
             'id': message_db_id,
             'messages': message_db_message,
             'user_id': message_db_user_id,
             'name': user_db_user_name
             }
-        ]})
+        ])
     else:
         return jsonify({'flag': 'false'})
     
@@ -537,11 +537,11 @@ def post_theme():
 
        room = Room.query.filter(
            or_(
-               user_id0 = user_id,
-               user_id1 = user_id,
-               user_id2 = user_id,
-               user_id3 = user_id,
-               user_id4 = user_id
+               Room.user_id0 == user_id,
+               Room.user_id1 == user_id,
+               Room.user_id2 == user_id,
+               Room.user_id3 == user_id,
+               Room.user_id4 == user_id
             )
         ).first()
        get_theme = room.theme
