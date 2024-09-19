@@ -6,7 +6,7 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime as dt
 
-
+# -*- coding: utf-8 -*-
 
 app = Flask(__name__)
 CORS(app) 
@@ -85,55 +85,48 @@ def get_data():
 
 @app.route('/api/chat',methods=['POST'])
 def chat():
-    try:
-        get_chat = request.get_json()
-        get_id = get_chat['id']
-        get_user_id = get_chat['user_id']
+    get_chat = request.get_json()
+    if not get_chat:
+            return jsonify({'flag': 'false', 'error': 'No JSON data found'})
 
-        if get_id and get_user_id:
-        #メッセージ
-            current_message = message.query.filter(
-                and_(
-                    message.id > get_id,
-                    message.user_id==get_user_id
-                )
-            ).all()
-            current_name = user.query(user.user_name)
-    
-            return jsonify({
-                'id':current_message.id,
-                'messages':current_message.message,
-                'user_id':current_message.user_id,
-                'name':current_name
-            })
-        else:  
-            return jsonify({'flag':'false'})
-        
-    except Exception:
-        return jsonify({'flag':'false'}),500
+    get_id = get_chat['id']
+    get_user_id = get_chat['user_id']
 
+    #メッセージ
+    current_message = message.query.filter_by(
+        and_(
+            message.id > get_id,
+            message.user_id==get_user_id
+        )
+    ).all()
+    current_name = user.query(user.user_name)
 
-
+    return jsonify({
+        'id':current_message,
+        'messages':current_message,
+        'user_id':current_message,
+        'name':current_name
+    })
+    # else:  
+    #     return jsonify({'flag':'false'})
 
      
-#ユーザーがメッセージを送信した時の処理
+#ユーザーがメッセージを送信した時の処理Clear
 @app.route('/api/get_message',methods=['POST'])
 def get_message():
-    try:
-        send_message = request.get_json()
-        content_user_id = send_message['user_id']
-        content_message = send_message['messages']         
+    send_message = request.get_json()
+    content_user_id = send_message['user_id']
+    content_message = send_message['messages']         
 
-          #メッセージを保存
-        Message = message(user_id=content_user_id,message=content_message)
-        db.session.add(Message)
-        db.session.commit()
+    #メッセージを保存
+    Message = message(user_id=content_user_id,message=content_message)
+    db.session.add(Message)
+    db.session.commit()
           
-        return jsonify({'flag':'true'})
+    return jsonify({'flag':'true'})
     
-    except Exception:
-        return jsonify({'flag':'false'}),500
-
+    
+#Clear
 @app.route('/api/change_theme',methods=['POST'])
 def change_theme():
     try:
@@ -148,78 +141,68 @@ def change_theme():
     
     except Exception:
         return jsonify({'flag':'false'}),500
-
+#Clear
 @app.route('/api/post_theme',methods=['POST'])
 def post_theme():
     try:
        post_theme = request.get_json()
-       user_id0 = post_theme['user_id']
+       user_id_0 = post_theme['user_id']
 
-       room = Room.query.filter(user_id=user_id0).all()
+       room = Room.query.filter_by(user_id0=user_id_0).first()
        
        return jsonify({'theme':room.theme})
     except Exception:
         return jsonify({'flag':'false'}),500
 
-#ログイン
+#ログインClear
 @app.route('/login',methods=['POST'])
 def login():
-    try:
-        login_data = request.get_json()
+    
+    login_data = request.get_json()
+    if login_data:
         get_userid = login_data['user_id']
         get_password = login_data['user_pass']
 
-        users = user.query.filter_by(user_id=get_userid).all()
-        #  ユーザidとパスを確認
-        if users and check_password_hash(users.password==get_password):
-        
-            return jsonify({'flag':'true'})
-        
-        else:
-            return jsonify({'flag':'false'})
-        
-    except Exception:
-        return jsonify({'flag':'false'}),500
-
-       
+    users = user.query.filter_by(user_id=get_userid).all()
+    #  ユーザidとパスを確認
+    if users and check_password_hash(users.password==get_password):
+    
+        return jsonify({'flag':'true'})
+    
+    else:
+        return jsonify({'flag':'false'})     
 
 #アカウントの新規作成
 @app.route("/signup",methods=['POST'])
 def signup():
-    try:
-        signup_data = request.get_json()
-        signup_name = signup_data['user_name']
-        signup_user_id = signup_data['user_id']
-        signup_password = signup_data['password']
+    signup_data = request.get_json()
+    signup_name = signup_data['user_name']
+    signup_user_id = signup_data['user_id']
+    signup_password = signup_data['password']
 
-        catch_user_id = user.query.filter(user.user_id == signup_user_id)
-        catch_password = user.query.filter(user.password == signup_password)
-        if user.query(catch_user_id.exists()).scalar() and user.query(catch_password.exists()).scalar():
+    catch_user_id = user.query.filter_by(user_id = signup_user_id).first()
+    catch_password = user.query.filter_by(password = signup_password).first()
 
-          return jsonify({'flag':'false'})
-        else:
-          #パスワードをハッシュ化
-          hash_password = generate_password_hash(signup_password,method='pbkdf2:sha256',salt_length=16)
-          new_user = user(user_name=signup_name,user_id=signup_user_id,password=hash_password)
-          db.session.add(new_user)
-          db.session.commit()
+    if user.query(catch_user_id.exists()).scalar() and user.query(catch_password.exists()).scalar():
 
-          return jsonify({'flag':'true'})
-        
-    except Exception:
-        return jsonify({'flag':'false'}),500
+        return jsonify({'flag':'false'})
+    else:
+        new_user = user(user_name=signup_name,user_id=signup_user_id,password=signup_password)
+        db.session.add(new_user)
+        db.session.commit()
 
+        return jsonify({'flag':'true'})
 
-
+#Clear
 @app.route("/get_userName",methods=['POST'])
 def get_userName():
     try:
         get_user = request.get_json()
         id = get_user['user_id']
 
-        name = user.query.filter(user.user_id==id).all()
+        name = user.query.filter_by(user_id=id).first()
 
-        return jsonify({'user_name':name.user_id})
+        return jsonify({'user_name':name.user_name})
     
     except Exception:
         return jsonify({'flag':'false'}),500
