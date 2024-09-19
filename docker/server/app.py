@@ -194,7 +194,7 @@ def is_matching_db_empty():
 
 
 # --- ルート定義 ---
-
+### test #####
 @app.route('/')
 def hello():
      return "Hello World!"
@@ -203,6 +203,14 @@ def hello():
 # def create_table_endpoint(table_name):
 #     bind_key = request.args.get('bind_key', 'message_db')  # デフォルトで'message_db'を使用
 #     return create_table(bind_key, table_name)
+
+@app.route('/testpost', methods=['POST'])
+def testpost():
+    data = request.get_json() 
+    if 'user_id' in data:
+        return jsonify({"received_user_id": data['user_id']}) 
+    else:
+        return jsonify({"error": "user_id not provided"}), 400
 
 @app.route('/debug_createdb')
 def create_db():
@@ -215,6 +223,7 @@ def create_db():
 # def copy_record_route(room_name):
 #     return copy_record(room_name)
 
+###########
 
 @app.route('/matching_start', methods=['POST'])
 def matching_start():
@@ -316,6 +325,94 @@ def chat_start():
         })
     
     return jsonify({"flag": "false"})
+
+
+
+### Post機能
+
+# @app.route('/postView_group',methods=['POST'])
+# def postView_group():
+#     data = request.get_json()
+#     user_id = data['user_id']
+#     old_results = OldRoom.query.filter(
+#         or_(
+#             OldRoom.user_id0 == user_id,
+#             OldRoom.user_id1 == user_id,
+#             OldRoom.user_id2 == user_id,
+#             OldRoom.user_id3 == user_id,
+#             OldRoom.user_id4 == user_id
+#         )
+#      ).order_by(OldRoom.end_time.desc()).all()
+#     if old_results:
+#         latest_old = old_results[0]
+#         latest_room_name = latest_old.room_name,
+#     else:
+#         old_list = {}
+#     posts = Post.query.filter_by(room_name=latest_room_name).all()
+#     post_list = [
+#         {
+#             "id": post.id,
+#             "user_name": post.user_id,
+#             "theme": post.theme,
+#             "post_txt": post.post_txt
+#         }
+#         for post in posts
+#     ]
+#     return jsonify(post_list)
+
+@app.route('/postView_all')
+def postView_all():
+    posts = Post.query.limit(20).all()
+    post_list = [
+        {
+            "id": post.id,
+            "user_name": post.user_id,
+            "theme": post.theme,
+            "post_txt": post.post_txt
+        }
+        for post in posts
+    ]
+    return jsonify(post_list)
+
+# @app.route('/movePost',methods=['POST'])
+# def movePost():
+#     data = request.get_json()
+#     user_id = data['user_id']
+#     old_results = OldRoom.query.filter(
+#         or_(
+#             OldRoom.user_id0 == user_id,
+#             OldRoom.user_id1 == user_id,
+#             OldRoom.user_id2 == user_id,
+#             OldRoom.user_id3 == user_id,
+#             OldRoom.user_id4 == user_id
+#         )
+#     ).order_by(OldRoom.end_time.desc()).all()
+#     if old_results:
+#         latest_old = old_results[0]
+#         latest_room_name = latest_old.theme
+#     else:
+#         old_list = {}
+
+#     return latest_room_name
+
+# @app.route('/post',methods=['POST'])
+# def post():
+#     try:
+#         data = request.get_json()
+#         user_id = data['user_id']
+#         post_txt = data['post_txt']
+
+#         new_post = Post(user_id=user_id, post_txt=post_txt)
+#         db.session.add(new_post)
+#         db.session.commit()
+
+#         return jsonify({"flag":"true"})
+    
+#     except Exception:
+#         return jsonify({"flag":"false"}), 500
+    
+###
+
 
 if __name__ == "__main__":
     app.run(debug=True)
