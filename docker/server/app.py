@@ -87,26 +87,27 @@ def get_data():
 def chat():
     get_chat = request.get_json()
     if not get_chat:
-            return jsonify({'flag': 'false', 'error': 'No JSON data found'})
+        return jsonify({'flag': 'false', 'error': 'No JSON data found'})
+    
+    if get_chat:
+        get_id = get_chat['users_id']
+        get_user_id = get_chat['user_id']
 
-    get_id = get_chat['id']
-    get_user_id = get_chat['user_id']
-
-    #メッセージ
-    current_message = message.query.filter_by(
+        #メッセージ
+        current_message = message.query.filter_by(
         and_(
-            message.id > get_id,
-            message.user_id==get_user_id
+            id > get_id,
+            user_id=get_user_id
         )
-    ).all()
-    current_name = user.query(user.user_name)
+        ).all()
+        current_name = user.query(user.user_name)
 
-    return jsonify({
-        'id':current_message,
-        'messages':current_message,
-        'user_id':current_message,
-        'name':current_name
-    })
+        return jsonify({
+            'id':current_message.id,
+            'messages':current_message.message,
+            'user_id':current_message.user_id,
+            'name':current_name
+        })
     # else:  
     #     return jsonify({'flag':'false'})
 
@@ -181,9 +182,8 @@ def signup():
     signup_password = signup_data['password']
 
     catch_user_id = user.query.filter_by(user_id = signup_user_id).first()
-    catch_password = user.query.filter_by(password = signup_password).first()
 
-    if user.query(catch_user_id.exists()).scalar() and user.query(catch_password.exists()).scalar():
+    if user.query(catch_user_id.exists()).scalar() :
 
         return jsonify({'flag':'false'})
     else:
