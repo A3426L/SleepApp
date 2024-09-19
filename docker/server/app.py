@@ -73,26 +73,62 @@ def get_data():
     return jsonify({"message": "Hello from Flask!", "user_id": 1})
 
 
-@app.route('/api/chat',methods=['POST'])
+
+####################################################
+@app.route('/api/chat', methods=['POST'])##create - > tajima 
 def chat():
-    get_chat = request.get_json()   
-    
+    get_chat = request.get_json()
     get_id = get_chat['id']
     get_user_id = get_chat['user_id']
 
-    # #メッセージ
-    current_message = message.query.filter(message.id > get_id).first()
-    #current_name = user.query(user.user_name)
-
-    return jsonify({
-        'id':current_message.id,
-        'messages':current_message.message,
-        'user_id':current_message.user_id,
-        #'name':current_name
+    # 最新のメッセージIDを取得
+    latest_message = db.session.query(Message).order_by(Message.id.desc()).first()
+    
+    if latest_message and latest_message.id > get_id:
+        message_db_id = latest_message.id
+        message_db_user_id = latest_message.user_id
+        message_db_message = latest_message.message
+        
+        # メッセージのユーザーIDに基づいてユーザー名を取得
+        user = User.query.filter_by(user_id=message_db_user_id).first()
+        user_db_user_name = user.user_name if user else 'Unknown'
+        
+        return jsonify({
+            'id': message_db_id,
+            'messages': message_db_message,
+            'user_id': message_db_user_id,
+            'name': user_db_user_name
         })
 
-    return jsonify({'flag':'false'})
+    return jsonify({'flag': 'false'})
+
+###################################################
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    get_chat = request.get_json()
+    get_id = get_chat['id']
+    get_user_id = get_chat['user_id']
+
+    # 最新のメッセージIDを取得
+    latest_message = db.session.query(Message).order_by(Message.id.desc()).first()
     
+    if latest_message and latest_message.id > get_id:
+        message_db_id = latest_message.id
+        message_db_user_id = latest_message.user_id
+        message_db_message = latest_message.message
+        
+        # メッセージのユーザーIDに基づいてユーザー名を取得
+        user = User.query.filter_by(user_id=message_db_user_id).first()
+        user_db_user_name = user.user_name if user else 'Unknown'
+        
+        return jsonify({
+            'id': message_db_id,
+            'messages': message_db_message,
+            'user_id': message_db_user_id,
+            'name': user_db_user_name
+        })
+
+    return jsonify({'flag': 'false'})
      
 #ユーザーがメッセージを送信した時の処理Clear
 @app.route('/api/get_message',methods=['POST'])
@@ -146,9 +182,9 @@ def login():
         get_userid = login_data['user_id']
         get_password = login_data['pass']
 
-    users = user.query.filter_by(user_id=get_userid).first()
+    users = user.query.filter_by(user_id=get_userid).all()
     #  ユーザidとパスを確認
-    if users.query.filter_by(user_id=get_userid,password=get_password):
+    if users and check_password_hash(users.password==get_password):
     
         return jsonify({'flag':'true'})
     
@@ -179,7 +215,7 @@ def signup():
     else:
         # If a user with the same user_id exists, return false
         return jsonify({'flag': 'false'})
-    
+
     
 #Clear
 @app.route("/get_userName",methods=['POST'])
