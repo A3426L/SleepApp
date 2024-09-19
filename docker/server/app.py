@@ -2,7 +2,7 @@
 from flask import Flask , jsonify , request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import text , or_ , and_ , Table, Column, Integer, String, MetaData
+from sqlalchemy import text , or_ , and_ , Table, Column, Integer, String, MetaData ,desc
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -429,35 +429,33 @@ def post():
 
 
 ### Chat機能　
-
-@app.route('/api/chat',methods=['POST'])
+@app.route('/api/chat', methods=['POST'])
 def chat():
-    try:
-        get_chat = request.get_json()
-        get_id = get_chat['id']
-        get_user_id = get_chat['user_id']
+    get_chat = request.get_json()
+    get_id = get_chat['id']
 
-        if get_id and get_user_id:
-        #メッセージ
-            current_message = Message.query.filter(
-                and_(
-                    Message.id > get_id,
-                    Message.user_id==get_user_id
-                )
-            ).all()
-            current_name = User.query(User.user_name)
-    
-            return jsonify({
-                'id':current_message.id,
-                'messages':current_message.message,
-                'user_id':current_message.user_id,
-                'name':current_name
-            })
-        else:  
-            return jsonify({'flag':'false'})
-        
-    except Exception:
-        return jsonify({'flag':'false'}),500
+    # Get the latest message id from the database
+    latest_message = Message.query.order_by(desc(Message.id)).first()
+    message_db_id = str(latest_message.id) if latest_message else '0'
+
+    if message_db_id > get_id:  # 文字列比較
+        # Fetch the message with the latest id
+        latest_message = Message.query.get(int(message_db_id))
+        message_db_user_id = latest_message.user_id
+        message_db_message = latest_message.message
+
+        # Fetch the user name from the user table
+        user_db = User.query.get(message_db_user_id)
+        user_db_user_name = user_db.user_name if user_db else None
+
+        return jsonify({
+            'id': message_db_id,
+            'messages': message_db_message,
+            'user_id': message_db_user_id,
+            'name': user_db_user_name
+        })
+    else:
+        return jsonify({'flag': 'false'})
     
 
 @app.route('/api/get_message',methods=['POST'])
@@ -481,9 +479,11 @@ def get_message():
 def change_theme():
     try:
        get_theme = request.get_json()
-       theme0 = get_theme['theme']
+       theme0 = get_theme['theme_txt']
+       theme_id = get_theme['user_id']
 
-       Theme = Room(theme=theme0)
+       
+       Theme = Room(user_id0=theme_id,theme=theme0)
        db.session.add(Theme)
        db.session.commit()
 
