@@ -13,10 +13,11 @@ const Loading = () => {
     const router = useRouter();
 
     useEffect(() => {
+      console.log("aaaaaaaaaaaaaaaaa");
         const postData = async () => {
             try {
-              const response = await axios.post('http://172.16.42.21/matching_start', {
-                user_id: '1',
+              const response = await axios.post('http://172.16.42.22/matching_start', {
+                user_id: userIdglobal,
               });
               setTitle(response.data.flag);
               console.log("aaaaaaaaaaaaaaaaa",response.data.flag);
@@ -32,9 +33,9 @@ const Loading = () => {
         // POSTリクエストを送信する関数
         const sendPostRequest = () => {
           console.log('0000000000')
-          axios.post('http://172.16.42.21/matching', {
+          axios.post('http://172.16.42.22/matching', {
             // 送信するデータ
-            user_id: '1',
+            user_id: userIdglobal,
           })
           .then(response => {
             console.log(response.data.flag);
