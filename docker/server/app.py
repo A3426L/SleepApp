@@ -2,8 +2,9 @@
 from flask import Flask , jsonify , request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import text , or_ , Table, Column, Integer, String, MetaData
+from sqlalchemy import text , or_ , and_ , Table, Column, Integer, String, MetaData
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from datetime import datetime as dt, timedelta
 
@@ -385,11 +386,11 @@ def movePost():
     ).order_by(OldRoom.end_time.desc()).all()
     if old_results:
         latest_old = old_results[0]
-        latest_room_name = latest_old.theme
+        latest_theme_name = latest_old.theme
     else:
         old_list = {}
 
-    return latest_room_name
+    return latest_theme_name
 
 @app.route('/post',methods=['POST'])
 def post():
@@ -398,7 +399,24 @@ def post():
         user_id = data['user_id']
         post_txt = data['post_txt']
 
-        new_post = Post(user_id0=user_id, post_txt=post_txt)
+        old_results = OldRoom.query.filter(
+            or_(
+                OldRoom.user_id0 == user_id,
+                OldRoom.user_id1 == user_id,
+                OldRoom.user_id2 == user_id,
+                OldRoom.user_id3 == user_id,
+                OldRoom.user_id4 == user_id
+            )
+        ).order_by(OldRoom.end_time.desc()).all()
+        
+        if old_results:
+            latest_old = old_results[0]
+            latest_room_name = latest_old.room_name
+            latest_room_theme = latest_old.theme
+        else:
+            old_list = {}
+
+        new_post = Post(room_name = latest_room_name,user_id0 = user_id,theme = latest_room_theme, post_txt = post_txt)
         db.session.add(new_post)
         db.session.commit()
 
@@ -408,6 +426,141 @@ def post():
         return jsonify({"flag":"false"}), 500
     
 ###
+
+
+### Chat機能　
+
+@app.route('/api/chat',methods=['POST'])
+def chat():
+    try:
+        get_chat = request.get_json()
+        get_id = get_chat['id']
+        get_user_id = get_chat['user_id']
+
+        if get_id and get_user_id:
+        #メッセージ
+            current_message = Message.query.filter(
+                and_(
+                    Message.id > get_id,
+                    Message.user_id==get_user_id
+                )
+            ).all()
+            current_name = User.query(User.user_name)
+    
+            return jsonify({
+                'id':current_message.id,
+                'messages':current_message.message,
+                'user_id':current_message.user_id,
+                'name':current_name
+            })
+        else:  
+            return jsonify({'flag':'false'})
+        
+    except Exception:
+        return jsonify({'flag':'false'}),500
+    
+
+@app.route('/api/get_message',methods=['POST'])
+def get_message():
+    try:
+        send_message = request.get_json()
+        content_user_id = send_message['user_id']
+        content_message = send_message['messages']         
+
+          #メッセージを保存
+        message = Message(user_id=content_user_id,message=content_message)
+        db.session.add(message)
+        db.session.commit()
+          
+        return jsonify({'flag':'true'})
+    
+    except Exception:
+        return jsonify({'flag':'false'}),500
+    
+@app.route('/api/change_theme',methods=['POST'])
+def change_theme():
+    try:
+       get_theme = request.get_json()
+       theme0 = get_theme['theme']
+
+       Theme = Room(theme=theme0)
+       db.session.add(Theme)
+       db.session.commit()
+
+       return jsonify({'flag':'true'})
+    
+    except Exception:
+        return jsonify({'flag':'false'}),500
+    
+@app.route('/api/post_theme',methods=['POST'])
+def post_theme():
+    try:
+       post_theme = request.get_json()
+       user_id0 = post_theme['user_id']
+
+       room = Room.query.filter(user_id=user_id0).all()
+       
+       return jsonify({'theme':room.theme})
+    except Exception:
+        return jsonify({'flag':'false'}),500
+    
+
+### login機能
+@app.route('/login',methods=['POST'])
+def login():
+    try:
+        login_data = request.get_json()
+        get_userid = login_data['user_id']
+        get_password = login_data['user_pass']
+
+        users = User.query.filter_by(user_id=get_userid).all()
+        #  ユーザidとパスを確認
+        if users and check_password_hash(users.password==get_password):
+        
+            return jsonify({'flag':'true'})
+        
+        else:
+            return jsonify({'flag':'false'})
+        
+    except Exception:
+        return jsonify({'flag':'false'}),500
+    
+@app.route("/signup",methods=['POST'])
+def signup():
+    signup_data = request.get_json()
+    signup_name = signup_data['user_name']
+    signup_user_id = signup_data['user_id']
+    signup_password = signup_data['password']
+    
+    catch_user_id = User.query.filter_by(user_id = signup_user_id).first()
+
+    catch_password = User.query.filter(password = signup_password).first()
+
+    return jsonify({'flag': 'true'}) 
+    # if User.query(catch_user_id.exists()).scalar() and User.query(catch_password.exists()).scalar():
+    #     return jsonify({'flag':"false"})
+    # else:
+    #     #パスワードをハッシュ化
+    #     #hash_password = generate_password_hash(signup_password,method='pbkdf2:sha256',salt_length=16)
+    #     new_user = User(user_name=signup_name,user_id=signup_user_id,password=signup_password)
+    #     db.session.add(new_user)
+    #     db.session.commit()
+
+    #     return jsonify({'flag': catch_user_id})
+
+@app.route("/get_userName",methods=['POST'])
+def get_userName():
+    try:
+        get_user = request.get_json()
+        id = get_user['user_id']
+
+        name = User.query.filter(User.user_id==id).all()
+
+        return jsonify({'user_name':name.user_id})
+    
+    except Exception:
+        return jsonify({'flag':'false'}),500
+
 
 
 if __name__ == "__main__":
