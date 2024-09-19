@@ -83,75 +83,80 @@ def get_data():
     return jsonify({"message": "Hello from Flask!", "user_id": 1})
 
 
+app = Flask(__name__)
+
 @app.route('/api/chat',methods=['POST'])
 def chat():
-     get_chat = request.get_json()
-     get_id = get_chat['id']
-     get_user_id = get_chat['user_id']
+    get_chat = request.get_json()
+    get_id = get_chat['id']
+    get_user_id = get_chat['user_id']
 
-     if get_id and get_user_id:
-       #メッセージ
-       current_message = message.query.filter(
-                     and_(
-                         message.id > get_id,
-                         message.user_id==get_user_id
-                     )
-       ).all()
-       current_name = user.query(user.user_name)
+    if get_id and get_user_id:
+    #メッセージ
+        current_message = message.query.filter(
+                and_(
+                    message.id > get_id,
+                    message.user_id==get_user_id
+                )
+        ).all()
+        current_name = user.query(user.user_name)
     
-       return jsonify({
-                 'id':current_message.id,
-                 'messages':current_message.message,
-                 'user_id':current_message.user_id',
-                 'name':current_name
-              })
+        return jsonify({
+            'id':current_message.id,
+            'messages':current_message.message,
+            'user_id':current_message.user_id,
+            'name':current_name
+        })
+    else:  
+        return jsonify({'flag':'false'})
 
-     else:
-           return jsonify({'flag':'false'})
+
+
      
 #ユーザーがメッセージを送信した時の処理
 @app.route('/api/get_message',methods=['POST'])
 def get_message():
-          send_message = request.get_json()
-          content_user_id = send_message['user_id']
-          content_message = send_message['messages']         
+        send_message = request.get_json()
+        content_user_id = send_message['user_id']
+        content_message = send_message['messages']         
 
           #メッセージを保存
-          Message = message(user_id=content_user_id,message=content_message)
-          db.session.add(Message)
-          db.session.commit()
+        Message = message(user_id=content_user_id,message=content_message)
+        db.session.add(Message)
+        db.session.commit()
           
-          return jsonify({'flag':'true'})
+        return jsonify({'flag':'true'})
 
 @app.route('/api/change_theme',methods=['POST'])
 def change_theme():
        get_theme = request.get_json()
-       theme0 = get_theme('theme')
+       theme0 = get_theme['theme']
 
        Theme = Room(theme=theme0)
        db.session.add(Theme)
        db.session.commit()
 
        return jsonify({'flag':'true'})
+
 @app.route('/api/post_theme',methods=['POST'])
 def post_theme():
        post_theme = request.get_json()
-       user_id0 = post_theme('user_id')
+       user_id0 = post_theme['user_id']
 
        room = Room.query.filter(user_id=user_id0).all()
        
        return jsonify({'theme':room.theme})
 
-# #ログイン
-# @app.route('/login',methods=['POST'])
+#ログイン(なにか悪さしてるコメントを外すとPOST通信できない)
+# @app.route('login',methods=['POST'])
 # def login():
 #      login_data = request.get_json()
-#      get_user_id = login_data['user_id']
-#      password = login_data['user_pass']
+#      get_userid = login_data['user_id']
+#      get_password = login_data['user_pass']
 
-#      user = user.query.filter(user_id==get_user_id).first()
+#     #  users = user.query.filter_by(user_id=get_userid).all()
 #      #ユーザidとパスを確認
-#      if user and check_password_hash(user.password,password):
+#      if get_userid and check_password_hash(get_password):
         
 #         return jsonify({'flag':'true'})
         
@@ -159,36 +164,38 @@ def post_theme():
 #           return jsonify({'flag':'false'})
        
 
-# #アカウントの新規作成
-# @app.route("/signup",methods=['POST'])
-# def signup():
-#      name = request.form.get('user_name')
-#      user_id1 = request.form.get('user_id')
-#      password1 = request.form.get('password')
+#アカウントの新規作成
+@app.route("/signup",methods=['POST'])
+def signup():
+     signup_data = request.get_json()
+     signup_name = signup_data['user_name']
+     signup_user_id = signup_data['user_id']
+     signup_password = signup_data['password']
 
-#      catch_user_id = user.query.filter(user_id == user_id1)
-#      catch_password = user.query.filter(password == password1)
-#      if user.query(catch_user_id.exists()).scalar() and user.query(catch_password.exists()).scalar():
+     catch_user_id = user.query.filter(user.user_id == signup_user_id)
+     catch_password = user.query.filter(user.password == signup_password)
+     if user.query(catch_user_id.exists()).scalar() and user.query(catch_password.exists()).scalar():
 
-#           return jsonify({'flag':'false'})
-#      else:
-#           #パスワードをハッシュ化
-#           hash_password = generate_password_hash(password1,method='pbkdf2:sha256',salt_length=16)
-#           new_user = user(user_name=name,user_id=user_id1,password=hash_password)
-#           db.session.add(new_user)
-#           db.session.commit()
+          return jsonify({'flag':'false'})
+     else:
+          #パスワードをハッシュ化
+          hash_password = generate_password_hash(signup_password,method='pbkdf2:sha256',salt_length=16)
+          new_user = user(user_name=signup_name,user_id=signup_user_id,password=hash_password)
+          db.session.add(new_user)
+          db.session.commit()
 
-#           return jsonify({'flag':'true'})
+          return jsonify({'flag':'true'})
 
 
-# @app.route("/get_userName",methods=['POST'])
-# def get_userName():
-#      id = request.form.get('user_id')
+@app.route("/get_userName",methods=['POST'])
+def get_userName():
+     get_user = request.get_json()
+    #  id = get_user['user_id']
 
-#      name = user.query.filter(user.user_id==id).all()
+    #  name = user.query.filter(user.user_id==id).all()
 
-#      return jsonify({'user_name':name.user_id})
-
+    #  return jsonify({'user_name':name.user_id})
+     return jsonify({'user':get_user['user_id']})
 
 
 if __name__ == "__main__":
