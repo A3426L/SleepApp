@@ -84,14 +84,14 @@ def post_data():
     # 取得したデータをそのまま返す
     return jsonify(data)
 
-@app.route('/api/get-end-time', methods=['GET'])
+@app.route('/chat_start', methods=['GET'])
 def get_endtime():
     # 固定された開始時刻と終了時刻を設定（JSTのISOフォーマット）
-    fixed_start_time = "2024-09-19T10:15:00+09:00"  # 固定された開始時刻
-    fixed_end_time = "2024-09-19T10:19:00+09:00"    # 固定された終了時刻
+    fixed_start_time = "2024-09-19T13:00:00+09:00"  # 固定された開始時刻
+    fixed_end_time = "2024-09-19T14:08:00+09:00"    # 固定された終了時刻
     
     # 開始時刻と終了時刻をJSONで返す
-    return jsonify({'startTime': fixed_start_time, 'endTime': fixed_end_time})
+    return jsonify({'user_id0': "1",'startTime': fixed_start_time, 'endTime': fixed_end_time})
 
 # リーダーかどうかを判断
 @app.route('/api/leader', methods=['POST'])
@@ -136,6 +136,22 @@ def teat_post():
 
     # 受け取ったデータをそのまま返す
     return jsonify(data)
+
+@app.route('/matching', methods=['POST'])
+def matching():
+     # POSTリクエストのボディからJSONデータを取得
+    data = request.json
+    # 取得したデータをそのまま返す
+    return jsonify({'flag': "true"})
+
+@app.route('/matching_start', methods=['POST'])
+def matching_start():
+     # POSTリクエストのボディからJSONデータを取得
+    data = request.json
+    # 取得したデータをそのまま返す
+    return jsonify({'flag': "true"})
+
+
 
 if __name__ == "__main__":
      app.run(debug=True)
