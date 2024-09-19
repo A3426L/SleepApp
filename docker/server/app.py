@@ -1,7 +1,7 @@
 from flask import Flask , jsonify , request 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import text , and_ , Table, Column, Integer, String, MetaData
+from sqlalchemy import text , and_ , Table, Column, Integer, String, MetaData,desc
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime as dt
@@ -72,9 +72,6 @@ def check_db():
 def get_data():
     return jsonify({"message": "Hello from Flask!", "user_id": 1})
 
-
-
-####################################################@app.route('/api/chat', methods=['POST'])
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
