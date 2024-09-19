@@ -26,10 +26,10 @@ export const App: React.FC = () => {
     // メッセージを取得する関数
     const fetchMessages = async () => {
       try {
-        const response = await axios.post('http://172.16.42.22/api/get_message', {
+        const response = await axios.post('http://172.16.42.22/api/chat', {
             // 必要に応じて送信するデータをここに追加
             user_id: userIdglobal, // 例としてユーザーIDを送信する
-            message_txt: newMsgId
+            id: newMsgId
         });
     
         // メッセージを逆順に並び替える
