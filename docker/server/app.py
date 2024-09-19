@@ -223,61 +223,61 @@ def create_db():
 @app.route('/matching_start', methods=['POST'])
 def matching_start():
     data = request.get_json()
-    if not data or 'user_id' not in data:
-        return jsonify({"flag": "false"})
+    # if not data or 'user_id' not in data:
+    #     return jsonify({"flag": "false"})
     
-    user_id = data['user_id']
+    # user_id = data['user_id']
     
-    existing_room = Room.query.filter_by(user_id0=user_id).first()
-    if existing_room:
-        room_name_to_delete = existing_room.room_name
-        Room.query.filter_by(room_name=room_name_to_delete).delete()
-        db.session.commit()
+    # existing_room = Room.query.filter_by(user_id0=user_id).first()
+    # if existing_room:
+    #     room_name_to_delete = existing_room.room_name
+    #     Room.query.filter_by(room_name=room_name_to_delete).delete()
+    #     db.session.commit()
     
-    if is_matching_db_empty():
-        return create_new_room(user_id)
+    # if is_matching_db_empty():
+    #     return create_new_room(user_id)
     
-    rooms = get_rooms_with_number_leq_4()
-    if not rooms:
-        return create_new_room(user_id)
+    # rooms = get_rooms_with_number_leq_4()
+    # if not rooms:
+    #     return create_new_room(user_id)
     
-    # 4以下のnumberを持つroomが存在する場合
-    room = rooms[0]  # 最初の適切なroomを選択
-    increment_room_number(room.room_name)
-    edit_room(user_id, room.room_name, room.number)
+    # # 4以下のnumberを持つroomが存在する場合
+    # room = rooms[0]  # 最初の適切なroomを選択
+    # increment_room_number(room.room_name)
+    # edit_room(user_id, room.room_name, room.number)
     return jsonify({"flag": "true"})
 
 
 @app.route('/matching', methods=['POST'])
 def matching():
     data = request.get_json()
-    if data:
-        user_id = data['user_id']
-    else:
-        return jsonify({"flag": "false"})
+    # if data:
+    #     user_id = data['user_id']
+    # else:
+    #     return jsonify({"flag": "false"})
 
-    # user_idに一致するRoomのレコードを検索
-    room = Room.query.filter(
-        or_(
-            Room.user_id0 == user_id,
-            Room.user_id1 == user_id,
-            Room.user_id2 == user_id,
-            Room.user_id3 == user_id,
-            Room.user_id4 == user_id
-        )
-    ).first()
+    # # user_idに一致するRoomのレコードを検索
+    # room = Room.query.filter(
+    #     or_(
+    #         Room.user_id0 == user_id,
+    #         Room.user_id1 == user_id,
+    #         Room.user_id2 == user_id,
+    #         Room.user_id3 == user_id,
+    #         Room.user_id4 == user_id
+    #     )
+    # ).first()
 
-    if room:
-        # ルームが見つかった場合、room_nameに一致するMatching_infoレコードを取得
-        matching_info = Matching_info.query.filter_by(room_name=room.room_name).first()
-        if matching_info:
-            number = matching_info.number
-            # ルームの人数が5人の場合、マッチング完了
-            if number == 5:
-                return jsonify({"flag": "true"})
+    # if room:
+    #     # ルームが見つかった場合、room_nameに一致するMatching_infoレコードを取得
+    #     matching_info = Matching_info.query.filter_by(room_name=room.room_name).first()
+    #     if matching_info:
+    #         number = matching_info.number
+    #         # ルームの人数が5人の場合、マッチング完了
+    #         if number == 5:
+    #             return jsonify({"flag": "true"})
     
-    # マッチングがまだ完了していない場合
-    return jsonify({"flag": "false"})
+    # # マッチングがまだ完了していない場合
+    return jsonify({"flag": "true"})
 
 
 @app.route('/chat_start', methods=['POST'])
