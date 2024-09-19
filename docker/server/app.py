@@ -482,9 +482,9 @@ def change_theme():
        theme0 = get_theme['theme_txt']
        theme_id = get_theme['user_id']
 
+       room = Room.query.filter_by(user_id0=theme_id).first()
        
-       Theme = Room(user_id0=theme_id,theme=theme0)
-       db.session.add(Theme)
+       room.theme = theme0
        db.session.commit()
 
        return jsonify({'flag':'true'})
