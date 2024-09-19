@@ -437,14 +437,14 @@ def chat():
 
     # Get the latest message id from the database
     latest_message = Message.query.order_by(desc(Message.id)).first()
-    message_db_id = latest_message.id if latest_message else '0'
+    message_db_id = latest_message.id if latest_message else 0
 
     if message_db_id == get_id:
         return jsonify({'flag': 'false'})
 
     if message_db_id > get_id:  # 文字列比較
         # Fetch the message with the latest id
-        latest_message = Message.query.get(int(message_db_id))
+        latest_message = Message.query.get(message_db_id)
         message_db_user_id = latest_message.user_id
         message_db_message = latest_message.message
 
@@ -469,7 +469,7 @@ def get_message():
         content_user_id = send_message['user_id']
         content_message = send_message['messages']         
 
-          #メッセージを保存
+        #メッセージを保存
         message = Message(user_id=content_user_id,message=content_message)
         db.session.add(message)
         db.session.commit()
