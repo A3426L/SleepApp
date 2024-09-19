@@ -83,8 +83,6 @@ def get_data():
     return jsonify({"message": "Hello from Flask!", "user_id": 1})
 
 
-app = Flask(__name__)
-
 @app.route('/api/chat',methods=['POST'])
 def chat():
     get_chat = request.get_json()
@@ -148,20 +146,20 @@ def post_theme():
        return jsonify({'theme':room.theme})
 
 #ログイン(なにか悪さしてるコメントを外すとPOST通信できない)
-# @app.route('login',methods=['POST'])
-# def login():
-#      login_data = request.get_json()
-#      get_userid = login_data['user_id']
-#      get_password = login_data['user_pass']
+@app.route('/login',methods=['POST'])
+def login():
+     login_data = request.get_json()
+     get_userid = login_data['user_id']
+     get_password = login_data['user_pass']
 
-#     #  users = user.query.filter_by(user_id=get_userid).all()
-#      #ユーザidとパスを確認
-#      if get_userid and check_password_hash(get_password):
+     users = user.query.filter_by(user_id=get_userid).all()
+    #  ユーザidとパスを確認
+     if users and check_password_hash(users.password==get_password):
         
-#         return jsonify({'flag':'true'})
+        return jsonify({'flag':'true'})
         
-#      else:
-#           return jsonify({'flag':'false'})
+     else:
+        return jsonify({'flag':'false'})
        
 
 #アカウントの新規作成
@@ -190,13 +188,11 @@ def signup():
 @app.route("/get_userName",methods=['POST'])
 def get_userName():
      get_user = request.get_json()
-    #  id = get_user['user_id']
+     id = get_user['user_id']
 
-    #  name = user.query.filter(user.user_id==id).all()
+     name = user.query.filter(user.user_id==id).all()
 
-    #  return jsonify({'user_name':name.user_id})
-     return jsonify({'user':get_user['user_id']})
-
+     return jsonify({'user_name':name.user_id})
 
 if __name__ == "__main__":
      
