@@ -40,18 +40,17 @@ export const App: React.FC = () => {
         }
     
         // メッセージを逆順に並び替える
-        
-        const fetchedMessages = response.data.map((msg: any) => {
-          const rMsgs = msg.reverse();
+        const reversedMessages = response.data.messages.reverse();
+        const fetchedMessages = reversedMessages.map((msg: any) => {
             // userIdglobalとmsg.user_idが同じかどうかをチェック
-            const isUserMessage = userIdglobal === rMsgs.user_id;
+            const isUserMessage = userIdglobal === msg.user_id;
     
             return {
-                text: rMsgs.messages,
-                _id: rMsgs.id,
+                text: msg.messages,
+                _id: msg.id,
                 createdAt: new Date(),
                 user: {
-                    _id: isUserMessage ? 1 : rMsgs.user_id, // 同じ場合は1、それ以外はmsg.user_id
+                    _id: isUserMessage ? 1 : msg.user_id, // 同じ場合は1、それ以外はmsg.user_id
                     name: 'developer',
                     avatar: 'https://png.pngtree.com/png-clipart/20191122/original/pngtree-user-icon-isolated-on-abstract-background-png-image_5192004.jpg',
                 },
@@ -216,27 +215,27 @@ export const App: React.FC = () => {
   const ProgressBar = () => {
     const widthAnim = useRef(new Animated.Value(0)).current;
 
-    const startProgressBar = useCallback(async (totalDuration: number, elapsedTime: number, end: number, current: number) => {
-      if (totalDuration > 0) {
-        // プログレスバーの幅を計算
-        const progress = (elapsedTime / totalDuration) * 100;
-        widthAnim.setValue(progress);
+    // const startProgressBar = useCallback(async (totalDuration: number, elapsedTime: number, end: number, current: number) => {
+    //   if (totalDuration > 0) {
+    //     // プログレスバーの幅を計算
+    //     const progress = (elapsedTime / totalDuration) * 100;
+    //     widthAnim.setValue(progress);
 
-        // プログレスバーが終了したときに画面遷移を実行
-        Animated.timing(widthAnim, {
-          toValue: 100,
-          duration: end - current,
-          useNativeDriver: false,
-        }).start(({finished}) => {
-          if (finished) {
-            // アニメーションが正常に終了した場合にのみ実行される
-            console.log("アニメーション終了");
-            // ここに画面遷移などの処理を追加
-            router.navigate({pathname:'/title_page'}); // 例: react-routerを使用した画面遷移
-          }
-        });
-      }
-    }, [widthAnim]);
+    //     // プログレスバーが終了したときに画面遷移を実行
+    //     Animated.timing(widthAnim, {
+    //       toValue: 100,
+    //       duration: end - current,
+    //       useNativeDriver: false,
+    //     }).start(({finished}) => {
+    //       if (finished) {
+    //         // アニメーションが正常に終了した場合にのみ実行される
+    //         console.log("アニメーション終了");
+    //         // ここに画面遷移などの処理を追加
+    //         router.navigate({pathname:'/title_page'}); // 例: react-routerを使用した画面遷移
+    //       }
+    //     });
+    //   }
+    // }, [widthAnim]);
 
     const fetchDataAndStartProgress = async () => {
       try {
@@ -266,7 +265,7 @@ export const App: React.FC = () => {
         console.log('クライアントの現在時刻:', new Date());
 
         // プログレスバーを開始
-        startProgressBar(totalDuration, elapsedTime, end, current);
+        // startProgressBar(totalDuration, elapsedTime, end, current);
       } catch (error) {
         console.error(error);
       }
