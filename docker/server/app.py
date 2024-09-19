@@ -99,7 +99,10 @@ def chat():
             'name': user_db_user_name
         })
     else:
-        return jsonify({'flag': 'false'})
+        return jsonify({'id': 'NUll',
+                        'messages':'Null',
+                        'user_id':'Null',
+                        'name':'Null'})
      
 #ユーザーがメッセージを送信した時の処理Clear
 @app.route('/api/get_message',methods=['POST'])
