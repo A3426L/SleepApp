@@ -74,12 +74,17 @@ def get_data():
 
 
 
-####################################################
-@app.route('/api/chat', methods=['POST'])##create - > tajima 
+####################################################@app.route('/api/chat', methods=['POST'])
 def chat():
     get_chat = request.get_json()
     get_id = get_chat['id']
     get_user_id = get_chat['user_id']
+
+    # get_id を数値型に変換
+    try:
+        get_id = int(get_id)
+    except ValueError:
+        return jsonify({'error': 'Invalid ID format'}), 400
 
     # 最新のメッセージIDを取得
     latest_message = db.session.query(Message).order_by(Message.id.desc()).first()
@@ -90,7 +95,7 @@ def chat():
         message_db_message = latest_message.message
         
         # メッセージのユーザーIDに基づいてユーザー名を取得
-        user = User.query.filter_by(user_id=message_db_user_id).first()
+        user = db.session.query(User).filter_by(user_id=message_db_user_id).first()
         user_db_user_name = user.user_name if user else 'Unknown'
         
         return jsonify({
@@ -102,33 +107,7 @@ def chat():
 
     return jsonify({'flag': 'false'})
 
-###################################################
-@app.route('/api/chat', methods=['POST'])
-def chat():
-    get_chat = request.get_json()
-    get_id = get_chat['id']
-    get_user_id = get_chat['user_id']
 
-    # 最新のメッセージIDを取得
-    latest_message = db.session.query(Message).order_by(Message.id.desc()).first()
-    
-    if latest_message and latest_message.id > get_id:
-        message_db_id = latest_message.id
-        message_db_user_id = latest_message.user_id
-        message_db_message = latest_message.message
-        
-        # メッセージのユーザーIDに基づいてユーザー名を取得
-        user = User.query.filter_by(user_id=message_db_user_id).first()
-        user_db_user_name = user.user_name if user else 'Unknown'
-        
-        return jsonify({
-            'id': message_db_id,
-            'messages': message_db_message,
-            'user_id': message_db_user_id,
-            'name': user_db_user_name
-        })
-
-    return jsonify({'flag': 'false'})
      
 #ユーザーがメッセージを送信した時の処理Clear
 @app.route('/api/get_message',methods=['POST'])
