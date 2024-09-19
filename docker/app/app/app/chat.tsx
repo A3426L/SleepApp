@@ -1,3 +1,5 @@
+//ip変更場所6個
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, TextInput, ImageBackground, Animated, TouchableOpacity, Alert } from 'react-native';
 import { GiftedChat, IMessage, Send, InputToolbar, Bubble, Time } from 'react-native-gifted-chat';
