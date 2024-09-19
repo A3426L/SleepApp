@@ -112,9 +112,11 @@ export const App: React.FC = () => {
       user: userIdglobal
     }));
   
-    axios.post('http://172.16.42.21/api/data/post', 
-      { messages: messageData },  // メッセージデータをサーバーに送信
-      { headers: { 'Content-Type': 'application/json' } }
+    axios.post('http://172.16.42.21/api/chat', 
+      { 
+        id:  newMsgId,
+        user_id: userIdglobal
+      },  // メッセージデータをサーバーに送信
     )
     .then((response) => {
       console.log(response.data);
@@ -187,8 +189,9 @@ export const App: React.FC = () => {
   const handleBlur = async () => {
     if (title.trim() !== '') {
       try {
-        const response = await axios.post('http://172.16.42.21/api/title', {
-          text: title,
+        const response = await axios.post('http://172.16.42.21/api/change_theme', {
+          theme_txt: title,
+          user_id: userIdglobal
         });
 
         // レスポンスの処理
