@@ -56,16 +56,6 @@ def create_db():
     with app.app_context():
         db.create_all()
         return "Database tables created."
-#お試し用
-@app.route('/add-user-test', methods=['GET'])
-def add_user_test():
-    id = "4"
-    name = "ううう"
-    new_user = User1(id=id, name=name)
-    with app.app_context():
-        db.session.add(new_user)
-        db.session.commit()
-    return "Add data succusess."
 
 @app.route('/check-db')
 def check_db():
@@ -85,29 +75,27 @@ def get_data():
 
 @app.route('/api/chat',methods=['POST'])
 def chat():
-    get_chat = request.get_json()
-    if not get_chat:
-        return jsonify({'flag': 'false', 'error': 'No JSON data found'})
+    get_chat = request.get_json()   
     
-    if get_chat:
-        get_id = get_chat['users_id']
-        get_user_id = get_chat['user_id']
+    get_id = get_chat['users_id']
+    get_user_id = get_chat['user_id']
+    return jsonify({'flag':'true'})
 
-        #メッセージ
-        current_message = message.query.filter_by(
-        and_(
-            id > get_id,
-            user_id=get_user_id
-        )
-        ).all()
-        current_name = user.query(user.user_name)
+    #     #メッセージ
+    #     current_message = message.query.filter_by(
+    #     and_(
+    #         id > get_id,
+    #         user_id=get_user_id
+    #     )
+    #     ).all()
+    #     current_name = user.query(user.user_name)
 
-        return jsonify({
-            'usersid':current_message.id,
-            'messages':current_message.message,
-            'user_id':current_message.user_id,
-            'name':current_name
-        })
+    #     return jsonify({
+    #         'usersid':current_message.id,
+    #         'messages':current_message.message,
+    #         'user_id':current_message.user_id,
+    #         'name':current_name
+    #     })
     # else:  
     #     return jsonify({'flag':'false'})
 
