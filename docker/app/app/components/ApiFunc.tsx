@@ -3,7 +3,7 @@ import { AxiosResponse } from "axios";
 
 
 //const URL = 'http://172.16.42.14/testpost'
-const IP='172.16.42.22';
+const IP='192.168.11.5';
 
 
 

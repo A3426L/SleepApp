@@ -432,11 +432,15 @@ def post():
 @app.route('/api/chat', methods=['POST'])
 def chat():
     get_chat = request.get_json()
+    get_user_id = get_chat['user_id']
     get_id = get_chat['id']
 
     # Get the latest message id from the database
     latest_message = Message.query.order_by(desc(Message.id)).first()
-    message_db_id = str(latest_message.id) if latest_message else '0'
+    message_db_id = latest_message.id if latest_message else '0'
+
+    if message_db_id == get_id:
+        return jsonify({'flag': 'false'})
 
     if message_db_id > get_id:  # 文字列比較
         # Fetch the message with the latest id
