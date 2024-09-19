@@ -152,9 +152,9 @@ def login():
         get_userid = login_data['user_id']
         get_password = login_data['pass']
 
-    users = user.query.filter_by(user_id=get_userid).all()
+    users = user.query.filter_by(user_id=get_userid).first()
     #  ユーザidとパスを確認
-    if users and check_password_hash(users.password==get_password):
+    if users.query.filter_by(user_id=get_userid,password=get_password):
     
         return jsonify({'flag':'true'})
     
