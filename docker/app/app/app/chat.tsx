@@ -28,7 +28,7 @@ export const App: React.FC = () => {
     // メッセージを取得する関数
     const fetchMessages = async () => {
       try {
-        const response = await axios.post('http://10.225.174.32/api/chat', {
+        const response = await axios.post('http://172.20.10.8/api/chat', {
             // 必要に応じて送信するデータをここに追加
             user_id: userIdglobal, // 例としてユーザーIDを送信する
             id: newMsgId
@@ -40,17 +40,18 @@ export const App: React.FC = () => {
         }
     
         // メッセージを逆順に並び替える
-        const reversedMessages = response.data.messages.reverse();
-        const fetchedMessages = reversedMessages.map((msg: any) => {
+        
+        const fetchedMessages = response.data.map((msg: any) => {
+          const rMsgs = msg.reverse();
             // userIdglobalとmsg.user_idが同じかどうかをチェック
-            const isUserMessage = userIdglobal === msg.user_id;
+            const isUserMessage = userIdglobal === rMsgs.user_id;
     
             return {
-                text: msg.messages,
-                _id: msg.id,
+                text: rMsgs.messages,
+                _id: rMsgs.id,
                 createdAt: new Date(),
                 user: {
-                    _id: isUserMessage ? 1 : msg.user_id, // 同じ場合は1、それ以外はmsg.user_id
+                    _id: isUserMessage ? 1 : rMsgs.user_id, // 同じ場合は1、それ以外はmsg.user_id
                     name: 'developer',
                     avatar: 'https://png.pngtree.com/png-clipart/20191122/original/pngtree-user-icon-isolated-on-abstract-background-png-image_5192004.jpg',
                 },
@@ -89,7 +90,7 @@ export const App: React.FC = () => {
     // コンポーネントがマウントされた際にPOSTリクエストを送信
   // const checkLeader = async () => {
   //   try {
-  //     const response = await axios.post('http://10.225.174.32/api/leader', {
+  //     const response = await axios.post('http://172.20.10.8/api/leader', {
   //       value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
   //     });
   //     // レスポンスデータを確認して編集可能状態を設定
@@ -119,7 +120,7 @@ export const App: React.FC = () => {
       user: userIdglobal
     }));
   
-    axios.post('http://10.225.174.32/api/get_message', 
+    axios.post('http://172.20.10.8/api/get_message', 
       { 
         id:  msg,
         user_id: userIdglobal
@@ -196,7 +197,7 @@ export const App: React.FC = () => {
   const handleBlur = async () => {
     if (title.trim() !== '') {
       try {
-        const response = await axios.post('http://10.225.174.32/api/change_theme', {
+        const response = await axios.post('http://172.20.10.8/api/change_theme', {
           theme_txt: title,
           user_id: userIdglobal
         });
@@ -239,7 +240,7 @@ export const App: React.FC = () => {
 
     const fetchDataAndStartProgress = async () => {
       try {
-        const response = await axios.post('http://10.225.174.32/chat_start',{
+        const response = await axios.post('http://172.20.10.8/chat_start',{
           user_id: userIdglobal,
         });
         const now = new Date().getTime();
@@ -262,7 +263,7 @@ export const App: React.FC = () => {
 
         console.log('サーバーからの開始時刻（JST）:', start);
         console.log('サーバーからの終了時刻（JST）:', end);
-        console.log('クライアントの現在時刻:', new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+        console.log('クライアントの現在時刻:', new Date());
 
         // プログレスバーを開始
         startProgressBar(totalDuration, elapsedTime, end, current);
@@ -292,7 +293,7 @@ export const App: React.FC = () => {
 
 
   const test = () => {
-    // axios.post('http://10.225.174.32/randam_theme',{
+    // axios.post('http://172.20.10.8/randam_theme',{
     //   user_id: userIdglobal,
     // })
     //   .then(random_theme => {
