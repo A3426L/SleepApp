@@ -79,25 +79,17 @@ def chat():
     
     get_id = get_chat['id']
     get_user_id = get_chat['user_id']
-    return jsonify({'flag':'true'})
 
-    #     #メッセージ
-    #     current_message = message.query.filter_by(
-    #     and_(
-    #         id > get_id,
-    #         user_id=get_user_id
-    #     )
-    #     ).all()
-    #     current_name = user.query(user.user_name)
+        #メッセージ
+    current_message = message.query.filter_by(id > get_id,user_id=get_user_id).first()
+    current_name = user.query(user.user_name)
 
-    #     return jsonify({
-    #         'usersid':current_message.id,
-    #         'messages':current_message.message,
-    #         'user_id':current_message.user_id,
-    #         'name':current_name
-    #     })
-    # else:  
-    #     return jsonify({'flag':'false'})
+    return jsonify({
+        'usersid':current_message.id,
+        'messages':current_message.message,
+        'user_id':current_message.user_id,
+        'name':current_name})
+    #else:  return jsonify({'flag':'false'})
 
      
 #ユーザーがメッセージを送信した時の処理Clear
