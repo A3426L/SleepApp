@@ -77,7 +77,7 @@ def get_data():
 def chat():
     get_chat = request.get_json()   
     
-    get_id = get_chat['users_id']
+    get_id = get_chat['id']
     get_user_id = get_chat['user_id']
     return jsonify({'flag':'true'})
 
@@ -105,7 +105,7 @@ def chat():
 def get_message():
     send_message = request.get_json()
     content_user_id = send_message['user_id']
-    content_message = send_message['messages']         
+    content_message = send_message['messages_txt']         
 
     #メッセージを保存
     Message = message(user_id=content_user_id,message=content_message)
@@ -120,7 +120,7 @@ def get_message():
 def change_theme():
     try:
        get_theme = request.get_json()
-       theme0 = get_theme['theme']
+       theme0 = get_theme['theme_txt']
 
        Theme = Room(theme=theme0)
        db.session.add(Theme)
@@ -150,7 +150,7 @@ def login():
     login_data = request.get_json()
     if login_data:
         get_userid = login_data['user_id']
-        get_password = login_data['user_pass']
+        get_password = login_data['pass']
 
     users = user.query.filter_by(user_id=get_userid).all()
     #  ユーザidとパスを確認
@@ -166,12 +166,12 @@ def signup():
     signup_data = request.get_json()
     
     # Check if signup_data exists and contains the necessary fields
-    if not signup_data or 'user_name' not in signup_data or 'user_id' not in signup_data or 'password' not in signup_data:
-        return jsonify({'error': 'Invalid input'}), 400
+    if not signup_data or 'name' not in signup_data or 'user_id' not in signup_data or 'pass' not in signup_data:
+        return jsonify({'flag': 'false'})
 
-    signup_name = signup_data['user_name']
+    signup_name = signup_data['name']
     signup_user_id = signup_data['user_id']
-    signup_password = signup_data['password']
+    signup_password = signup_data['pass']
 
     # Check if the user_id already exists in the database
     existing_user = user.query.filter_by(user_id=signup_user_id).first()
