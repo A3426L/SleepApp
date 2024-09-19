@@ -465,7 +465,7 @@ def get_message():
     try:
         send_message = request.get_json()
         content_user_id = send_message['user_id']
-        content_message = send_message['messages']         
+        content_message = send_message['message_txt']         
 
         #メッセージを保存
         message = Message(user_id=content_user_id,message=content_message)
