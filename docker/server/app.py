@@ -77,7 +77,6 @@ def get_data():
 def chat():
     get_chat = request.get_json()
     get_id = get_chat['id']
-    get_user_id = get_chat['user_id']
 
     # Get the latest message id from the database
     latest_message = message.query.order_by(desc(message.id)).first()
@@ -123,8 +122,10 @@ def change_theme():
     try:
        get_theme = request.get_json()
        theme0 = get_theme['theme_txt']
+       theme_id = get_theme['user_id']
 
-       Theme = Room(theme=theme0)
+       
+       Theme = Room(user_id0=theme_id,theme=theme0)
        db.session.add(Theme)
        db.session.commit()
 
