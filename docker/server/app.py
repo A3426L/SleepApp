@@ -342,10 +342,10 @@ def postView_group():
      ).order_by(OldRoom.end_time.desc()).all()
     if old_results:
         latest_old = old_results[0]
-        latest_room_name = latest_old.room_name,
+        latest_room_name = latest_old.room_name
     else:
         old_list = {}
-    posts = Post.query.filter_by(room_name=latest_room_name).all()
+    posts = Post.query.order_by(Post.id.desc()).filter_by(room_name=latest_room_name).limit(20).all()
     post_list = [
         {
             "id": post.id,
@@ -359,7 +359,7 @@ def postView_group():
 
 @app.route('/postView_all')
 def postView_all():
-    posts = Post.query.limit(20).all()
+    posts = Post.query.order_by(Post.id.desc()).limit(20).all()
     post_list = [
         {
             "id": post.id,
@@ -508,45 +508,46 @@ def post_theme():
 ### login機能
 @app.route('/login',methods=['POST'])
 def login():
-    try:
-        login_data = request.get_json()
-        get_userid = login_data['user_id']
-        get_password = login_data['user_pass']
-
-        users = User.query.filter_by(user_id=get_userid).all()
-        #  ユーザidとパスを確認
-        if users and check_password_hash(users.password==get_password):
-        
-            return jsonify({'flag':'true'})
-        
-        else:
-            return jsonify({'flag':'false'})
-        
-    except Exception:
-        return jsonify({'flag':'false'}),500
     
-@app.route("/signup",methods=['POST'])
+    login_data = request.get_json()
+    if login_data:
+        get_userid = login_data['user_id']
+        get_password = login_data['pass']
+
+    users = User.query.filter_by(user_id=get_userid).first()
+    #  ユーザidとパスを確認
+    if users.query.filter_by(user_id=get_userid,password=get_password):
+    
+        return jsonify({'flag':'true'})
+    
+    else:
+        return jsonify({'flag':'false'})     
+    
+@app.route("/signup", methods=['POST'])
 def signup():
     signup_data = request.get_json()
-    signup_name = signup_data['user_name']
-    signup_user_id = signup_data['user_id']
-    signup_password = signup_data['password']
     
-    catch_user_id = User.query.filter_by(user_id = signup_user_id).first()
+    # Check if signup_data exists and contains the necessary fields
+    if not signup_data or 'name' not in signup_data or 'user_id' not in signup_data or 'pass' not in signup_data:
+        return jsonify({'flag': 'false'})
 
-    catch_password = User.query.filter(password = signup_password).first()
+    signup_name = signup_data['name']
+    signup_user_id = signup_data['user_id']
+    signup_password = signup_data['pass']
 
-    return jsonify({'flag': 'true'}) 
-    # if User.query(catch_user_id.exists()).scalar() and User.query(catch_password.exists()).scalar():
-    #     return jsonify({'flag':"false"})
-    # else:
-    #     #パスワードをハッシュ化
-    #     #hash_password = generate_password_hash(signup_password,method='pbkdf2:sha256',salt_length=16)
-    #     new_user = User(user_name=signup_name,user_id=signup_user_id,password=signup_password)
-    #     db.session.add(new_user)
-    #     db.session.commit()
+    # Check if the user_id already exists in the database
+    existing_user = User.query.filter_by(user_id=signup_user_id).first()
 
-    #     return jsonify({'flag': catch_user_id})
+    if existing_user is None:
+        # If no user with the same user_id exists, create a new user
+        new_user = User(user_id=signup_user_id, user_name=signup_name, password=signup_password)
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'flag': 'true'})
+    else:
+        # If a user with the same user_id exists, return false
+        return jsonify({'flag': 'false'})
+
 
 @app.route("/get_userName",methods=['POST'])
 def get_userName():
@@ -554,9 +555,9 @@ def get_userName():
         get_user = request.get_json()
         id = get_user['user_id']
 
-        name = User.query.filter(User.user_id==id).all()
+        name = User.query.filter(User.user_id==id).first()
 
-        return jsonify({'user_name':name.user_id})
+        return jsonify({'user_name':name.user_name})
     
     except Exception:
         return jsonify({'flag':'false'}),500
