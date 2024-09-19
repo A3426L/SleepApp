@@ -132,7 +132,7 @@ export default function Test_tabs() {
           </View>
           <View style={{flex:0.5,justifyContent:"center"}}>
             
-              <Link href={"/chat"} asChild>
+              <Link href={"/Loading"} asChild>
                 <TouchableOpacity style={{flex:0.35, backgroundColor: "#4b58c8",justifyContent: 'center',marginBottom: "20%",marginHorizontal:"7%", borderRadius:20}}>
                   <Text style={{color: "white",fontSize:25,textAlign:"center"}}>
                     夢を決める
