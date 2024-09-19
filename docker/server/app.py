@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://mysql:mysql@db:3306/mysql_test'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -66,8 +66,8 @@ def post_data():
 @app.route('/api/get-end-time', methods=['GET'])
 def get_endtime():
     # 固定された開始時刻と終了時刻を設定（JSTのISOフォーマット）
-    fixed_start_time = "2024-09-17T23:30:00+09:00"  # 固定された開始時刻
-    fixed_end_time = "2024-09-18T02:09:30+09:00"    # 固定された終了時刻
+    fixed_start_time = "2024-09-19T10:15:00+09:00"  # 固定された開始時刻
+    fixed_end_time = "2024-09-19T10:19:00+09:00"    # 固定された終了時刻
     
     # 開始時刻と終了時刻をJSONで返す
     return jsonify({'startTime': fixed_start_time, 'endTime': fixed_end_time})
@@ -92,6 +92,24 @@ def post_leader():
 #タイトル受け取る
 @app.route('/api/title', methods=['POST'])
 def post_and_return():
+    # POSTリクエストからJSONデータを取得
+    data = request.json
+
+    # 受け取ったデータをそのまま返す
+    return jsonify(data)
+
+#タイトル受け取る
+@app.route('/api/title_test', methods=['POST'])
+def post_title_test():
+    # POSTリクエストからJSONデータを取得
+    data = request.json
+
+    # 受け取ったデータをそのまま返す
+    return jsonify({'title': "画面遷移だよん!"})
+
+#タイトル受け取る
+@app.route('/api/test_post', methods=['POST'])
+def teat_post():
     # POSTリクエストからJSONデータを取得
     data = request.json
 

@@ -1,19 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, TextInput, ImageBackground, Animated, TouchableOpacity, Alert } from 'react-native';
 import { GiftedChat, IMessage, Send, InputToolbar, Bubble, Time } from 'react-native-gifted-chat';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Link, useRouter } from 'expo-router';
+import { Link, usePathname, useRouter, useFocusEffect } from 'expo-router';
 import axios from 'axios';
 import { useGlobalContext } from './GlobalContext';
 
 const home_image = require("@/assets/images/chat_image.png");
 
 export const App: React.FC = () => {
+  const router = useRouter();
   const { userIdglobal, setUserIdglobal } = useGlobalContext();
   const [msg, setMsg] = useState<IMessage[]>([]);
   const topInputRef = useRef<TextInput>(null);
   const bottomInputRef = useRef<TextInput>(null);
   const [result, setResult] = useState(null); //リーダーかどうかを0,1で格納
+  const leaderRun = useRef(false);
   const [title, setTitle] = useState(''); //titleを格納
   const [isEditable, setIsEditable] = useState(false); // 編集可能かどうかの状態
   const previousMessagesRef = useRef<IMessage[]>([]); // 型を明示的に指定
@@ -22,7 +24,7 @@ export const App: React.FC = () => {
     // メッセージを取得する関数
     const fetchMessages = async () => {
       try {
-        const response = await axios.get('http://10.225.174.30/api/data');
+        const response = await axios.get('http://172.20.10.8/api/data');
         // メッセージを逆順に並び替える
         const reversedMessages = response.data.messages.reverse();
         const fetchedMessages = reversedMessages.map((msg: any) => {
@@ -63,21 +65,21 @@ export const App: React.FC = () => {
     fetchMessages();
 
     // 0.1秒ごとにメッセージを取得するためのインターバルを設定
-    const intervalId = setInterval(fetchMessages, 100); // 100ミリ秒 = 0.1秒
+    const intervalId = setInterval(fetchMessages, 2000); // 100ミリ秒 = 0.1秒
 
     // クリーンアップ関数
     return () => clearInterval(intervalId);
   }, []); // 空の依存配列で初回マウント時のみに実行
 
-  useEffect(() => {
-    console.log('Messages:', msg); // msgの中身を表示
-  }, [msg]); // msgが変更されたら実行
+  // useEffect(() => {
+  //   console.log('Messages:', msg); // msgの中身を表示
+  // }, [msg]); // msgが変更されたら実行
 
-  useEffect(() => {
+  // useEffect(() => {
     // コンポーネントがマウントされた際にPOSTリクエストを送信
     const checkLeader = async () => {
       try {
-        const response = await axios.post('http://10.225.174.30/api/leader', {
+        const response = await axios.post('http://172.20.10.8/api/leader', {
           value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
         });
         // レスポンスデータを確認して編集可能状態を設定
@@ -95,8 +97,11 @@ export const App: React.FC = () => {
       }
     };
 
-    checkLeader();
-  }, []);  // 空の依存配列で初回マウント時のみに実行
+    if(!leaderRun.current){
+      checkLeader();
+      leaderRun.current = true;
+    }
+  // }, []);  // 空の依存配列で初回マウント時のみに実行
 
   const onSend = (messages: IMessage[] = []) => {
     // メッセージをGiftedChatの状態に追加
@@ -110,7 +115,7 @@ export const App: React.FC = () => {
       user: userIdglobal
     }));
   
-    axios.post('http://10.225.174.30/api/data/post', 
+    axios.post('http://172.20.10.8/api/data/post', 
       { messages: messageData },  // メッセージデータをサーバーに送信
       { headers: { 'Content-Type': 'application/json' } }
     )
@@ -185,7 +190,7 @@ export const App: React.FC = () => {
   const handleBlur = async () => {
     if (title.trim() !== '') {
       try {
-        const response = await axios.post('http://10.225.174.30/api/title', {
+        const response = await axios.post('http://172.20.10.8/api/title', {
           text: title,
         });
 
@@ -199,90 +204,77 @@ export const App: React.FC = () => {
     }
   }
 
-  //プログレスバー
+  // プログレスバー
   const ProgressBar = () => {
-    const [loading, setLoading] = useState(true);
     const widthAnim = useRef(new Animated.Value(0)).current;
-    const [startTime, setStartTime] = useState(0); // 開始時刻
-    const [endTime, setEndTime] = useState(0); // 終了時刻
-    const router = useRouter(); // useRouterを使って画面遷移を行う
 
-    useEffect(() => {
-      const fetchTimes = async () => {
-        try {
-          const response = await axios.get('http://10.225.174.30/api/get-end-time');
-          const now = new Date().getTime();
-          const start = new Date(response.data.startTime).getTime();
-          const end = new Date(response.data.endTime).getTime();
+    const startProgressBar = useCallback(async (totalDuration: number, elapsedTime: number, end: number, current: number) => {
+      if (totalDuration > 0) {
+        // プログレスバーの幅を計算
+        const progress = (elapsedTime / totalDuration) * 100;
+        widthAnim.setValue(progress);
 
-          // 現在時刻が開始時刻より前の場合は開始時刻に設定
-          const current = Math.max(now, start);
-          const totalDuration = end - start;
-          const elapsedTime = current - start;
-
-          setStartTime(start);
-          setEndTime(end);
-
-          console.log('サーバーからの開始時刻（JST）:', new Date(response.data.startTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
-          console.log('サーバーからの終了時刻（JST）:', new Date(response.data.endTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
-          console.log('クライアントの現在時刻:', new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
-
-          if (totalDuration > 0) {
-            setLoading(false);
-
-            // プログレスバーの幅を計算
-            const progress = (elapsedTime / totalDuration) * 100;
-
-            widthAnim.setValue(progress);
-
-            // プログレスバーが終了したときに画面遷移を実行
-            Animated.timing(widthAnim, {
-              toValue: 100,
-              duration: end - current,
-              useNativeDriver: false,
-            }).start(() => {
-              // アニメーション終了後にわずかに遅延させてから画面遷移
-              setTimeout(() => {
-                router.navigate({
-                  pathname: "/title_page",
-                  params: { title: title }
-                });
-              }, 2000); // 適切な遅延時間を設定
-              console.log("なんでだよ！！！")
-            });
+        // プログレスバーが終了したときに画面遷移を実行
+        Animated.timing(widthAnim, {
+          toValue: 100,
+          duration: end - current,
+          useNativeDriver: false,
+        }).start(({finished}) => {
+          if (finished) {
+            // アニメーションが正常に終了した場合にのみ実行される
+            console.log("アニメーション終了");
+            // ここに画面遷移などの処理を追加
+            router.navigate({pathname:'/title_page'}); // 例: react-routerを使用した画面遷移
           }
-        } catch (error) {
-          console.error(error);
-          setLoading(false);
-        }
-      };
+        });
+      }
+    }, [widthAnim]);
 
-      fetchTimes();
-    }, [widthAnim, router, title]);
+    const fetchDataAndStartProgress = async () => {
+      try {
+        const response = await axios.get('http://172.20.10.8/api/get-end-time');
+        const now = new Date().getTime();
+        const start = new Date(response.data.startTime).getTime();
+        const end = new Date(response.data.endTime).getTime();
+
+        // 現在時刻が開始時刻より前の場合は開始時刻に設定
+        const current = Math.max(now, start);
+        const totalDuration = end - start;
+        const elapsedTime = current - start;
+
+        console.log('サーバーからの開始時刻（JST）:', new Date(response.data.startTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+        console.log('サーバーからの終了時刻（JST）:', new Date(response.data.endTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+        console.log('クライアントの現在時刻:', new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+
+        // プログレスバーを開始
+        startProgressBar(totalDuration, elapsedTime, end, current);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchDataAndStartProgress(); // 非同期関数を呼び出す
 
     return (
       <View style={styles.progressBarBackground}>
-        {loading ? (
-          <Text>Loading...</Text>
-        ) : (
-          <Animated.View
-            style={[
-              styles.progressBarFill,
-              {
-                width: widthAnim.interpolate({
-                  inputRange: [0, 100],
-                  outputRange: ['0%', '100%'],
-                }),
-              },
-            ]}
-          />
-        )}
+        <Animated.View
+          style={[
+            styles.progressBarFill,
+            {
+              width: widthAnim.interpolate({
+                inputRange: [0, 100],
+                outputRange: ['0%', '100%'],
+              }),
+            },
+          ]}
+        />
       </View>
     );
   };
 
+
   const test = () => {
-    // axios.get('http://10.225.174.30/api/data')
+    // axios.get('http://172.20.10.8/api/data')
     //   .then(test_data => {
     //     console.log(test_data.data);
     //   })
