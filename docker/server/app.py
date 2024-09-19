@@ -439,8 +439,6 @@ def chat():
     latest_message = Message.query.order_by(desc(Message.id)).first()
     message_db_id = latest_message.id if latest_message else 0
 
-    if message_db_id == get_id:
-        return jsonify({'flag': 'false'})
 
     if message_db_id > get_id:  # 文字列比較
         # Fetch the message with the latest id
