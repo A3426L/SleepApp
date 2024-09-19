@@ -1,5 +1,5 @@
 import { View, SafeAreaView, StyleSheet, Text, ImageBackground } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useGlobalContext } from './GlobalContext';
 import axios from 'axios';
@@ -10,17 +10,19 @@ const Loading = () => {
     const { userIdglobal, setUserIdglobal } = useGlobalContext();
     const [ title, setTitle ] = useState();
     const [ error, setError] = useState();
+    const router = useRouter();
 
     useEffect(() => {
         const postData = async () => {
             try {
-              const response = await axios.post('http://172.20.10.8/matching_start', {
-                user_id: userIdglobal,
+              const response = await axios.post('http://172.16.42.21/matching_start', {
+                user_id: '1',
               });
               setTitle(response.data.flag);
-              console.log(response.data.flag);
+              console.log("aaaaaaaaaaaaaaaaa",response.data.flag);
             } catch (err) {
                 console.log("error")
+                
             }
         };
         postData();
@@ -29,27 +31,36 @@ const Loading = () => {
     useEffect(() => {
         // POSTリクエストを送信する関数
         const sendPostRequest = () => {
-          axios.post('http://172.20.10.8/matching', {
+          console.log('0000000000')
+          axios.post('http://172.16.42.21/matching', {
             // 送信するデータ
-            user_id: userIdglobal,
+            user_id: '1',
           })
           .then(response => {
             console.log(response.data.flag);
+            if(response.data.flag === "true"){
+              console.log("アニメーション終了");
+            // ここに画面遷移などの処理を追加
+            router.replace({pathname:'/chat'}); // 例: react-routerを使用した画面遷移
+            }
           })
           .catch(error => {
             console.error('POST failed:', error);
           });
         };
-    
+        
+      
         // 1秒ごとにPOSTリクエストを送信
         const intervalId = setInterval(() => {
-          sendPostRequest();
+          if(title === "true"){
+            sendPostRequest();
+          }
         }, 1000); // 1000ミリ秒 = 1秒
     
         // コンポーネントがアンマウントされたときにインターバルをクリア
         return () => clearInterval(intervalId);
     
-      }, []);
+      }, [title]);
 
     return (
         <View style={style.container}>
