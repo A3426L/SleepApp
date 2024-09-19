@@ -20,41 +20,51 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState(''); //titleを格納
   const [isEditable, setIsEditable] = useState(false); // 編集可能かどうかの状態
   const previousMessagesRef = useRef<IMessage[]>([]); // 型を明示的に指定
+  const [newMsgId, setNewMsgId] = useState<Number>(0);
 
   useEffect(() => {
     // メッセージを取得する関数
     const fetchMessages = async () => {
       try {
-        const response = await axios.get('http://172.20.10.8/api/data');
+        const response = await axios.post('http://172.16.42.21/api/get_message', {
+            // 必要に応じて送信するデータをここに追加
+            user_id: userIdglobal, // 例としてユーザーIDを送信する
+            message_txt: newMsgId
+        });
+    
         // メッセージを逆順に並び替える
         const reversedMessages = response.data.messages.reverse();
         const fetchedMessages = reversedMessages.map((msg: any) => {
-          // userIdGlobalとmsg.idが同じかどうかをチェック
-          const isUserMessage = userIdglobal === msg.user_id;
-
-          return {
-            text: msg.text,
-            _id: msg.msg_id,
-            createdAt: new Date(),
-            user: {
-              _id: isUserMessage ? 1 : msg.user_id, // 同じ場合は1、それ以外はmsg.id
-              name: 'developer',
-              avatar: 'https://png.pngtree.com/png-clipart/20191122/original/pngtree-user-icon-isolated-on-abstract-background-png-image_5192004.jpg',
-            },
-          };
+            // userIdglobalとmsg.user_idが同じかどうかをチェック
+            const isUserMessage = userIdglobal === msg.user_id;
+    
+            return {
+                text: msg.text,
+                _id: msg.msg_id,
+                createdAt: new Date(),
+                user: {
+                    _id: isUserMessage ? 1 : msg.user_id, // 同じ場合は1、それ以外はmsg.user_id
+                    name: 'developer',
+                    avatar: 'https://png.pngtree.com/png-clipart/20191122/original/pngtree-user-icon-isolated-on-abstract-background-png-image_5192004.jpg',
+                },
+            };
         });
-
+    
         // 前回のメッセージと新しいメッセージを比較し、新しいメッセージだけをフィルタリング
         const previousMessages = previousMessagesRef.current;
         const newMessages = fetchedMessages.filter((message: IMessage) => 
-          !previousMessages.some((prev) => prev._id === message._id)
+            !previousMessages.some((prev) => prev._id === message._id)
         );
-
+    
         // 新しいメッセージがある場合にのみ状態を更新
         if (newMessages.length > 0) {
-          setMsg((previousMessages) => [...previousMessages, ...newMessages]);
-        }
+            setMsg((previousMessages) => [...previousMessages, ...newMessages]);
 
+            // 新しいメッセージの最後のメッセージIDを取得してnewMsgIdに設定
+            const lastNewMessage = newMessages[newMessages.length - 1];
+            setNewMsgId(lastNewMessage._id);
+        }
+    
         // 現在のメッセージリストを保存
         previousMessagesRef.current = [...previousMessagesRef.current, ...newMessages];
       } catch (error) {
@@ -62,15 +72,8 @@ export const App: React.FC = () => {
       }
     };
 
-    // 初回実行
     fetchMessages();
-
-    // 0.1秒ごとにメッセージを取得するためのインターバルを設定
-    const intervalId = setInterval(fetchMessages, 2000); // 100ミリ秒 = 0.1秒
-
-    // クリーンアップ関数
-    return () => clearInterval(intervalId);
-  }, []); // 空の依存配列で初回マウント時のみに実行
+}, []);
 
   // useEffect(() => {
   //   console.log('Messages:', msg); // msgの中身を表示
@@ -79,7 +82,7 @@ export const App: React.FC = () => {
     // コンポーネントがマウントされた際にPOSTリクエストを送信
   // const checkLeader = async () => {
   //   try {
-  //     const response = await axios.post('http://172.20.10.8/api/leader', {
+  //     const response = await axios.post('http://172.16.42.21/api/leader', {
   //       value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
   //     });
   //     // レスポンスデータを確認して編集可能状態を設定
@@ -103,13 +106,13 @@ export const App: React.FC = () => {
   
     // メッセージをPOSTリクエストでサーバーに送信
     const messageData = messages.map(msg => ({
-      _id: msg._id,
+      _id: newMsgId,
       text: msg.text,
       // createdAt: msg.createdAt,
       user: userIdglobal
     }));
   
-    axios.post('http://172.20.10.8/api/data/post', 
+    axios.post('http://172.16.42.21/api/data/post', 
       { messages: messageData },  // メッセージデータをサーバーに送信
       { headers: { 'Content-Type': 'application/json' } }
     )
@@ -184,7 +187,7 @@ export const App: React.FC = () => {
   const handleBlur = async () => {
     if (title.trim() !== '') {
       try {
-        const response = await axios.post('http://172.20.10.8/api/title', {
+        const response = await axios.post('http://172.16.42.21/api/title', {
           text: title,
         });
 
@@ -226,7 +229,7 @@ export const App: React.FC = () => {
 
     const fetchDataAndStartProgress = async () => {
       try {
-        const response = await axios.post('http://172.20.10.8/chat_start',{
+        const response = await axios.post('http://172.16.42.21/chat_start',{
           user_id: userIdglobal,
         });
         const now = new Date().getTime();
@@ -279,7 +282,7 @@ export const App: React.FC = () => {
 
 
   const test = () => {
-    // axios.post('http://172.20.10.8/randam_theme',{
+    // axios.post('http://172.16.42.21/randam_theme',{
     //   user_id: userIdglobal,
     // })
     //   .then(random_theme => {
