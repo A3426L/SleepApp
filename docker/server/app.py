@@ -161,26 +161,32 @@ def login():
     else:
         return jsonify({'flag':'false'})     
 
-#アカウントの新規作成
-@app.route("/signup",methods=['POST'])
+@app.route("/signup", methods=['POST'])
 def signup():
     signup_data = request.get_json()
+    
+    # Check if signup_data exists and contains the necessary fields
+    if not signup_data or 'user_name' not in signup_data or 'user_id' not in signup_data or 'password' not in signup_data:
+        return jsonify({'error': 'Invalid input'}), 400
+
     signup_name = signup_data['user_name']
     signup_user_id = signup_data['user_id']
     signup_password = signup_data['password']
 
-    catch_user_id = user.query.filter_by(user_id = signup_user_id).first()
+    # Check if the user_id already exists in the database
+    existing_user = user.query.filter_by(user_id=signup_user_id).first()
 
-    if user.query(catch_user_id.exists()).scalar() :
-
-        return jsonify({'flag':'false'})
-    else:
-        new_user = user(user_name=signup_name,user_id=signup_user_id,password=signup_password)
+    if existing_user is None:
+        # If no user with the same user_id exists, create a new user
+        new_user = user(user_id=signup_user_id, user_name=signup_name, password=signup_password)
         db.session.add(new_user)
         db.session.commit()
-
-        return jsonify({'flag':'true'})
-
+        return jsonify({'flag': 'true'})
+    else:
+        # If a user with the same user_id exists, return false
+        return jsonify({'flag': 'false'})
+    
+    
 #Clear
 @app.route("/get_userName",methods=['POST'])
 def get_userName():
