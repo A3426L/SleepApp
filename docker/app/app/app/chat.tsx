@@ -39,8 +39,8 @@ export const App: React.FC = () => {
             const isUserMessage = userIdglobal === msg.user_id;
     
             return {
-                text: msg.text,
-                _id: msg.msg_id,
+                text: msg.messages,
+                _id: msg.id,
                 createdAt: new Date(),
                 user: {
                     _id: isUserMessage ? 1 : msg.user_id, // 同じ場合は1、それ以外はmsg.user_id
