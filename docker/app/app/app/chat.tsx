@@ -31,6 +31,11 @@ export const App: React.FC = () => {
             user_id: userIdglobal, // 例としてユーザーIDを送信する
             id: newMsgId
         });
+
+        if (response.data.flag === 'false') {
+          console.log('No new messages');
+          return;
+        }
     
         // メッセージを逆順に並び替える
         const reversedMessages = response.data.messages.reverse();
