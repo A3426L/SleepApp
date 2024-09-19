@@ -75,33 +75,26 @@ export const App: React.FC = () => {
   //   console.log('Messages:', msg); // msgの中身を表示
   // }, [msg]); // msgが変更されたら実行
 
-  // useEffect(() => {
     // コンポーネントがマウントされた際にPOSTリクエストを送信
-    const checkLeader = async () => {
-      try {
-        const response = await axios.post('http://172.20.10.8/api/leader', {
-          value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
-        });
-        // レスポンスデータを確認して編集可能状態を設定
-        if (response.data.result === 1) {
-          setIsEditable(true); // リーダーの場合
-        } else {
-          setIsEditable(false); // リーダーでない場合
-        }
-        // レスポンスデータを結果として保存
-        setResult(response.data.result);
-        console.log(response.data.result);
-      } catch (err) {
-        // エラーが発生した場合はエラーメッセージを保存
-        console.error('Error fetching messages:', err);
-      }
-    };
-
-    if(!leaderRun.current){
-      checkLeader();
-      leaderRun.current = true;
-    }
-  // }, []);  // 空の依存配列で初回マウント時のみに実行
+  // const checkLeader = async () => {
+  //   try {
+  //     const response = await axios.post('http://172.20.10.8/api/leader', {
+  //       value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
+  //     });
+  //     // レスポンスデータを確認して編集可能状態を設定
+  //     if (response.data.result === 1) {
+  //       setIsEditable(true); // リーダーの場合
+  //     } else {
+  //       setIsEditable(false); // リーダーでない場合
+  //     }
+  //     // レスポンスデータを結果として保存
+  //     setResult(response.data.result);
+  //     console.log(response.data.result);
+  //   } catch (err) {
+  //     // エラーが発生した場合はエラーメッセージを保存
+  //     console.error('Error fetching messages:', err);
+  //   }
+  // };
 
   const onSend = (messages: IMessage[] = []) => {
     // メッセージをGiftedChatの状態に追加
@@ -232,10 +225,19 @@ export const App: React.FC = () => {
 
     const fetchDataAndStartProgress = async () => {
       try {
-        const response = await axios.get('http://172.20.10.8/api/get-end-time');
+        const response = await axios.get('http://172.20.10.8/chat_start');
         const now = new Date().getTime();
         const start = new Date(response.data.startTime).getTime();
         const end = new Date(response.data.endTime).getTime();
+
+        //リーダーかの判断
+        if (response.data.user_id0 === "1") {
+          setIsEditable(true); // リーダーの場合
+          console.log("リーダーーーーーーーー");
+        } else {
+          setIsEditable(false); // リーダーでない場合
+          console.log("あーーーーーーーーーーー");
+        }
 
         // 現在時刻が開始時刻より前の場合は開始時刻に設定
         const current = Math.max(now, start);
