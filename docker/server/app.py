@@ -75,39 +75,35 @@ def get_data():
 
 
 ####################################################@app.route('/api/chat', methods=['POST'])
+
+@app.route('/api/chat', methods=['POST'])
 def chat():
     get_chat = request.get_json()
     get_id = get_chat['id']
     get_user_id = get_chat['user_id']
 
-    # get_id を数値型に変換
-    try:
-        get_id = int(get_id)
-    except ValueError:
-        return jsonify({'error': 'Invalid ID format'}), 400
+    # Get the latest message id from the database
+    latest_message = message.query.order_by(desc(message.id)).first()
+    message_db_id = str(latest_message.id) if latest_message else '0'
 
-    # 最新のメッセージIDを取得
-    latest_message = db.session.query(Message).order_by(Message.id.desc()).first()
-    
-    if latest_message and latest_message.id > get_id:
-        message_db_id = latest_message.id
+    if message_db_id > get_id:  # 文字列比較
+        # Fetch the message with the latest id
+        latest_message = message.query.get(int(message_db_id))
         message_db_user_id = latest_message.user_id
         message_db_message = latest_message.message
-        
-        # メッセージのユーザーIDに基づいてユーザー名を取得
-        user = db.session.query(User).filter_by(user_id=message_db_user_id).first()
-        user_db_user_name = user.user_name if user else 'Unknown'
-        
+
+        # Fetch the user name from the user table
+        user_db = user.query.get(message_db_user_id)
+        user_db_user_name = user_db.user_name if user_db else None
+
         return jsonify({
             'id': message_db_id,
             'messages': message_db_message,
             'user_id': message_db_user_id,
             'name': user_db_user_name
         })
-
-    return jsonify({'flag': 'false'})
-
-
+    else:
+        return jsonify({'flag': 'false'})
      
 #ユーザーがメッセージを送信した時の処理Clear
 @app.route('/api/get_message',methods=['POST'])
