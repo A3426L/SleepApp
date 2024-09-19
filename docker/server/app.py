@@ -518,7 +518,7 @@ def change_theme():
        theme0 = get_theme['theme_txt']
        theme_id = get_theme['user_id']
 
-       room = Room.query.filter_by(
+       room = OldRoom.query.filter_by(
            user_id0=theme_id).first()
        
        room.theme = theme0
@@ -535,13 +535,13 @@ def post_theme():
        post_theme = request.get_json()
        user_id = post_theme['user_id']
 
-       room = Room.query.filter(
+       room = OldRoom.query.filter(
            or_(
-               Room.user_id0 == user_id,
-               Room.user_id1 == user_id,
-               Room.user_id2 == user_id,
-               Room.user_id3 == user_id,
-               Room.user_id4 == user_id
+               OldRoom.user_id0 == user_id,
+               OldRoom.user_id1 == user_id,
+               OldRoom.user_id2 == user_id,
+               OldRoom.user_id3 == user_id,
+               OldRoom.user_id4 == user_id
             )
         ).first()
        get_theme = room.theme
