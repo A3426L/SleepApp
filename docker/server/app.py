@@ -44,7 +44,6 @@ class Matching_info(db.Model):
     room_name = db.Column(db.String(timeL), primary_key=True)  # 時間を文字列として保存する。Roomのテーブル名になる。
     number = db.Column(db.Integer, nullable=False, default=0)
 
-# 各ルームモデル、チャットルームのメンバ情報、ルームナンバを保持する。
 class Room(db.Model):
     __bind_key__ = 'room_db'
     room_name = db.Column(db.String(timeL), primary_key=True) 
@@ -54,13 +53,13 @@ class Room(db.Model):
     user_id3 = db.Column(db.String(user_idL), nullable=True)
     user_id4 = db.Column(db.String(user_idL), nullable=True)
     theme = db.Column(db.String(themeL), nullable=True)
-    start_time = db.Column(db.String(timeL), nullable=True)  # 5人全員集まった際にその時間を記録する（文字列）
-    end_time = db.Column(db.String(timeL), nullable=True)  # チャット終了予定時刻を記録する。（文字列）
+    start_time = db.Column(db.DateTime, nullable=True)  # 5人全員集まった際にその時間を記録する（datetime型）
+    end_time = db.Column(db.DateTime, nullable=True)  # チャット終了予定時刻を記録する。（datetime型）db.Column(db.String(timeL), nullable=True)  # チャット終了予定時刻を記録する。（文字列）
 
 # メッセージモデル
 class Message(db.Model):  
     __bind_key__ = 'message_db'
-    id = db.Column(db.Integer, primary_key=True)  # メッセージの順番に使用する。
+    id = db.Column(db.Integer, primary_key=True,autoincrement=True)  # メッセージの順番に使用する。
     user_id = db.Column(db.String(user_idL), nullable=False)  # 誰がそのメッセージを話したかを判別する
     message = db.Column(db.String(140), nullable=False)  # メッセージデータ
 
@@ -74,11 +73,11 @@ class OldRoom(db.Model):  # Roomの過去情報を記録する。
     user_id3 = db.Column(db.String(user_idL),nullable=True)
     user_id4 = db.Column(db.String(user_idL),nullable=True)
     theme = db.Column(db.String(timeL), nullable=True)
-    end_time = db.Column(db.String(timeL), nullable=True)  # チャット終了予定時刻を記録する。（文字列）
-
+    end_time = db.Column(db.DateTime, nullable=True)  # チャット終了予定時刻を記録する。（datetime型）
+    
 class Post(db.Model):
     __bind_key__ = 'post_db'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
     room_name = db.Column(db.String(timeL), nullable=False) 
     user_id0 = db.Column(db.String(user_idL), nullable=False)
     theme = db.Column(db.String(themeL), nullable=False)
@@ -86,18 +85,13 @@ class Post(db.Model):
 
 class Randomtheme(db.Model):
     __bind_key__ = 'randomtheme_db'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
     theme = db.Column(db.String(timeL), nullable=False)
 
 # --- ユーティリティ関数 ---
 
 def format_datetime_to_string(dt_obj):
     return dt_obj.strftime('%Y%m%d%H%M%S')
-
-def get_current_datetime(offset):
-    datetime = dt.now() + timedelta(minutes=offset)
-    strdatetime = format_datetime_to_string(datetime)
-    return strdatetime
 
 def copy_record(room_name):#roomのroom_nameを起点としてその内容をroom_oldへ記録する．
     with app.app_context():
@@ -296,10 +290,12 @@ def chat_start():
     ).first()
 
     if room:
+        datetime = dt.now()
+        datetime_offset = datetime + timedelta(minutes=5)
         user_id0 = room.user_id0  # ルームマスターのID
         room_name = room.room_name
-        start_time = get_current_datetime(offset=0)  # 現在の時刻を取得
-        end_time = get_current_datetime(offset=5)  # 5分後の時刻を終了時刻として設定
+        start_time = format_datetime_to_string(datetime)  # 現在の時刻を取得
+        end_time = format_datetime_to_string(datetime_offset)  # 5分後の時刻を終了時刻として設定
         
         
         #chat_startではMatching_infoを削除できない。Matching_infoを参照して開始されるのでラグがあった場合とんでもねぇことになる。
