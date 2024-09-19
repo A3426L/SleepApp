@@ -112,9 +112,9 @@ export const App: React.FC = () => {
       user: userIdglobal
     }));
   
-    axios.post('http://172.16.42.22/api/chat', 
+    axios.post('http://172.16.42.22/api/get_message', 
       { 
-        id:  newMsgId,
+        id:  msg,
         user_id: userIdglobal
       },  // メッセージデータをサーバーに送信
     )
