@@ -1,3 +1,5 @@
+//ip変更場所1個
+
 import { View, SafeAreaView, StyleSheet, Text, ImageBackground } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -14,7 +16,7 @@ const Title = () => {
     useEffect(() => {
         const postData = async () => {
             try {
-              const response = await axios.post('http://172.16.42.22/api/title_test', {
+              const response = await axios.post('http://10.225.174.32/api/post_theme', {
                 user_id: userIdglobal,
               });
               setTitle(response.data.title);

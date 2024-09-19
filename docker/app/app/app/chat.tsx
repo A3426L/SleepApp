@@ -1,3 +1,5 @@
+//ip変更場所6個
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, TextInput, ImageBackground, Animated, TouchableOpacity, Alert } from 'react-native';
 import { GiftedChat, IMessage, Send, InputToolbar, Bubble, Time } from 'react-native-gifted-chat';
@@ -26,7 +28,7 @@ export const App: React.FC = () => {
     // メッセージを取得する関数
     const fetchMessages = async () => {
       try {
-        const response = await axios.post('http://10.225.174.32/api/chat', {
+        const response = await axios.post('http://172.20.10.8/api/chat', {
             // 必要に応じて送信するデータをここに追加
             user_id: userIdglobal, // 例としてユーザーIDを送信する
             id: newMsgId
@@ -87,7 +89,7 @@ export const App: React.FC = () => {
     // コンポーネントがマウントされた際にPOSTリクエストを送信
   // const checkLeader = async () => {
   //   try {
-  //     const response = await axios.post('http://10.225.174.32/api/leader', {
+  //     const response = await axios.post('http://172.20.10.8/api/leader', {
   //       value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
   //     });
   //     // レスポンスデータを確認して編集可能状態を設定
@@ -117,7 +119,7 @@ export const App: React.FC = () => {
       user: userIdglobal
     }));
   
-    axios.post('http://10.225.174.32/api/get_message', 
+    axios.post('http://172.20.10.8/api/get_message', 
       { 
         id:  msg,
         user_id: userIdglobal
@@ -194,7 +196,7 @@ export const App: React.FC = () => {
   const handleBlur = async () => {
     if (title.trim() !== '') {
       try {
-        const response = await axios.post('http://10.225.174.32/api/change_theme', {
+        const response = await axios.post('http://172.20.10.8/api/change_theme', {
           theme_txt: title,
           user_id: userIdglobal
         });
@@ -213,31 +215,31 @@ export const App: React.FC = () => {
   const ProgressBar = () => {
     const widthAnim = useRef(new Animated.Value(0)).current;
 
-    const startProgressBar = useCallback(async (totalDuration: number, elapsedTime: number, end: number, current: number) => {
-      if (totalDuration > 0) {
-        // プログレスバーの幅を計算
-        const progress = (elapsedTime / totalDuration) * 100;
-        widthAnim.setValue(progress);
+    // const startProgressBar = useCallback(async (totalDuration: number, elapsedTime: number, end: number, current: number) => {
+    //   if (totalDuration > 0) {
+    //     // プログレスバーの幅を計算
+    //     const progress = (elapsedTime / totalDuration) * 100;
+    //     widthAnim.setValue(progress);
 
-        // プログレスバーが終了したときに画面遷移を実行
-        Animated.timing(widthAnim, {
-          toValue: 100,
-          duration: end - current,
-          useNativeDriver: false,
-        }).start(({finished}) => {
-          if (finished) {
-            // アニメーションが正常に終了した場合にのみ実行される
-            console.log("アニメーション終了");
-            // ここに画面遷移などの処理を追加
-            router.navigate({pathname:'/title_page'}); // 例: react-routerを使用した画面遷移
-          }
-        });
-      }
-    }, [widthAnim]);
+    //     // プログレスバーが終了したときに画面遷移を実行
+    //     Animated.timing(widthAnim, {
+    //       toValue: 100,
+    //       duration: end - current,
+    //       useNativeDriver: false,
+    //     }).start(({finished}) => {
+    //       if (finished) {
+    //         // アニメーションが正常に終了した場合にのみ実行される
+    //         console.log("アニメーション終了");
+    //         // ここに画面遷移などの処理を追加
+    //         router.navigate({pathname:'/title_page'}); // 例: react-routerを使用した画面遷移
+    //       }
+    //     });
+    //   }
+    // }, [widthAnim]);
 
     const fetchDataAndStartProgress = async () => {
       try {
-        const response = await axios.post('http://10.225.174.32/chat_start',{
+        const response = await axios.post('http://172.20.10.8/chat_start',{
           user_id: userIdglobal,
         });
         const now = new Date().getTime();
@@ -260,10 +262,10 @@ export const App: React.FC = () => {
 
         console.log('サーバーからの開始時刻（JST）:', start);
         console.log('サーバーからの終了時刻（JST）:', end);
-        console.log('クライアントの現在時刻:', new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+        console.log('クライアントの現在時刻:', new Date());
 
         // プログレスバーを開始
-        startProgressBar(totalDuration, elapsedTime, end, current);
+        // startProgressBar(totalDuration, elapsedTime, end, current);
       } catch (error) {
         console.error(error);
       }
@@ -290,7 +292,7 @@ export const App: React.FC = () => {
 
 
   const test = () => {
-    // axios.post('http://10.225.174.32/randam_theme',{
+    // axios.post('http://172.20.10.8/randam_theme',{
     //   user_id: userIdglobal,
     // })
     //   .then(random_theme => {
