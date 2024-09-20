@@ -279,7 +279,6 @@ def matching():
     # # マッチングがまだ完了していない場合
     return jsonify({"flag": "true"})
 
-
 @app.route('/chat_start', methods=['POST'])
 def chat_start():
     data = request.get_json()
@@ -300,24 +299,33 @@ def chat_start():
     ).first()
 
     if room:
-        datetime = dt.now()
-        datetime_offset = datetime + timedelta(minutes=5)
+        if room.start_time is None or room.end_time is None:
+            # roomのstart_timeとend_timeが存在しなかったとき
+            current_time = dt.now()
+            end_time = current_time + timedelta(minutes=5)
+            room.start_time = current_time
+            room.end_time = end_time
+            db.session.commit()
+        else:
+            # roomのstart_timeとend_timeが存在したとき
+            current_time = room.start_time
+            end_time = room.end_time
+            
         user_id0 = room.user_id0  # ルームマスターのID
         room_name = room.room_name
-        start_time = format_datetime_to_string(datetime)  # 現在の時刻を取得
-        end_time = format_datetime_to_string(datetime_offset)  # 5分後の時刻を終了時刻として設定
+
+
+        start_time_str = format_datetime_to_string(current_time)
+        end_time_str = format_datetime_to_string(end_time)
         
-        
-        #chat_startではMatching_infoを削除できない。Matching_infoを参照して開始されるのでラグがあった場合とんでもねぇことになる。
-        #送信されてきたuser_idとuser_id0が同じとき(実行するのはルームマスターのみ)room->old_roomへコピー
         if user_id == user_id0:
             copy_record(room_name)
         
         return jsonify({
             "flag": "true",
             "user_id0": user_id0,
-            "start_time": start_time,
-            "end_time": end_time,
+            "start_time": start_time_str,
+            "end_time": end_time_str,
             "room_name": room_name
         })
     
