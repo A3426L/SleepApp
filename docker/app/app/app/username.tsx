@@ -92,7 +92,7 @@ export default function UserName() {
                   </Text>
                 </View>
                 <View style={{flex: 0.6,}}>
-                  <TextInput style={{flex:1, backgroundColor: "#4b58c8",borderRadius:10, justifyContent:"center", marginHorizontal:"5%", fontSize: 25}} value={username} keyboardType="email-address" onChangeText={handleusernameChange}/>
+                  <TextInput maxLength={10} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:10, justifyContent:"center", marginHorizontal:"5%", fontSize: 25}} value={username} keyboardType="email-address" onChangeText={handleusernameChange}/>
                 </View>
               </View>
               <View style={{flex: 0.10,}}/>

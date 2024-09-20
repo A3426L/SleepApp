@@ -98,7 +98,7 @@ export default function Acccount_two() {
                 </Text>
               </View>
               <View style={{flex: 0.6,}}>
-                <TextInput style={{flex:1, backgroundColor: "#4b58c8",borderRadius:10, justifyContent:"center", marginHorizontal:"5%", fontSize: 25}} value={userid} keyboardType="email-address" onChangeText={handleuseridChange}/>
+                <TextInput maxLength={10} style={{flex:1, backgroundColor: "#4b58c8",borderRadius:10, justifyContent:"center", marginHorizontal:"5%", fontSize: 25}} value={userid} keyboardType="email-address" onChangeText={handleuseridChange}/>
               </View>
             </View>
             <View style={{flex: 0.05,}}/>
@@ -109,7 +109,7 @@ export default function Acccount_two() {
                 </Text>
               </View>
               <View style={{flex: 0.6,}}>
-                <TextInput style={{flex:1, backgroundColor: "#4b58c8",borderRadius:10, justifyContent:"center", marginHorizontal:"5%", fontSize: 25}} value={password} keyboardType="email-address" onChangeText={handlepasswordChange}/>
+                <TextInput maxLength={20}style={{flex:1, backgroundColor: "#4b58c8",borderRadius:10, justifyContent:"center", marginHorizontal:"5%", fontSize: 25}} value={password} keyboardType="email-address" onChangeText={handlepasswordChange}/>
               </View>
             </View>
             <View style={{flex: 0.15, flexDirection: "row"}}>
