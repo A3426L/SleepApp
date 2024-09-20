@@ -297,12 +297,16 @@ def matching():
         )
         ).order_by(desc(OldRoom.id)).first()
                 # ルームが見つかった場合、room_nameに一致するMatching_infoレコードを取得
-        old_matching_info = Matching_info.query.filter_by(room_name=old_room.room_name).first()
-        if old_matching_info:
-            old_number = old_matching_info.number
-            # ルームの人数が5人の場合、マッチング完了
-            if old_number == 5:
-                return jsonify({"flag": "true"})
+        
+        if old_room:
+            old_matching_info = Matching_info.query.filter_by(room_name=old_room.room_name).first()
+            if old_matching_info:
+                old_number = old_matching_info.number
+                # ルームの人数が5人の場合、マッチング完了
+                if old_number == 5:
+                    return jsonify({"flag": "true"})
+        else:
+            return jsonify({"flag": "false"})
     # # マッチングがまだ完了していない場合
     return jsonify({"flag": "false"})
 
