@@ -29,7 +29,7 @@ export const App: React.FC = () => {
     const post_theme = async () => {
       try {
         const response = await axios.post('http://172.20.10.8/api/post_theme', {
-            user_id: userIdglobal,
+            room_name: roomName,
         });
 
         if (response.data.flag === "false") {
@@ -231,7 +231,7 @@ export const App: React.FC = () => {
       try {
         const response = await axios.post('http://172.20.10.8/api/change_theme', {
           theme_txt: title,
-          user_id: userIdglobal
+          room_name: roomName 
         });
 
         // レスポンスの処理
