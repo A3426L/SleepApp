@@ -534,7 +534,8 @@ def change_theme():
        theme0 = get_theme['theme_txt']
        theme_id = get_theme['user_id']
 
-       room = Room.query.filter_by(user_id0=theme_id).first()
+       room = OldRoom.query.filter_by(
+           user_id0=theme_id).first()
        
        room.theme = theme0
        db.session.commit()
@@ -548,9 +549,18 @@ def change_theme():
 def post_theme():
     try:
        post_theme = request.get_json()
-       user_id0 = post_theme['user_id']
+       user_id = post_theme['user_id']
 
-       room = Room.query.filter(user_id=user_id0).all()
+       room = OldRoom.query.filter(
+           or_(
+               OldRoom.user_id0 == user_id,
+               OldRoom.user_id1 == user_id,
+               OldRoom.user_id2 == user_id,
+               OldRoom.user_id3 == user_id,
+               OldRoom.user_id4 == user_id
+            )
+        ).order_by(desc(OldRoom.id)).first()
+       get_theme = room.theme
        
        return jsonify({'theme':room.theme})
     except Exception:
