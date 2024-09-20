@@ -28,13 +28,8 @@ export const App: React.FC = () => {
     // メッセージを取得する関数
     const fetchMessages = async () => {
       try {
-<<<<<<< HEAD
-        const response = await axios.post('http://192.168.11.5/api/chat', {
-=======
-        const response = await axios.post('http://172.20.10.8/api/chat', {
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
-            // 必要に応じて送信するデータをここに追加
-            user_id: userIdglobal, // 例としてユーザーIDを送信する
+        const response = await axios.post('http://172.16.42.21/api/chat', {
+            user_id: userIdglobal,
             id: newMsgId
         });
 
@@ -42,48 +37,47 @@ export const App: React.FC = () => {
           console.log('No new messages');
           return;
         }
-    
+
         // メッセージを逆順に並び替える
         const reversedMessages = response.data.messages.reverse();
         const fetchedMessages = reversedMessages.map((msg: any) => {
-            // userIdglobalとmsg.user_idが同じかどうかをチェック
             const isUserMessage = userIdglobal === msg.user_id;
-    
+
             return {
                 text: msg.messages,
                 _id: msg.id,
                 createdAt: new Date(),
                 user: {
-                    _id: isUserMessage ? 1 : msg.user_id, // 同じ場合は1、それ以外はmsg.user_id
+                    _id: isUserMessage ? 1 : msg.user_id,
                     name: 'developer',
                     avatar: 'https://png.pngtree.com/png-clipart/20191122/original/pngtree-user-icon-isolated-on-abstract-background-png-image_5192004.jpg',
                 },
             };
         });
-    
-        // 前回のメッセージと新しいメッセージを比較し、新しいメッセージだけをフィルタリング
+
         const previousMessages = previousMessagesRef.current;
         const newMessages = fetchedMessages.filter((message: IMessage) => 
             !previousMessages.some((prev) => prev._id === message._id)
         );
-    
-        // 新しいメッセージがある場合にのみ状態を更新
+
         if (newMessages.length > 0) {
             setMsg((previousMessages) => [...previousMessages, ...newMessages]);
 
-            // 新しいメッセージの最後のメッセージIDを取得してnewMsgIdに設定
             const lastNewMessage = newMessages[newMessages.length - 1];
             setNewMsgId(lastNewMessage._id);
         }
-    
-        // 現在のメッセージリストを保存
+
         previousMessagesRef.current = [...previousMessagesRef.current, ...newMessages];
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
     };
 
-    fetchMessages();
+    // 1秒ごとにfetchMessagesを実行
+    const intervalId = setInterval(fetchMessages, 1000);
+
+    // コンポーネントがアンマウントされたときにインターバルをクリア
+    return () => clearInterval(intervalId);
 }, []);
 
   // useEffect(() => {
@@ -93,11 +87,7 @@ export const App: React.FC = () => {
     // コンポーネントがマウントされた際にPOSTリクエストを送信
   // const checkLeader = async () => {
   //   try {
-<<<<<<< HEAD
-  //     const response = await axios.post('http://192.168.11.5/api/leader', {
-=======
-  //     const response = await axios.post('http://172.20.10.8/api/leader', {
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+  //     const response = await axios.post('http://172.16.42.21/api/leader', {
   //       value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
   //     });
   //     // レスポンスデータを確認して編集可能状態を設定
@@ -118,31 +108,28 @@ export const App: React.FC = () => {
   const onSend = (messages: IMessage[] = []) => {
     // メッセージをGiftedChatの状態に追加
     setMsg((previousMessages) => GiftedChat.append(previousMessages, messages));
+
+    // 送信したメッセージの内容を取り出す（最初のメッセージを対象）
+    const messageText = messages[0].text;
   
-    // メッセージをPOSTリクエストでサーバーに送信
-    const messageData = messages.map(msg => ({
-      _id: newMsgId,
-      text: msg.text,
-      // createdAt: msg.createdAt,
-      user: userIdglobal
-    }));
-  
-<<<<<<< HEAD
-    axios.post('http://192.168.11.5/api/get_message', 
-=======
-    axios.post('http://172.20.10.8/api/get_message', 
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
-      { 
-        id:  msg,
-        user_id: userIdglobal
-      },  // メッセージデータをサーバーに送信
-    )
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
+    if(messages.length > 0){
+      // メッセージをPOSTリクエストでサーバーに送信
+      const messageData = messages[0];
+      console.log('送信するメッセージデータ:', messageData);
+    
+      axios.post('http://172.16.42.21/api/get_message', 
+        { 
+          message_txt:  messageData.text,
+          user_id: userIdglobal
+        },  // メッセージデータをサーバーに送信
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    }
   };
 
   //下部のテキストボックスのフォーカスを解除するためのコンポーネント
@@ -208,11 +195,7 @@ export const App: React.FC = () => {
   const handleBlur = async () => {
     if (title.trim() !== '') {
       try {
-<<<<<<< HEAD
-        const response = await axios.post('http://192.168.11.5/api/change_theme', {
-=======
-        const response = await axios.post('http://172.20.10.8/api/change_theme', {
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+        const response = await axios.post('http://172.16.42.21/api/change_theme', {
           theme_txt: title,
           user_id: userIdglobal
         });
@@ -255,11 +238,7 @@ export const App: React.FC = () => {
 
     const fetchDataAndStartProgress = async () => {
       try {
-<<<<<<< HEAD
-        const response = await axios.post('http://192.168.11.5/chat_start',{
-=======
-        const response = await axios.post('http://172.20.10.8/chat_start',{
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+        const response = await axios.post('http://172.16.42.21/chat_start',{
           user_id: userIdglobal,
         });
         const now = new Date().getTime();
@@ -312,11 +291,7 @@ export const App: React.FC = () => {
 
 
   const test = () => {
-<<<<<<< HEAD
-    // axios.post('http://192.168.11.5/randam_theme',{
-=======
-    // axios.post('http://172.20.10.8/randam_theme',{
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+    // axios.post('http://172.16.42.21/randam_theme',{
     //   user_id: userIdglobal,
     // })
     //   .then(random_theme => {
