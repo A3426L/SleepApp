@@ -31,13 +31,13 @@ export const App: React.FC = () => {
             user_id: userIdglobal,
         });
 
-        if (response.data.flag === 'false') {
+        if (response.data.flag === "false") {
           console.log('No title');
           return;
         }
 
         return {
-          setTitle: response.data.theme,
+          setTitle: response.data.flag,
         };
       } catch (error) {
         console.error('Error fetching messages:', error);

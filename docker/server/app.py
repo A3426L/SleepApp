@@ -297,7 +297,7 @@ def chat_start():
     if not data or 'user_id' not in data:
         return jsonify({"flag": "false"})
 
-    user_id = data['user_id']
+    user_id = str(data['user_id'])  # user_idを確実に文字列に
 
     # user_idに基づいてRoomレコードを検索
     room = Room.query.filter(
@@ -326,13 +326,13 @@ def chat_start():
         copy_record(room.room_name)
         db.session.delete(room)
         db.session.commit()
-        
+
         return jsonify({
             "flag": "true",
-            "user_id0": room.user_id0,
-            "start_time": format_datetime_to_string(current_time),
-            "end_time": format_datetime_to_string(end_time),
-            "room_name": room.room_name
+            "user_id0": str(room.user_id0),
+            "start_time": str(format_datetime_to_string(current_time)),
+            "end_time": str(format_datetime_to_string(end_time)),
+            "room_name": str(room.room_name)
         })
     else:
         # 降順で検索するように変更
@@ -349,10 +349,10 @@ def chat_start():
         if old_room:
             return jsonify({
                 "flag": "true",
-                "user_id0": old_room.user_id0,
-                "start_time": format_datetime_to_string(old_room.start_time),
-                "end_time": format_datetime_to_string(old_room.end_time),
-                "room_name": old_room.room_name
+                "user_id0": str(old_room.user_id0),
+                "start_time": str(format_datetime_to_string(old_room.start_time)),
+                "end_time": str(format_datetime_to_string(old_room.end_time)),
+                "room_name": str(old_room.room_name)
             })
     
     return jsonify({"flag": "false", "error": "No room found"})
