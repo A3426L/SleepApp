@@ -28,11 +28,7 @@ export const App: React.FC = () => {
     // メッセージを取得する関数
     const fetchMessages = async () => {
       try {
-<<<<<<< HEAD
-        const response = await axios.post('http://192.168.11.5/api/chat', {
-=======
-        const response = await axios.post('http://172.20.10.8/api/chat', {
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+        const response = await axios.post('http://172.16.42.31/api/chat', {
             // 必要に応じて送信するデータをここに追加
             user_id: userIdglobal, // 例としてユーザーIDを送信する
             id: newMsgId
@@ -93,11 +89,7 @@ export const App: React.FC = () => {
     // コンポーネントがマウントされた際にPOSTリクエストを送信
   // const checkLeader = async () => {
   //   try {
-<<<<<<< HEAD
-  //     const response = await axios.post('http://192.168.11.5/api/leader', {
-=======
-  //     const response = await axios.post('http://172.20.10.8/api/leader', {
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+  //     const response = await axios.post('http://172.16.42.31/api/leader', {
   //       value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
   //     });
   //     // レスポンスデータを確認して編集可能状態を設定
@@ -127,11 +119,7 @@ export const App: React.FC = () => {
       user: userIdglobal
     }));
   
-<<<<<<< HEAD
-    axios.post('http://192.168.11.5/api/get_message', 
-=======
-    axios.post('http://172.20.10.8/api/get_message', 
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+    axios.post('http://172.16.42.31/api/get_message', 
       { 
         id:  msg,
         user_id: userIdglobal
@@ -208,11 +196,7 @@ export const App: React.FC = () => {
   const handleBlur = async () => {
     if (title.trim() !== '') {
       try {
-<<<<<<< HEAD
-        const response = await axios.post('http://192.168.11.5/api/change_theme', {
-=======
-        const response = await axios.post('http://172.20.10.8/api/change_theme', {
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+        const response = await axios.post('http://172.16.42.31/api/change_theme', {
           theme_txt: title,
           user_id: userIdglobal
         });
@@ -255,11 +239,7 @@ export const App: React.FC = () => {
 
     const fetchDataAndStartProgress = async () => {
       try {
-<<<<<<< HEAD
-        const response = await axios.post('http://192.168.11.5/chat_start',{
-=======
-        const response = await axios.post('http://172.20.10.8/chat_start',{
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+        const response = await axios.post('http://172.16.42.31/chat_start',{
           user_id: userIdglobal,
         });
         const now = new Date().getTime();
@@ -312,11 +292,7 @@ export const App: React.FC = () => {
 
 
   const test = () => {
-<<<<<<< HEAD
-    // axios.post('http://192.168.11.5/randam_theme',{
-=======
-    // axios.post('http://172.20.10.8/randam_theme',{
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+    // axios.post('http://172.16.42.31/randam_theme',{
     //   user_id: userIdglobal,
     // })
     //   .then(random_theme => {
