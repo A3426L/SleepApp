@@ -487,10 +487,12 @@ def chat():
 
     # Get the latest message id from the database
     latest_message = Message.query.order_by(desc(Message.id)).first()
-    message_db_id = latest_message.id if latest_message else 0
+    message_db_id = (str(latest_message).id) 
+    
+    if not latest_message :
+        return jsonify({'flag': 'false'})
 
-
-    if message_db_id > get_id:  # 文字列比較
+    if (int(message_db_id)) > (int(get_id)):  # 文字列比較
         # Fetch the message with the latest id
         latest_message = Message.query.get(message_db_id)
         message_db_user_id = latest_message.user_id
@@ -498,7 +500,10 @@ def chat():
 
         # Fetch the user name from the user table
         user_db = User.query.get(message_db_user_id)
-        user_db_user_name = user_db.user_name if user_db else None
+        user_db_user_name = user_db.user_name 
+
+        if not user_db :
+            return jsonify({'flag': 'false'})
 
         return jsonify({
             'id': message_db_id,
