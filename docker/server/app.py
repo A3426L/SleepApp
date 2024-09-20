@@ -327,12 +327,19 @@ def chat_start():
         db.session.delete(room)
         db.session.commit()
         
+        room_user_id0 = room.user_id0
+        str_current_time = format_datetime_to_string(current_time)
+        str_end_time = format_datetime_to_string(end_time)
+        room_room_name = room.room_name
+        
+        
+        
         return jsonify({
             "flag": "true",
-            "user_id0": room.user_id0,
-            "start_time": format_datetime_to_string(current_time),
-            "end_time": format_datetime_to_string(end_time),
-            "room_name": room.room_name
+            "user_id0": room_user_id0,
+            "start_time": str_current_time,
+            "end_time": str_end_time,
+            "room_name": room_room_name
         })
     else:
         # 降順で検索するように変更
@@ -346,16 +353,19 @@ def chat_start():
             )
         ).order_by(desc(OldRoom.id)).first()
 
-        if old_room:
-            return jsonify({
-                "flag": "true",
-                "user_id0": old_room.user_id0,
-                "start_time": format_datetime_to_string(old_room.start_time),
-                "end_time": format_datetime_to_string(old_room.end_time),
-                "room_name": old_room.room_name
-            })
-    
-    return jsonify({"flag": "false", "error": "No room found"})
+
+        room_user_id0_ = old_room.user_id0
+        str_current_time_ = format_datetime_to_string(old_room.start_time)
+        str_end_time_ = format_datetime_to_string(old_room.end_time)
+        room_room_name_ = old_room.room_name
+
+        return jsonify({
+            "flag": "true",
+            "user_id0": room_user_id0_,
+            "start_time": str_current_time_,
+            "end_time": str_end_time_,
+            "room_name": room_room_name_
+        })
 
 ### Post機能
 
