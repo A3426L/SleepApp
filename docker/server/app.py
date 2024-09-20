@@ -583,13 +583,13 @@ def chat():
 
                 # メッセージとユーザー情報を返す
                 return jsonify([{
-                    'id': (str(message_db_id)),
-                    'messages': (str(message_db_message)),
-                    'user_id': (str(message_user_id)),
-                    'name': (str(user_name))
+                    'id': message_db_id,
+                    'messages': message_db_message,
+                    'user_id': message_user_id,
+                    'name': user_name
                 }])
             else:
-                return jsonify({'flag': 'False'})
+                return jsonify({'flag': 'false'})
 
     except Exception as e:
         #print(f"Error in chat: {e}")

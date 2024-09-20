@@ -23,11 +23,12 @@ export const App: React.FC = () => {
   const [isEditable, setIsEditable] = useState(false); // 編集可能かどうかの状態
   const previousMessagesRef = useRef<IMessage[]>([]); // 型を明示的に指定
   const [newMsgId, setNewMsgId] = useState<Number>(0);
+  const [roomName, setRoomName] = useState<string>("");
 
   useEffect(() => {
     const post_theme = async () => {
       try {
-        const response = await axios.post('http://172.16.42.21/api/post_theme', {
+        const response = await axios.post('http://172.20.10.8/api/post_theme', {
             user_id: userIdglobal,
         });
 
@@ -51,10 +52,14 @@ export const App: React.FC = () => {
       }
 
       try {
-        const response = await axios.post('http://172.16.42.21/api/chat', {
-            user_id: userIdglobal,
-            id: newMsgId
-        });
+        const requestData = {
+          room_name: roomName,
+          user_id: userIdglobal,
+          id: newMsgId,
+        };
+        console.log("chat/room_namemaeeeeeeeee",roomName);
+        const response = await axios.post('http://172.20.10.8/api/chat', requestData);
+        console.log("chat/room_name",roomName);
 
         if (response.data.flag === 'false') {
           console.log('No new messages');
@@ -83,8 +88,11 @@ export const App: React.FC = () => {
             !previousMessages.some((prev) => prev._id === message._id)
         );
 
-        if (newMessages.length > 0) {
-            setMsg((previousMessages) => [...previousMessages, ...newMessages]);
+        console.log("response",response.data[0].user_id);
+        console.log("globalid",userIdglobal);
+
+        if (newMessages.length > 0 && userIdglobal !== response.data[0].user_id) {
+            setMsg((previousMessages) => [...newMessages, ...previousMessages]);
 
             const lastNewMessage = newMessages[newMessages.length - 1];
             setNewMsgId(lastNewMessage._id);
@@ -96,11 +104,11 @@ export const App: React.FC = () => {
       }
     };
     // 1秒ごとにfetchMessagesを実行
-    const intervalId = setInterval(fetchMessages, 1000);
+    const intervalId = setInterval(fetchMessages, 2000);
 
     // コンポーネントがアンマウントされたときにインターバルをクリア
     return () => clearInterval(intervalId);
-}, []);
+}, [roomName]);
 
   // useEffect(() => {
   //   console.log('Messages:', msg); // msgの中身を表示
@@ -109,7 +117,7 @@ export const App: React.FC = () => {
     // コンポーネントがマウントされた際にPOSTリクエストを送信
   // const checkLeader = async () => {
   //   try {
-  //     const response = await axios.post('http://172.16.42.21/api/leader', {
+  //     const response = await axios.post('http://172.20.10.8/api/leader', {
   //       value: 1  // ここでPOSTするデータを指定（例: valueが1の場合）
   //     });
   //     // レスポンスデータを確認して編集可能状態を設定
@@ -139,10 +147,11 @@ export const App: React.FC = () => {
       const messageData = messages[0];
       console.log('送信するメッセージデータ:', messageData);
     
-      axios.post('http://172.16.42.21/api/get_message', 
+      axios.post('http://172.20.10.8/api/get_message', 
         { 
           message_txt:  messageData.text,
-          user_id: userIdglobal
+          user_id: userIdglobal,
+          room_name: roomName
         },  // メッセージデータをサーバーに送信
       )
       .then((response) => {
@@ -217,7 +226,7 @@ export const App: React.FC = () => {
   const handleBlur = async () => {
     if (title.trim() !== '') {
       try {
-        const response = await axios.post('http://172.16.42.21/api/change_theme', {
+        const response = await axios.post('http://172.20.10.8/api/change_theme', {
           theme_txt: title,
           user_id: userIdglobal
         });
@@ -260,13 +269,15 @@ export const App: React.FC = () => {
 
     const fetchDataAndStartProgress = async () => {
       try {
-        const response = await axios.post('http://172.16.42.21/chat_start',{
+        const response = await axios.post('http://172.20.10.8/chat_start',{
           user_id: userIdglobal,
         });
         const now = new Date().getTime();
         const start = new Date(ChangeDate(response.data.start_time)).getTime();
         const end = new Date(ChangeDate(response.data.end_time)).getTime();
+        setRoomName(response.data.room_name);
         console.log("aaaaaaaaaaa",end);
+        console.log("room_name",roomName);
         //リーダーかの判断
         if (response.data.user_id0 === userIdglobal) {
           setIsEditable(true); // リーダーの場合
@@ -313,7 +324,7 @@ export const App: React.FC = () => {
 
 
   const test = () => {
-    // axios.post('http://172.16.42.21/randam_theme',{
+    // axios.post('http://172.20.10.8/randam_theme',{
     //   user_id: userIdglobal,
     // })
     //   .then(random_theme => {

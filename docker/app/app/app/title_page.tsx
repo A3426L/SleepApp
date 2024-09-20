@@ -16,7 +16,7 @@ const Title = () => {
     useEffect(() => {
         const postData = async () => {
             try {
-              const response = await axios.post('http://172.16.42.21/api/post_theme', {
+              const response = await axios.post('http://172.20.10.8/api/post_theme', {
                 user_id: userIdglobal,
               });
               setTitle(response.data.title);
