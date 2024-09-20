@@ -223,62 +223,61 @@ def create_db():
 @app.route('/matching_start', methods=['POST'])
 def matching_start():
     data = request.get_json()
-    if not data or 'user_id' not in data:
-        return jsonify({"flag": "false"})
+    # if not data or 'user_id' not in data:
+    #     return jsonify({"flag": "false"})
     
-    user_id = data['user_id']
+    # user_id = data['user_id']
     
-    existing_room = Room.query.filter_by(user_id0=user_id).first()
-    if existing_room:
-        room_name_to_delete = existing_room.room_name
-        Room.query.filter_by(room_name=room_name_to_delete).delete()
-        db.session.commit()
+    # existing_room = Room.query.filter_by(user_id0=user_id).first()
+    # if existing_room:
+    #     room_name_to_delete = existing_room.room_name
+    #     Room.query.filter_by(room_name=room_name_to_delete).delete()
+    #     db.session.commit()
     
-    if is_matching_db_empty():
-        return create_new_room(user_id)
+    # if is_matching_db_empty():
+    #     return create_new_room(user_id)
     
-    rooms = get_rooms_with_number_leq_4()
-    if not rooms:
-        return create_new_room(user_id)
+    # rooms = get_rooms_with_number_leq_4()
+    # if not rooms:
+    #     return create_new_room(user_id)
     
-    # 4以下のnumberを持つroomが存在する場合
-    room = rooms[0]  # 最初の適切なroomを選択
-    increment_room_number(room.room_name)
-    edit_room(user_id, room.room_name, room.number)
+    # # 4以下のnumberを持つroomが存在する場合
+    # room = rooms[0]  # 最初の適切なroomを選択
+    # increment_room_number(room.room_name)
+    # edit_room(user_id, room.room_name, room.number)
     return jsonify({"flag": "true"})
 
 
 @app.route('/matching', methods=['POST'])
 def matching():
     data = request.get_json()
-    if data:
-        user_id = data['user_id']
-    else:
-        return jsonify({"flag": "false"})
+    # if data:
+    #     user_id = data['user_id']
+    # else:
+    #     return jsonify({"flag": "false"})
 
-    # user_idに一致するRoomのレコードを検索
-    room = Room.query.filter(
-        or_(
-            Room.user_id0 == user_id,
-            Room.user_id1 == user_id,
-            Room.user_id2 == user_id,
-            Room.user_id3 == user_id,
-            Room.user_id4 == user_id
-        )
-    ).first()
+    # # user_idに一致するRoomのレコードを検索
+    # room = Room.query.filter(
+    #     or_(
+    #         Room.user_id0 == user_id,
+    #         Room.user_id1 == user_id,
+    #         Room.user_id2 == user_id,
+    #         Room.user_id3 == user_id,
+    #         Room.user_id4 == user_id
+    #     )
+    # ).first()
 
-    if room:
-        # ルームが見つかった場合、room_nameに一致するMatching_infoレコードを取得
-        matching_info = Matching_info.query.filter_by(room_name=room.room_name).first()
-        if matching_info:
-            number = matching_info.number
-            # ルームの人数が5人の場合、マッチング完了
-            if number == 5:
-                return jsonify({"flag": "true"})
+    # if room:
+    #     # ルームが見つかった場合、room_nameに一致するMatching_infoレコードを取得
+    #     matching_info = Matching_info.query.filter_by(room_name=room.room_name).first()
+    #     if matching_info:
+    #         number = matching_info.number
+    #         # ルームの人数が5人の場合、マッチング完了
+    #         if number == 5:
+    #             return jsonify({"flag": "true"})
     
-    # マッチングがまだ完了していない場合
-    return jsonify({"flag": "false"})
-
+    # # マッチングがまだ完了していない場合
+    return jsonify({"flag": "true"})
 
 @app.route('/chat_start', methods=['POST'])
 def chat_start():
@@ -300,24 +299,33 @@ def chat_start():
     ).first()
 
     if room:
-        datetime = dt.now()
-        datetime_offset = datetime + timedelta(minutes=5)
+        if room.start_time is None or room.end_time is None:
+            # roomのstart_timeとend_timeが存在しなかったとき
+            current_time = dt.now()
+            end_time = current_time + timedelta(minutes=5)
+            room.start_time = current_time
+            room.end_time = end_time
+            db.session.commit()
+        else:
+            # roomのstart_timeとend_timeが存在したとき
+            current_time = room.start_time
+            end_time = room.end_time
+            
         user_id0 = room.user_id0  # ルームマスターのID
         room_name = room.room_name
-        start_time = format_datetime_to_string(datetime)  # 現在の時刻を取得
-        end_time = format_datetime_to_string(datetime_offset)  # 5分後の時刻を終了時刻として設定
+
+
+        start_time_str = format_datetime_to_string(current_time)
+        end_time_str = format_datetime_to_string(end_time)
         
-        
-        #chat_startではMatching_infoを削除できない。Matching_infoを参照して開始されるのでラグがあった場合とんでもねぇことになる。
-        #送信されてきたuser_idとuser_id0が同じとき(実行するのはルームマスターのみ)room->old_roomへコピー
         if user_id == user_id0:
             copy_record(room_name)
         
         return jsonify({
             "flag": "true",
             "user_id0": user_id0,
-            "start_time": start_time,
-            "end_time": end_time,
+            "start_time": start_time_str,
+            "end_time": end_time_str,
             "room_name": room_name
         })
     
@@ -437,14 +445,12 @@ def chat():
 
     # Get the latest message id from the database
     latest_message = Message.query.order_by(desc(Message.id)).first()
-    message_db_id = latest_message.id if latest_message else '0'
+    message_db_id = latest_message.id if latest_message else 0
 
-    if message_db_id == get_id:
-        return jsonify({'flag': 'false'})
 
     if message_db_id > get_id:  # 文字列比較
         # Fetch the message with the latest id
-        latest_message = Message.query.get(int(message_db_id))
+        latest_message = Message.query.get(message_db_id)
         message_db_user_id = latest_message.user_id
         message_db_message = latest_message.message
 
@@ -467,9 +473,9 @@ def get_message():
     try:
         send_message = request.get_json()
         content_user_id = send_message['user_id']
-        content_message = send_message['messages']         
+        content_message = send_message['message_txt']         
 
-          #メッセージを保存
+        #メッセージを保存
         message = Message(user_id=content_user_id,message=content_message)
         db.session.add(message)
         db.session.commit()
