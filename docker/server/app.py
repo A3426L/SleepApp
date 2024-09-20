@@ -290,14 +290,13 @@ def matching():
     # # マッチングがまだ完了していない場合
     return jsonify({"flag": "false"})
 
-
 @app.route('/chat_start', methods=['POST'])
 def chat_start():
     data = request.get_json()
     if not data or 'user_id' not in data:
         return jsonify({"flag": "false"})
 
-    user_id = data['user_id']
+    user_id = str(data['user_id'])  # user_idを確実に文字列に
 
     # user_idに基づいてRoomレコードを検索
     room = Room.query.filter(
@@ -327,19 +326,12 @@ def chat_start():
         db.session.delete(room)
         db.session.commit()
         
-        room_user_id0 = room.user_id0
-        str_current_time = format_datetime_to_string(current_time)
-        str_end_time = format_datetime_to_string(end_time)
-        room_room_name = room.room_name
-        
-        
-        
         return jsonify({
             "flag": "true",
-            "user_id0": room_user_id0,
-            "start_time": str_current_time,
-            "end_time": str_end_time,
-            "room_name": room_room_name
+            "user_id0": str(room.user_id0),
+            "start_time": str(format_datetime_to_string(current_time)),
+            "end_time": str(format_datetime_to_string(end_time)),
+            "room_name": str(room.room_name)
         })
     else:
         # 降順で検索するように変更
@@ -353,20 +345,16 @@ def chat_start():
             )
         ).order_by(desc(OldRoom.id)).first()
 
-
-        room_user_id0_ = old_room.user_id0
-        str_current_time_ = format_datetime_to_string(old_room.start_time)
-        str_end_time_ = format_datetime_to_string(old_room.end_time)
-        room_room_name_ = old_room.room_name
-
-        return jsonify({
-            "flag": "true",
-            "user_id0": room_user_id0_,
-            "start_time": str_current_time_,
-            "end_time": str_end_time_,
-            "room_name": room_room_name_
-        })
-
+        if old_room:
+            return jsonify({
+                "flag": "true",
+                "user_id0": str(old_room.user_id0),
+                "start_time": str(format_datetime_to_string(old_room.start_time)),
+                "end_time": str(format_datetime_to_string(old_room.end_time)),
+                "room_name": str(old_room.room_name)
+            })
+    
+    return jsonify({"flag": "false", "error": "No room found"})
 ### Post機能
 
 @app.route('/postView_group',methods=['POST'])
