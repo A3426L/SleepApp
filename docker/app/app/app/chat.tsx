@@ -177,7 +177,10 @@ export const App: React.FC = () => {
     return (
       <View>
         {/* ユーザーIDを表示する部分 */}
-        <Text style={styles.userId}>{currentMessage.user._id}</Text>
+        {/* 自分以外のユーザーのIDのみ表示 */}
+        {currentMessage.user._id !== userIdglobal && (
+          <Text style={styles.userId}>{currentMessage.user._id}</Text>
+        )}
         {/* Bubble コンポーネント */}
         <Bubble
           {...props}
@@ -245,34 +248,34 @@ export const App: React.FC = () => {
   const ProgressBar = () => {
     const widthAnim = useRef(new Animated.Value(0)).current;
 
-    // const startProgressBar = useCallback(async (totalDuration: number, elapsedTime: number, end: number, current: number) => {
-    //   if (totalDuration > 0) {
-    //     // プログレスバーの幅を計算
-    //     const progress = (elapsedTime / totalDuration) * 100;
-    //     widthAnim.setValue(progress);
+    const startProgressBar = useCallback(async (totalDuration: number, elapsedTime: number, end: number, current: number) => {
+      if (totalDuration > 0) {
+        // プログレスバーの幅を計算
+        const progress = (elapsedTime / totalDuration) * 100;
+        widthAnim.setValue(progress);
 
-    //     // プログレスバーが終了したときに画面遷移を実行
-    //     Animated.timing(widthAnim, {
-    //       toValue: 100,
-    //       duration: end - current,
-    //       useNativeDriver: false,
-    //     }).start(({finished}) => {
-    //       if (finished) {
-    //         // アニメーションが正常に終了した場合にのみ実行される
-    //         console.log("アニメーション終了");
-    //         // ここに画面遷移などの処理を追加
-    //         router.navigate({pathname:'/title_page'}); // 例: react-routerを使用した画面遷移
-    //       }
-    //     });
-    //   }
-    // }, [widthAnim]);
+        // プログレスバーが終了したときに画面遷移を実行
+        Animated.timing(widthAnim, {
+          toValue: 100,
+          duration: end - current,
+          useNativeDriver: false,
+        }).start(({finished}) => {
+          if (finished) {
+            // アニメーションが正常に終了した場合にのみ実行される
+            console.log("アニメーション終了");
+            // ここに画面遷移などの処理を追加
+            router.navigate({pathname:'/title_page'}); // 例: react-routerを使用した画面遷移
+          }
+        });
+      }
+    }, [widthAnim]);
 
     const fetchDataAndStartProgress = async () => {
       try {
         const response = await axios.post('http://172.20.10.8/chat_start',{
           user_id: userIdglobal,
         });
-        const now = new Date().getTime();
+        const now = new Date().getTime()-32400725;
         const start = new Date(ChangeDate(response.data.start_time)).getTime();
         const end = new Date(ChangeDate(response.data.end_time)).getTime();
         setRoomName(response.data.room_name);
@@ -295,9 +298,10 @@ export const App: React.FC = () => {
         console.log('サーバーからの開始時刻（JST）:', start);
         console.log('サーバーからの終了時刻（JST）:', end);
         console.log('クライアントの現在時刻:', new Date());
+        console.log('ppppppppppppppppppp', now);
 
         // プログレスバーを開始
-        // startProgressBar(totalDuration, elapsedTime, end, current);
+        startProgressBar(totalDuration, elapsedTime, end, current);
       } catch (error) {
         console.error(error);
       }
@@ -372,7 +376,7 @@ export const App: React.FC = () => {
                 placeholder="メッセージを入力"
                 onSend={(messages) => onSend(messages)}
                 user={{
-                  _id: 1,
+                  _id: userIdglobal!,
                 }}
                 renderSend={(props) => <CustomSend {...props} />}
                 renderInputToolbar={(props) => <CustomInputToolbar {...props} />}
