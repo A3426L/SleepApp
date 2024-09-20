@@ -315,7 +315,9 @@ def chat_start():
     data = request.get_json()
     if not data or 'user_id' not in data:
         return jsonify({"flag": "false"})
+01_tajima
 ###
+
     user_id = str(data['user_id'])  # user_idを確実に文字列に
 
     # user_idに基づいてRoomレコードを検索
@@ -345,7 +347,7 @@ def chat_start():
         copy_record(room.room_name)
         db.session.delete(room)
         db.session.commit()
-        
+
         return jsonify({
             "flag": "true",
             "user_id0": str(room.user_id0),
