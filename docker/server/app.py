@@ -370,7 +370,7 @@ def chat_start():
                 "room_name": str(old_room.room_name)
             })
     
-    return jsonify({"flag": "false", "error": "No room found"})
+    return jsonify({"flag": "false"})
 ### Post機能
 
 @app.route('/postView_group',methods=['POST'])
