@@ -64,16 +64,17 @@ class Message(db.Model):
     user_id = db.Column(db.String(user_idL), nullable=False)  # 誰がそのメッセージを話したかを判別する
     message = db.Column(db.String(140), nullable=False)  # メッセージデータ
 
-class OldRoom(db.Model):  # Roomの過去情報を記録する。
+class OldRoom(db.Model):
     __bind_key__ = 'oldroom_db'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     room_name = db.Column(db.String(timeL), nullable=False) 
-    user_id0 = db.Column(db.String(user_idL),nullable=False)  # 1番目はルームマスターとして扱う
-    user_id1 = db.Column(db.String(user_idL),nullable=True)
-    user_id2 = db.Column(db.String(user_idL),nullable=True)
-    user_id3 = db.Column(db.String(user_idL),nullable=True)
-    user_id4 = db.Column(db.String(user_idL),nullable=True)
+    user_id0 = db.Column(db.String(user_idL), nullable=False)  # 1番目はルームマスターとして扱う
+    user_id1 = db.Column(db.String(user_idL), nullable=True)
+    user_id2 = db.Column(db.String(user_idL), nullable=True)
+    user_id3 = db.Column(db.String(user_idL), nullable=True)
+    user_id4 = db.Column(db.String(user_idL), nullable=True)
     theme = db.Column(db.String(timeL), nullable=True)
+    start_time = db.Column(db.DateTime, nullable=True) 
     end_time = db.Column(db.DateTime, nullable=True)  # チャット終了予定時刻を記録する。（datetime型）
     
 class Post(db.Model):
@@ -94,17 +95,27 @@ class Randomtheme(db.Model):
 def format_datetime_to_string(dt_obj):
     return dt_obj.strftime('%Y%m%d%H%M%S')
 
-def copy_record(room_name):#roomのroom_nameを起点としてその内容をroom_oldへ記録する．
+def copy_record(room_name):
     with app.app_context():
         addrecord = Room.query.filter_by(room_name=room_name).first()
         if addrecord:
-            add_old_room(addrecord.room_name,addrecord.user_id0,addrecord.user_id1,addrecord.user_id2,addrecord.user_id3,addrecord.user_id4,addrecord.theme,addrecord.end_time)
-            return "room copy comp!"
+            add_old_room(
+                room_name=addrecord.room_name,
+                user_id0=addrecord.user_id0,
+                user_id1=addrecord.user_id1,
+                user_id2=addrecord.user_id2,
+                user_id3=addrecord.user_id3,
+                user_id4=addrecord.user_id4,
+                theme=addrecord.theme,
+                start_time=addrecord.start_time,
+                end_time=addrecord.end_time
+            )
+            return "room copy complete!"
         else:
-            return "room copy faild"
+            return "room copy failed"
 
-def add_old_room(room_name, user_id0, user_id1=None, user_id2=None, user_id3=None, user_id4=None, theme=None, end_time=None):
-    new_old_room = OldRoom(room_name=room_name, user_id0=user_id0, user_id1=user_id1, user_id2=user_id2, user_id3=user_id3, user_id4=user_id4, theme=theme, end_time=end_time)
+def add_old_room(room_name, user_id0, user_id1=None, user_id2=None, user_id3=None, user_id4=None, theme=None, start_time=None,end_time=None):
+    new_old_room = OldRoom(room_name=room_name, user_id0=user_id0, user_id1=user_id1, user_id2=user_id2, user_id3=user_id3, user_id4=user_id4, theme=theme, start_time=start_time,end_time=end_time)
     with app.app_context():
         db.session.add(new_old_room)
         db.session.commit()
@@ -223,10 +234,10 @@ def create_db():
 @app.route('/matching_start', methods=['POST'])
 def matching_start():
     data = request.get_json()
-    # if not data or 'user_id' not in data:
-    #     return jsonify({"flag": "false"})
+    if not data or 'user_id' not in data:
+        return jsonify({"flag": "false"})
     
-    # user_id = data['user_id']
+    user_id = data['user_id']
     
     # existing_room = Room.query.filter_by(user_id0=user_id).first()
     # if existing_room:
@@ -234,58 +245,59 @@ def matching_start():
     #     Room.query.filter_by(room_name=room_name_to_delete).delete()
     #     db.session.commit()
     
-    # if is_matching_db_empty():
-    #     return create_new_room(user_id)
+    if is_matching_db_empty():
+        return create_new_room(user_id)
     
-    # rooms = get_rooms_with_number_leq_4()
-    # if not rooms:
-    #     return create_new_room(user_id)
+    rooms = get_rooms_with_number_leq_4()
+    if not rooms:
+        return create_new_room(user_id)
     
-    # # 4以下のnumberを持つroomが存在する場合
-    # room = rooms[0]  # 最初の適切なroomを選択
-    # increment_room_number(room.room_name)
-    # edit_room(user_id, room.room_name, room.number)
+    # 4以下のnumberを持つroomが存在する場合
+    room = rooms[0]  # 最初の適切なroomを選択
+    increment_room_number(room.room_name)
+    edit_room(user_id, room.room_name, room.number)
     return jsonify({"flag": "true"})
 
 
 @app.route('/matching', methods=['POST'])
 def matching():
     data = request.get_json()
-    # if data:
-    #     user_id = data['user_id']
-    # else:
-    #     return jsonify({"flag": "false"})
-
-    # # user_idに一致するRoomのレコードを検索
-    # room = Room.query.filter(
-    #     or_(
-    #         Room.user_id0 == user_id,
-    #         Room.user_id1 == user_id,
-    #         Room.user_id2 == user_id,
-    #         Room.user_id3 == user_id,
-    #         Room.user_id4 == user_id
-    #     )
-    # ).first()
-
-    # if room:
-    #     # ルームが見つかった場合、room_nameに一致するMatching_infoレコードを取得
-    #     matching_info = Matching_info.query.filter_by(room_name=room.room_name).first()
-    #     if matching_info:
-    #         number = matching_info.number
-    #         # ルームの人数が5人の場合、マッチング完了
-    #         if number == 5:
-    #             return jsonify({"flag": "true"})
-    
-    # # マッチングがまだ完了していない場合
-    return jsonify({"flag": "true"})
-
-@app.route('/chat_start', methods=['POST'])
-def chat_start():
-    data = request.get_json()
     if data:
         user_id = data['user_id']
     else:
         return jsonify({"flag": "false"})
+
+    # user_idに一致するRoomのレコードを検索
+    room = Room.query.filter(
+        or_(
+            Room.user_id0 == user_id,
+            Room.user_id1 == user_id,
+            Room.user_id2 == user_id,
+            Room.user_id3 == user_id,
+            Room.user_id4 == user_id
+        )
+    ).first()
+
+    if room:
+        # ルームが見つかった場合、room_nameに一致するMatching_infoレコードを取得
+        matching_info = Matching_info.query.filter_by(room_name=room.room_name).first()
+        if matching_info:
+            number = matching_info.number
+            # ルームの人数が5人の場合、マッチング完了
+            if number == 5:
+                return jsonify({"flag": "true"})
+    
+    # # マッチングがまだ完了していない場合
+    return jsonify({"flag": "false"})
+
+
+@app.route('/chat_start', methods=['POST'])
+def chat_start():
+    data = request.get_json()
+    if not data or 'user_id' not in data:
+        return jsonify({"flag": "false"})
+
+    user_id = data['user_id']
 
     # user_idに基づいてRoomレコードを検索
     room = Room.query.filter(
@@ -310,28 +322,40 @@ def chat_start():
             # roomのstart_timeとend_timeが存在したとき
             current_time = room.start_time
             end_time = room.end_time
-            
-        user_id0 = room.user_id0  # ルームマスターのID
-        room_name = room.room_name
-
-
-        start_time_str = format_datetime_to_string(current_time)
-        end_time_str = format_datetime_to_string(end_time)
         
-        if user_id == user_id0:
-            copy_record(room_name)
+        copy_record(room.room_name)
+        db.session.delete(room)
+        db.session.commit()
         
         return jsonify({
             "flag": "true",
-            "user_id0": user_id0,
-            "start_time": start_time_str,
-            "end_time": end_time_str,
-            "room_name": room_name
+            "user_id0": room.user_id0,
+            "start_time": format_datetime_to_string(current_time),
+            "end_time": format_datetime_to_string(end_time),
+            "room_name": room.room_name
         })
+    else:
+        # 降順で検索するように変更
+        old_room = OldRoom.query.filter(
+            or_(
+                OldRoom.user_id0 == user_id,
+                OldRoom.user_id1 == user_id,
+                OldRoom.user_id2 == user_id,
+                OldRoom.user_id3 == user_id,
+                OldRoom.user_id4 == user_id
+            )
+        ).order_by(desc(OldRoom.id)).first()
+
+        if old_room:
+            return jsonify({
+                "flag": "true",
+                "user_id0": old_room.user_id0,
+                "start_time": format_datetime_to_string(old_room.start_time),
+                "end_time": format_datetime_to_string(old_room.end_time),
+                "room_name": old_room.room_name
+            })
     
-    return jsonify({"flag": "false"})
-
-
+    return jsonify({"flag": "false", "error": "No room found"})
 
 ### Post機能
 
