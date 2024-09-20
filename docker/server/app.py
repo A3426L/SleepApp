@@ -2,9 +2,8 @@
 from flask import Flask , jsonify , request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import text , or_ , and_ , Table, Column, Integer, String, MetaData ,desc
+from sqlalchemy import text , or_ , Table, Column, Integer, String, MetaData
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
 
 from datetime import datetime as dt, timedelta
 
@@ -189,7 +188,7 @@ def is_matching_db_empty():
 
 
 # --- ルート定義 ---
-### test #####
+
 @app.route('/')
 def hello():
      return "Hello World!"
@@ -198,14 +197,6 @@ def hello():
 # def create_table_endpoint(table_name):
 #     bind_key = request.args.get('bind_key', 'message_db')  # デフォルトで'message_db'を使用
 #     return create_table(bind_key, table_name)
-
-@app.route('/testpost', methods=['POST'])
-def testpost():
-    data = request.get_json() 
-    if 'user_id' in data:
-        return jsonify({"received_user_id": data['user_id']}) 
-    else:
-        return jsonify({"error": "user_id not provided"}), 400
 
 @app.route('/debug_createdb')
 def create_db():
@@ -218,7 +209,6 @@ def create_db():
 # def copy_record_route(room_name):
 #     return copy_record(room_name)
 
-###########
 
 @app.route('/matching_start', methods=['POST'])
 def matching_start():
@@ -300,273 +290,37 @@ def chat_start():
     ).first()
 
     if room:
-        datetime = dt.now()
-        datetime_offset = datetime + timedelta(minutes=5)
+        if room.start_time is None or room.end_time is None:
+            # roomのstart_timeとend_timeが存在しなかったとき
+            current_time = dt.now()
+            end_time = current_time + timedelta(minutes=5)
+            room.start_time = current_time
+            room.end_time = end_time
+            db.session.commit()
+        else:
+            # roomのstart_timeとend_timeが存在したとき
+            current_time = room.start_time
+            end_time = room.end_time
+            
         user_id0 = room.user_id0  # ルームマスターのID
         room_name = room.room_name
-        start_time = format_datetime_to_string(datetime)  # 現在の時刻を取得
-        end_time = format_datetime_to_string(datetime_offset)  # 5分後の時刻を終了時刻として設定
+
+
+        start_time_str = format_datetime_to_string(current_time)
+        end_time_str = format_datetime_to_string(end_time)
         
-        
-        #chat_startではMatching_infoを削除できない。Matching_infoを参照して開始されるのでラグがあった場合とんでもねぇことになる。
-        #送信されてきたuser_idとuser_id0が同じとき(実行するのはルームマスターのみ)room->old_roomへコピー
         if user_id == user_id0:
             copy_record(room_name)
         
         return jsonify({
             "flag": "true",
             "user_id0": user_id0,
-            "start_time": start_time,
-            "end_time": end_time,
+            "start_time": start_time_str,
+            "end_time": end_time_str,
             "room_name": room_name
         })
     
     return jsonify({"flag": "false"})
-
-
-
-### Post機能
-
-@app.route('/postView_group',methods=['POST'])
-def postView_group():
-    data = request.get_json()
-    user_id = data['user_id']
-    old_results = OldRoom.query.filter(
-        or_(
-            OldRoom.user_id0 == user_id,
-            OldRoom.user_id1 == user_id,
-            OldRoom.user_id2 == user_id,
-            OldRoom.user_id3 == user_id,
-            OldRoom.user_id4 == user_id
-        )
-     ).order_by(OldRoom.end_time.desc()).all()
-    if old_results:
-        latest_old = old_results[0]
-        latest_room_name = latest_old.room_name
-    else:
-        old_list = {}
-    posts = Post.query.order_by(Post.id.desc()).filter_by(room_name=latest_room_name).limit(20).all()
-    post_list = [
-        {
-            "id": post.id,
-            "user_name": post.user_id0,
-            "theme": post.theme,
-            "post_txt": post.post_txt
-        }
-        for post in posts
-    ]
-    return jsonify(post_list)
-
-@app.route('/postView_all')
-def postView_all():
-    posts = Post.query.order_by(Post.id.desc()).limit(20).all()
-    post_list = [
-        {
-            "id": post.id,
-            "user_name": post.user_id0,
-            "theme": post.theme,
-            "post_txt": post.post_txt
-        }
-        for post in posts
-    ]
-    return jsonify(post_list)
-
-@app.route('/movePost',methods=['POST'])
-def movePost():
-    data = request.get_json()
-    user_id = data['user_id']
-    old_results = OldRoom.query.filter(
-        or_(
-            OldRoom.user_id0 == user_id,
-            OldRoom.user_id1 == user_id,
-            OldRoom.user_id2 == user_id,
-            OldRoom.user_id3 == user_id,
-            OldRoom.user_id4 == user_id
-        )
-    ).order_by(OldRoom.end_time.desc()).all()
-    if old_results:
-        latest_old = old_results[0]
-        latest_theme_name = latest_old.theme
-    else:
-        old_list = {}
-
-    return latest_theme_name
-
-@app.route('/post',methods=['POST'])
-def post():
-    try:
-        data = request.get_json()
-        user_id = data['user_id']
-        post_txt = data['post_txt']
-
-        old_results = OldRoom.query.filter(
-            or_(
-                OldRoom.user_id0 == user_id,
-                OldRoom.user_id1 == user_id,
-                OldRoom.user_id2 == user_id,
-                OldRoom.user_id3 == user_id,
-                OldRoom.user_id4 == user_id
-            )
-        ).order_by(OldRoom.end_time.desc()).all()
-        
-        if old_results:
-            latest_old = old_results[0]
-            latest_room_name = latest_old.room_name
-            latest_room_theme = latest_old.theme
-        else:
-            old_list = {}
-
-        new_post = Post(room_name = latest_room_name,user_id0 = user_id,theme = latest_room_theme, post_txt = post_txt)
-        db.session.add(new_post)
-        db.session.commit()
-
-        return jsonify({"flag":"true"})
-    
-    except Exception:
-        return jsonify({"flag":"false"}), 500
-    
-###
-
-
-### Chat機能　
-@app.route('/api/chat', methods=['POST'])
-def chat():
-    get_chat = request.get_json()
-    get_user_id = get_chat['user_id']
-    get_id = get_chat['id']
-
-    # Get the latest message id from the database
-    latest_message = Message.query.order_by(desc(Message.id)).first()
-    message_db_id = latest_message.id if latest_message else '0'
-
-    if message_db_id == get_id:
-        return jsonify({'flag': 'false'})
-
-    if message_db_id > get_id:  # 文字列比較
-        # Fetch the message with the latest id
-        latest_message = Message.query.get(int(message_db_id))
-        message_db_user_id = latest_message.user_id
-        message_db_message = latest_message.message
-
-        # Fetch the user name from the user table
-        user_db = User.query.get(message_db_user_id)
-        user_db_user_name = user_db.user_name if user_db else None
-
-        return jsonify({
-            'id': message_db_id,
-            'messages': message_db_message,
-            'user_id': message_db_user_id,
-            'name': user_db_user_name
-        })
-    else:
-        return jsonify({'flag': 'false'})
-    
-
-@app.route('/api/get_message',methods=['POST'])
-def get_message():
-    try:
-        send_message = request.get_json()
-        content_user_id = send_message['user_id']
-        content_message = send_message['messages']         
-
-          #メッセージを保存
-        message = Message(user_id=content_user_id,message=content_message)
-        db.session.add(message)
-        db.session.commit()
-          
-        return jsonify({'flag':'true'})
-    
-    except Exception:
-        return jsonify({'flag':'false'}),500
-    
-@app.route('/api/change_theme',methods=['POST'])
-def change_theme():
-    try:
-       get_theme = request.get_json()
-       theme0 = get_theme['theme_txt']
-       theme_id = get_theme['user_id']
-
-       room = Room.query.filter_by(user_id0=theme_id).first()
-       
-       room.theme = theme0
-       db.session.commit()
-
-       return jsonify({'flag':'true'})
-    
-    except Exception:
-        return jsonify({'flag':'false'}),500
-    
-@app.route('/api/post_theme',methods=['POST'])
-def post_theme():
-    try:
-       post_theme = request.get_json()
-       user_id0 = post_theme['user_id']
-
-       room = Room.query.filter(user_id=user_id0).all()
-       
-       return jsonify({'theme':room.theme})
-    except Exception:
-        return jsonify({'flag':'false'}),500
-    
-
-### login機能
-@app.route('/login',methods=['POST'])
-def login():
-    
-    login_data = request.get_json()
-    if login_data:
-        get_userid = login_data['user_id']
-        get_password = login_data['pass']
-
-    users = User.query.filter_by(user_id=get_userid).first()
-    #  ユーザidとパスを確認
-    if users.query.filter_by(user_id=get_userid,password=get_password):
-    
-        return jsonify({'flag':'true'})
-    
-    else:
-        return jsonify({'flag':'false'})     
-    
-@app.route("/signup", methods=['POST'])
-def signup():
-    signup_data = request.get_json()
-    
-    # Check if signup_data exists and contains the necessary fields
-    if not signup_data or 'name' not in signup_data or 'user_id' not in signup_data or 'pass' not in signup_data:
-        return jsonify({'flag': 'false'})
-
-    signup_name = signup_data['name']
-    signup_user_id = signup_data['user_id']
-    signup_password = signup_data['pass']
-
-    # Check if the user_id already exists in the database
-    existing_user = User.query.filter_by(user_id=signup_user_id).first()
-
-    if existing_user is None:
-        # If no user with the same user_id exists, create a new user
-        new_user = User(user_id=signup_user_id, user_name=signup_name, password=signup_password)
-        db.session.add(new_user)
-        db.session.commit()
-        return jsonify({'flag': 'true'})
-    else:
-        # If a user with the same user_id exists, return false
-        return jsonify({'flag': 'false'})
-
-
-@app.route("/get_userName",methods=['POST'])
-def get_userName():
-    try:
-        get_user = request.get_json()
-        id = get_user['user_id']
-
-        name = User.query.filter(User.user_id==id).first()
-
-        return jsonify({'user_name':name.user_name})
-    
-    except Exception:
-        return jsonify({'flag':'false'}),500
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
