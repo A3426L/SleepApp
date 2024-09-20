@@ -13,9 +13,10 @@ export interface postData{
     user_id?: string,
     name?: string,
     pass?: string,
-    message?: string,
     post_txt?: string,
-    chat?: string,
+    message_txt?: string,
+    id?: string,
+    theme_txt?: string,
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -65,6 +66,25 @@ export interface CHAT_START{
     start_time : string,
     end_time : string,
     room_name : string
+}
+
+export interface API_GET_MESSAGE{
+    flag: string
+}
+
+export interface API_CHAT{
+    id:string,
+    messages:string,
+    user_id:string,
+    name:string,
+}
+
+export interface API_CHANGE_THEME{
+    flag : string
+}
+
+export interface API_POST_THEME{
+    flag : string
 }
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -191,6 +211,54 @@ export async function matching(postData: postData) {
 
 export async function chat_start(postData: postData) {
     const buf: CHAT_START | undefined = await sendPostRequest('http://' + IP + '/chat_start', postData);
+    
+    // 取得したデータをコンソールに出力
+    if (buf) {
+        console.log('Response Data:', buf);
+    } else {
+        console.log('No data received');
+    }
+    return buf;
+}
+
+export async function api_get_message(postData: postData) {
+    const buf: API_GET_MESSAGE | undefined = await sendPostRequest('http://' + IP + '/api/get_message', postData);
+    
+    // 取得したデータをコンソールに出力
+    if (buf) {
+        console.log('Response Data:', buf);
+    } else {
+        console.log('No data received');
+    }
+    return buf;
+}
+
+export async function api_chat(postData: postData) {
+    const buf: API_CHAT | undefined = await sendPostRequest('http://' + IP + '/api/chat', postData);
+    
+    // 取得したデータをコンソールに出力
+    if (buf) {
+        console.log('Response Data:', buf);
+    } else {
+        console.log('No data received');
+    }
+    return buf;
+}
+
+export async function api_change_theme(postData: postData) {
+    const buf: API_CHANGE_THEME | undefined = await sendPostRequest('http://' + IP + '/api/change_theme', postData);
+    
+    // 取得したデータをコンソールに出力
+    if (buf) {
+        console.log('Response Data:', buf);
+    } else {
+        console.log('No data received');
+    }
+    return buf;
+}
+
+export async function api_post_theme(postData: postData) {
+    const buf: API_POST_THEME | undefined = await sendPostRequest('http://' + IP + '/api/post_theme', postData);
     
     // 取得したデータをコンソールに出力
     if (buf) {
