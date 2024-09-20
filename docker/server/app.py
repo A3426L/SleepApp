@@ -652,7 +652,7 @@ def post_theme():
         ).order_by(desc(OldRoom.id)).first()
        get_theme = room.theme
        
-       return jsonify({'theme':room.theme})
+       return jsonify({'theme':(str(get_theme))})
     except Exception:
         return jsonify({'flag':'false'}),500
     
