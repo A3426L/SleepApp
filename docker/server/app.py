@@ -540,59 +540,60 @@ def post():
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    get_chat = request.get_json()  # リクエストのJSONデータを取得
-    get_user_id = get_chat['user_id']
-    get_id = get_chat['id']
-    get_room_id = get_chat['roomname']  # JSONからルーム名を取得
-
-    engine = db.get_engine(app, bind=bind_key)
-    metadata.bind = engine
-    table_name = f"room_{get_room_id}"  # チャットルーム名に基づくテーブル名
-
     try:
-        table = Table(table_name, metadata, autoload_with=engine)  # 動的にテーブルをロード
+        send_message = request.get_json()
+        content_user_id = send_message['user_id']
+        content_id = send_message['id']
+        content_table_name = send_message['room_name']
+
+        # データベースに接続し、送信されたテーブルを取得
+        engine = db.get_engine(app, bind='message_db')
+        
+        with engine.connect() as connection:
+            table = Table(content_table_name, metadata, autoload_with=engine)
+
+            # DBから最新のIDとメッセージを取得
+            latest_message = connection.execute(table.select().order_by(table.c.id.desc())).first()
+            if latest_message is None:
+                return jsonify({'flag': False})
+            
+            if content_id == '0':
+                return jsonify({'flag': False})
+
+            # 送信されたIDとDB内の最新IDを比較
+            message_db_id = latest_message.id
+            if (int(content_id)) < (int(message_db_id)):
+                # 最新のメッセージとユーザーIDを取得
+                message_db_message = latest_message.message
+                message_user_id = latest_message.user_id
+
+                # userデータベースからuser_idに対応するユーザー名を取得
+                user_engine = db.get_engine(app, bind='user_db')
+                
+                with user_engine.connect() as user_connection:
+                    user_table = User.__table__
+                    user_query = user_connection.execute(
+                        user_table.select().where(user_table.c.user_id == message_user_id)
+                    ).first()
+
+                    if user_query:
+                        user_name = user_query.user_name
+                    else:
+                        user_name = "Unknown"  # 対応するユーザーが見つからない場合
+
+                # メッセージとユーザー情報を返す
+                return jsonify([{
+                    'id': (str(message_db_id)),
+                    'messages': (str(message_db_message)),
+                    'user_id': (str(message_user_id)),
+                    'name': (str(user_name))
+                }])
+            else:
+                return jsonify({'flag': False})
+
     except Exception as e:
-        return jsonify({'flag': 'false', 'error': f"Table {table_name} not found"})
-
-    # ルーム名の確認
-    room_check = connection.execute(
-        table.select().filter_by(room_name=get_room_id).limit(1)
-    ).first()
-    
-    if not room_check:
-        return jsonify({'flag': 'false', 'error': 'Room not found'})
-
-    connection = engine.connect()
-    latest_message = connection.execute(
-        table.select().order_by(desc(table.c.id)).limit(1)
-    ).first()  # 最新のメッセージを取得
-    
-    if not latest_message:
-        return jsonify({'flag': 'false'})
-
-    message_db_id = latest_message.id
-    message_user_id = latest_message.user_id
-    message_db_message = latest_message.message
-
-    if get_user_id != message_user_id:  # ユーザーIDが一致しない場合
-        return jsonify({'flag': 'false'})
-    
-    if int(message_db_id) > int(get_id):  # メッセージIDを比較
-        user_db = User.query.get(message_user_id)  # ユーザー情報を取得
-        if not user_db:
-            return jsonify({'flag': 'false'})
-        
-        user_user = user_db.user_name
-        
-        return jsonify({
-            'id': message_db_id,
-            'messages': message_db_message,
-            'user_id': message_user_id,
-            'name': user_user
-        })
-    else:
-        return jsonify({'flag': 'false'})
-
+        #print(f"Error in chat: {e}")
+        return jsonify({'flag': False})
 
 @app.route('/api/get_message', methods=['POST'])
 def get_message():
