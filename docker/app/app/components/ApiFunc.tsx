@@ -234,7 +234,7 @@ export async function api_get_message(postData: postData) {
 }
 
 export async function api_chat(postData: postData) {
-    const buf: API_CHAT | undefined = await sendPostRequest('http://' + IP + '/api/chat', postData);
+    const buf: API_CHAT[] | undefined = await sendPostRequest('http://' + IP + '/api/chat', postData);
     
     // 取得したデータをコンソールに出力
     if (buf) {
