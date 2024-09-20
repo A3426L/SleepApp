@@ -18,11 +18,7 @@ const Loading = () => {
       console.log("aaaaaaaaaaaaaaaaa");
         const postData = async () => {
             try {
-<<<<<<< HEAD
-              const response = await axios.post('http://192.168.11.5/matching_start', {
-=======
-              const response = await axios.post('http://10.225.174.32/matching_start', {
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+              const response = await axios.post('http://172.16.42.21/matching_start', {
                 user_id: userIdglobal,
               });
               setTitle(response.data.flag);
@@ -39,11 +35,7 @@ const Loading = () => {
         // POSTリクエストを送信する関数
         const sendPostRequest = () => {
           console.log('0000000000')
-<<<<<<< HEAD
-          axios.post('http://192.168.11.5/matching', {
-=======
-          axios.post('http://10.225.174.32/matching', {
->>>>>>> 347f89a6acfcd892f11b7e948e6e2fad959e2bdf
+          axios.post('http://172.16.42.21/matching', {
             // 送信するデータ
             user_id: userIdglobal,
           })
