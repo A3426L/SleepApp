@@ -46,9 +46,9 @@ export const App: React.FC = () => {
 
     // メッセージを取得する関数
     const fetchMessages = async () => {
-      // if(isEditable === false){
-      //   post_theme()
-      // }
+      if(isEditable === false){
+        post_theme()
+      }
 
       try {
         const response = await axios.post('http://172.16.42.21/api/chat', {
@@ -96,10 +96,7 @@ export const App: React.FC = () => {
       }
     };
     // 1秒ごとにfetchMessagesを実行
-    const intervalId = setInterval(()=>{
-      fetchMessages(),
-      1000}
-    );
+    const intervalId = setInterval(fetchMessages, 1000);
 
     // コンポーネントがアンマウントされたときにインターバルをクリア
     return () => clearInterval(intervalId);
