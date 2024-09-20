@@ -2,9 +2,19 @@ import { Stack} from "expo-router";
 import {useRouter} from 'expo-router';
 import { Modal } from "react-native";
 import { GlobalProvider } from './GlobalContext';
+import { useFonts } from 'expo-font';
 
 export default function RootLayout() {
   const router = useRouter();
+  const [loaded] = useFonts({
+    DenkOne: require('../assets/fonts/DenkOne-Regular.ttf'),
+  });
+
+  if (!loaded) {
+    return null;
+  }
+
+  
   return (
     <GlobalProvider>
     <Stack>

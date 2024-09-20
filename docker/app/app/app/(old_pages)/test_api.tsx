@@ -43,7 +43,7 @@ export default function YourComponent() {
           marginBottom: 20,
         }}
       >
-        <Text style={{ color: "white", fontSize: 20 }}>Sign up</Text>
+        <Text style={{ color: "white", fontSize: 20 ,fontFamily:"DenkOne",}}>Sign up</Text>
       </TouchableOpacity>
 
       {/* API結果をFlatListで表示 */}

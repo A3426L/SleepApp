@@ -452,8 +452,8 @@ def postView_all():
  [
     {
       "id":"1",
-      "user_name":"name1",
-      "theme":"theme1",
+      "user_name":"abcdefghijklmnopqrstu",
+      "theme":"あいうえおかきくけこさしすせそ",
       "post_txt":"眠い",
     },
     {
@@ -513,14 +513,143 @@ def movePost():
     },
 
 ) 
-        
 @app.route('/post', methods=['POST'])
 def post():
     data = request.get_json()
     if 1:
         return jsonify(
     {
+       "flag":"true"
+    },
+
+) 
+    else:
+        return jsonify({"error": "user_id not provided"}), 400
+        
+@app.route('/matching_start', methods=['POST'])
+def matching_start():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
         "flag":"true" 
+    },
+
+) 
+        
+@app.route('/matching', methods=['POST'])
+def matching():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
+        "flag":"true" 
+    },
+
+) 
+        
+@app.route('/chat_start', methods=['POST'])
+def chat_start():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
+      "user_id0":"1",
+      "start_time":"abcdefghijklmnopqrstu",
+      "end_time":"あいうえおかきくけこさしすせそ",
+      "room_name":"眠い",
+    },
+
+) 
+        
+@app.route('/api/get_message', methods=['POST'])
+def api_get_message():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
+        "flag":"true" 
+    },
+
+) 
+        
+@app.route('/api/chat', methods=['POST'])
+def api_chat():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+[
+    {
+      "id":"1",
+      "messages":"abcdefghijklmnopqrstu",
+      "user_id":"あいうえおかきくけこさしすせそ",
+      "name":"眠い",
+    },
+    {
+      "id":"2",
+      "messages":"abcdefghijklmnopqrstu",
+      "user_id":"あいうえおかきくけこさしすせそ",
+      "name":"眠い",
+    },
+    {
+      "id":"3",
+      "messages":"abcdefghijklmnopqrstu",
+      "user_id":"あいうえおかきくけこさしすせそ",
+      "name":"眠い",
+    },
+    {
+      "id":"4",
+      "messages":"abcdefghijklmnopqrstu",
+      "user_id":"あいうえおかきくけこさしすせそ",
+      "name":"眠い",
+    },
+    {
+      "id":"5",
+      "messages":"abcdefghijklmnopqrstu",
+      "user_id":"あいうえおかきくけこさしすせそ",
+      "name":"眠い",
+    },
+    {
+      "id":"6",
+      "messages":"abcdefghijklmnopqrstu",
+      "user_id":"あいうえおかきくけこさしすせそ",
+      "name":"眠い",
+    },
+    {
+      "id":"7",
+      "messages":"abcdefghijklmnopqrstu",
+      "user_id":"あいうえおかきくけこさしすせそ",
+      "name":"眠い",
+    },
+    {
+      "id":"8",
+      "messages":"abcdefghijklmnopqrstu",
+      "user_id":"あいうえおかきくけこさしすせそ",
+      "name":"眠い",
+    },
+
+  ]
+
+) 
+
+@app.route('/api/change_theme', methods=['POST'])
+def api_change_theme():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
+        "flag":"true" 
+    },
+
+) 
+        
+@app.route('/api/post_theme', methods=['POST'])
+def api_post_theme():
+    data = request.get_json()
+    if 1:
+        return jsonify(
+    {
+        'theme':"get_theme"
     },
 
 ) 

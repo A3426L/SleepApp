@@ -10,7 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 const TabsHeaderText = () => {
   return(
     <Text style = {styles.TabsHeaderText}>
-      Sleep App
+      Sheeeep
     </Text>
   );
 }
@@ -18,8 +18,10 @@ const TabsHeaderText = () => {
 const styles = StyleSheet.create({
   TabsHeaderText: {
     color: "white",
-    fontSize: 35,
+    fontSize: 45,
     textAlign: "left",
+    fontFamily:"DenkOne",
+    paddingLeft:20,
   },
 });
 
