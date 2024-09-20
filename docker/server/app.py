@@ -555,10 +555,10 @@ def chat():
             # DBから最新のIDとメッセージを取得
             latest_message = connection.execute(table.select().order_by(table.c.id.desc())).first()
             if latest_message is None:
-                return jsonify({'flag': False})
+                return jsonify({'flag': 'false'})
             
             if content_id == '0':
-                return jsonify({'flag': False})
+                return jsonify({'flag': 'false'})
 
             # 送信されたIDとDB内の最新IDを比較
             message_db_id = latest_message.id
@@ -589,7 +589,7 @@ def chat():
                     'name': (str(user_name))
                 }])
             else:
-                return jsonify({'flag': False})
+                return jsonify({'flag': 'False'})
 
     except Exception as e:
         #print(f"Error in chat: {e}")
@@ -609,12 +609,12 @@ def get_message():
 
         # メッセージを保存
         if not insert_message('message_db', content_room_name, content_user_id, content_message):
-            return jsonify({'flag':'False'})
+            return jsonify({'flag':'false'})
 
-        return jsonify({'flag': 'True'})
+        return jsonify({'flag': 'true'})
     except Exception as e:
         #print(f"Error in get_message: {e}")
-        return jsonify({'flag': 'False'})
+        return jsonify({'flag': 'false'})
     
 @app.route('/api/change_theme',methods=['POST'])
 def change_theme():
