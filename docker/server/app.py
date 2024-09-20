@@ -532,10 +532,11 @@ def change_theme():
     try:
        get_theme = request.get_json()
        theme0 = get_theme['theme_txt']
-       theme_id = get_theme['user_id']
+       reader_id = get_theme['user_id']
 
        room = OldRoom.query.filter_by(
-           user_id0=theme_id).first()
+           OldRoom.user_id0 == reader_id
+           ).order_by(desc(OldRoom.id)).first()
        
        room.theme = theme0
        db.session.commit()
