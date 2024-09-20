@@ -543,7 +543,7 @@ def post_theme():
                OldRoom.user_id3 == user_id,
                OldRoom.user_id4 == user_id
             )
-        ).first()
+        ).order_by(desc(OldRoom.id)).first()
        get_theme = room.theme
        
        return jsonify({'theme':get_theme})
