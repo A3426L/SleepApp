@@ -286,17 +286,36 @@ def matching():
             # ルームの人数が5人の場合、マッチング完了
             if number == 5:
                 return jsonify({"flag": "true"})
-    
+    else:
+        old_room = OldRoom.query.filter(
+        or_(
+            OldRoom.user_id0 == user_id,
+            OldRoom.user_id1 == user_id,
+            OldRoom.user_id2 == user_id,
+            OldRoom.user_id3 == user_id,
+            OldRoom.user_id4 == user_id
+        )
+        ).order_by(desc(OldRoom.id)).first()
+                # ルームが見つかった場合、room_nameに一致するMatching_infoレコードを取得
+        
+        if old_room:
+            old_matching_info = Matching_info.query.filter_by(room_name=old_room.room_name).first()
+            if old_matching_info:
+                old_number = old_matching_info.number
+                # ルームの人数が5人の場合、マッチング完了
+                if old_number == 5:
+                    return jsonify({"flag": "true"})
+        else:
+            return jsonify({"flag": "false"})
     # # マッチングがまだ完了していない場合
     return jsonify({"flag": "false"})
-
 
 @app.route('/chat_start', methods=['POST'])
 def chat_start():
     data = request.get_json()
     if not data or 'user_id' not in data:
         return jsonify({"flag": "false"})
-
+###
     user_id = str(data['user_id'])  # user_idを確実に文字列に
 
     # user_idに基づいてRoomレコードを検索
@@ -355,8 +374,7 @@ def chat_start():
                 "room_name": str(old_room.room_name)
             })
     
-    return jsonify({"flag": "false", "error": "No room found"})
-
+    return jsonify({"flag": "false"})
 ### Post機能
 
 @app.route('/postView_group',methods=['POST'])
@@ -482,14 +500,12 @@ def chat():
         user_db = User.query.get(message_db_user_id)
         user_db_user_name = user_db.user_name if user_db else None
 
-        return jsonify([
-            {
+        return jsonify({
             'id': message_db_id,
             'messages': message_db_message,
             'user_id': message_db_user_id,
             'name': user_db_user_name
-            }
-        ])
+        })
     else:
         return jsonify({'flag': 'false'})
     
@@ -518,8 +534,7 @@ def change_theme():
        theme0 = get_theme['theme_txt']
        theme_id = get_theme['user_id']
 
-       room = Room.query.filter_by(
-           user_id0=theme_id).first()
+       room = Room.query.filter_by(user_id0=theme_id).first()
        
        room.theme = theme0
        db.session.commit()
@@ -533,20 +548,11 @@ def change_theme():
 def post_theme():
     try:
        post_theme = request.get_json()
-       user_id = post_theme['user_id']
+       user_id0 = post_theme['user_id']
 
-       room = Room.query.filter(
-           or_(
-               Room.user_id0 == user_id,
-               Room.user_id1 == user_id,
-               Room.user_id2 == user_id,
-               Room.user_id3 == user_id,
-               Room.user_id4 == user_id
-            )
-        ).first()
-       get_theme = room.theme
+       room = Room.query.filter(user_id=user_id0).all()
        
-       return jsonify({'theme':get_theme})
+       return jsonify({'theme':room.theme})
     except Exception:
         return jsonify({'flag':'false'}),500
     
