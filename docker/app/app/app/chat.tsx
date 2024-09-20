@@ -25,8 +25,31 @@ export const App: React.FC = () => {
   const [newMsgId, setNewMsgId] = useState<Number>(0);
 
   useEffect(() => {
+    const post_theme = async () => {
+      try {
+        const response = await axios.post('http://172.16.42.21/api/post_theme', {
+            user_id: userIdglobal,
+        });
+
+        if (response.data.flag === 'false') {
+          console.log('No title');
+          return;
+        }
+
+        return {
+          setTitle: response.data.theme,
+        };
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    }
+
     // メッセージを取得する関数
     const fetchMessages = async () => {
+      // if(isEditable === false){
+      //   post_theme()
+      // }
+
       try {
         const response = await axios.post('http://172.16.42.21/api/chat', {
             user_id: userIdglobal,
@@ -39,7 +62,7 @@ export const App: React.FC = () => {
         }
 
         // メッセージを逆順に並び替える
-        const reversedMessages = response.data.messages.reverse();
+        const reversedMessages = response.data.reverse();
         const fetchedMessages = reversedMessages.map((msg: any) => {
             const isUserMessage = userIdglobal === msg.user_id;
 
@@ -72,9 +95,11 @@ export const App: React.FC = () => {
         console.error('Error fetching messages:', error);
       }
     };
-
     // 1秒ごとにfetchMessagesを実行
-    const intervalId = setInterval(fetchMessages, 1000);
+    const intervalId = setInterval(()=>{
+      fetchMessages(),
+      1000}
+    );
 
     // コンポーネントがアンマウントされたときにインターバルをクリア
     return () => clearInterval(intervalId);
@@ -246,7 +271,7 @@ export const App: React.FC = () => {
         const end = new Date(ChangeDate(response.data.end_time)).getTime();
         console.log("aaaaaaaaaaa",end);
         //リーダーかの判断
-        if (response.data.user_id0 === "1") {
+        if (response.data.user_id0 === userIdglobal) {
           setIsEditable(true); // リーダーの場合
           console.log("リーダーーーーーーーー");
         } else {
