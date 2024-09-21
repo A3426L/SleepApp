@@ -32,8 +32,8 @@ export const App: React.FC = () => {
             room_name: roomName,
         });
 
-        if (response.data.flag === "false") {
-          console.log('No title');
+        if (response.data.flag === "None") {
+          console.log('お題');
           return;
         }
 
@@ -370,6 +370,7 @@ export const App: React.FC = () => {
                   placeholder="お題"
                   ref={topInputRef}
                   onFocus={handleTopInputFocus} // フォーカスイベントを処理
+                  value={title}
                   onChangeText={handleTextChange} // テキスト変更を処理
                   onBlur={handleBlur} // フォーカスが外れたときに処理
                   editable={isEditable} // 編集可能/不可を制御

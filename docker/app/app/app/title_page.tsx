@@ -38,8 +38,8 @@ const Title = () => {
               console.log("error")
           }
       };
+      postData();
       getUserName();
-        postData();
     },[roomName])
 
     return (
