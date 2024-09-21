@@ -37,9 +37,12 @@ export const App: React.FC = () => {
           return;
         }
 
-        return {
-          setTitle: response.data.flag,
-        };
+        // return {
+        //   setTitle: response.data.theme,
+        // };
+        setTitle(response.data.theme);
+        console.log("111ldkfgakdjfjgdfhgjd",title)
+        return
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
@@ -108,7 +111,7 @@ export const App: React.FC = () => {
 
     // コンポーネントがアンマウントされたときにインターバルをクリア
     return () => clearInterval(intervalId);
-}, [roomName]);
+}, [roomName,title]);
 
   // useEffect(() => {
   //   console.log('Messages:', msg); // msgの中身を表示
@@ -231,8 +234,12 @@ export const App: React.FC = () => {
       try {
         const response = await axios.post('http://172.20.10.8/api/change_theme', {
           theme_txt: title,
-          room_name: roomName 
+          room_name: roomName
         });
+
+        if(response.data.flag === 'false'){
+          return
+        }
 
         // レスポンスの処理
         console.log('API Response:', response.data);

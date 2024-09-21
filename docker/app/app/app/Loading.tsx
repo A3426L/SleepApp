@@ -115,13 +115,13 @@ const Loading = () => {
         <View style={style.container}>
             <SafeAreaView style={style.container}>
                 
-                <Text style={style.text}>今日の夢のテーマは。。。</Text>
+                <Text style={style.text}>マッチング中...</Text>
                 <View style={style.titleContainer}>
-                    <Text style={style.title}>{title}</Text>
+                    <Text style={style.title}>おやすみの前に</Text>
                 </View>
                 <ImageBackground source={home_image} style={style.NewImage}>
                     <View style={style.sleepContainer}>
-                        <Text style={style.sleep}>1111111</Text>
+                        <Text style={style.sleep}>少々お待ちください。。</Text>
                     </View>
                 </ImageBackground>
                 

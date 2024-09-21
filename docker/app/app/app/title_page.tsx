@@ -4,6 +4,7 @@ import { View, SafeAreaView, StyleSheet, Text, ImageBackground } from 'react-nat
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useGlobalContext } from './GlobalContext';
+
 import axios from 'axios';
 
 const Title = () => {
@@ -12,12 +13,13 @@ const Title = () => {
     const { userIdglobal, setUserIdglobal } = useGlobalContext();
     const [ title, setTitle ] = useState();
     const [ error, setError] = useState();
+    const [roomName, setRoomName] = useState("");
 
     useEffect(() => {
         const postData = async () => {
             try {
               const response = await axios.post('http://172.20.10.8/api/post_theme', {
-                user_id: userIdglobal,
+                room_name: roomName,
               });
               setTitle(response.data.title);
               console.log(response.data.title);
@@ -25,8 +27,20 @@ const Title = () => {
                 console.log("error")
             }
         };
+        const getUserName = async () => {
+          try {
+            const response = await axios.post('http://172.20.10.8/chat_start', {
+              user_id: userIdglobal,
+            });
+            setRoomName(response.data.room_name);
+            console.log(response.data.room_name);
+          } catch (err) {
+              console.log("error")
+          }
+      };
+      getUserName();
         postData();
-    },[])
+    },[roomName])
 
     return (
         <View style={style.container}>
