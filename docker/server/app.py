@@ -616,46 +616,98 @@ def get_message():
         #print(f"Error in get_message: {e}")
         return jsonify({'flag': 'false'})
     
-@app.route('/api/change_theme',methods=['POST'])
+# @app.route('/api/change_theme',methods=['POST'])
+# def change_theme():
+#     try:
+#        get_theme = request.get_json()
+#        theme0 = get_theme['theme_txt']
+#        reader_id = get_theme['user_id']
+
+#        room = OldRoom.query.filter_by(
+#            OldRoom.user_id0 == reader_id
+#            ).order_by(desc(OldRoom.id)).first()
+       
+#        room.theme = theme0
+#        db.session.commit()
+
+#        return jsonify({'flag':'true'})
+    
+#     except Exception:
+#         return jsonify({'flag':'false'}),500
+    
+# @app.route('/api/post_theme',methods=['POST'])
+# def post_theme():
+#     try:
+#        post_theme = request.get_json()
+#        user_id = post_theme['user_id']
+
+#        room = OldRoom.query.filter(
+#            or_(
+#                OldRoom.user_id0 == user_id,
+#                OldRoom.user_id1 == user_id,
+#                OldRoom.user_id2 == user_id,
+#                OldRoom.user_id3 == user_id,
+#                OldRoom.user_id4 == user_id
+#             )
+#         ).order_by(desc(OldRoom.id)).first()
+#        get_theme = room.theme
+       
+#        return jsonify({'theme':(str(get_theme))})
+#     except Exception:
+#         return jsonify({'flag':'false'}),500
+    
+
+
+@app.route('/api/change_theme', methods=['POST'])
 def change_theme():
     try:
-       get_theme = request.get_json()
-       theme0 = get_theme['theme_txt']
-       reader_id = get_theme['user_id']
-
-       room = OldRoom.query.filter_by(
-           OldRoom.user_id0 == reader_id
-           ).order_by(desc(OldRoom.id)).first()
-       
-       room.theme = theme0
-       db.session.commit()
-
-       return jsonify({'flag':'true'})
-    
+        get_theme = request.get_json()
+        room_name0 = get_theme['room_name']
+        theme_txt0 = get_theme['theme_txt']
+        
+        # filter_byではなくfilterを使用
+        room = OldRoom.query.filter(OldRoom.room_name == room_name0).order_by(desc(OldRoom.id)).first()
+        
+        if not room:
+            return jsonify({'flag': 'false'})
+        
+        room.theme = theme_txt0
+        db.session.commit()
+        
+        return jsonify({'flag': 'true'})
     except Exception:
-        return jsonify({'flag':'false'}),500
+        return jsonify({'flag': 'false'}), 500
+
     
 @app.route('/api/post_theme',methods=['POST'])
 def post_theme():
     try:
-       post_theme = request.get_json()
-       user_id = post_theme['user_id']
+        post_theme = request.get_json()
+        user_id = post_theme['room_name']
 
-       room = OldRoom.query.filter(
-           or_(
-               OldRoom.user_id0 == user_id,
-               OldRoom.user_id1 == user_id,
-               OldRoom.user_id2 == user_id,
-               OldRoom.user_id3 == user_id,
-               OldRoom.user_id4 == user_id
+
+        room = OldRoom.query.filter(
+            (
+                OldRoom.room_name == user_id
             )
         ).order_by(desc(OldRoom.id)).first()
-       get_theme = room.theme
+        get_theme = room.theme
+    #    room = OldRoom.query.filter(
+    #        or_(
+    #            OldRoom.user_id0 == user_id,
+    #            OldRoom.user_id1 == user_id,
+    #            OldRoom.user_id2 == user_id,
+    #            OldRoom.user_id3 == user_id,
+    #            OldRoom.user_id4 == user_id
+    #         )
+    #     ).order_by(desc(OldRoom.id)).first()
+    #    get_theme = room.theme
        
-       return jsonify({'theme':(str(get_theme))})
+        return jsonify({'theme':(str(get_theme))})
     except Exception:
         return jsonify({'flag':'false'}),500
-    
+
+
 
 ### login機能
 @app.route('/login',methods=['POST'])
